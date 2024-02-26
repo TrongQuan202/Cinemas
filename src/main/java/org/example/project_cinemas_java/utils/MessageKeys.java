@@ -20,11 +20,13 @@ public class MessageKeys {
     public static final String EMAIL_DOES_NOT_EXISTS = "Email_not_exist";
     public static final String USER_ACCOUNT_IS_DISABLED = "User account is disabled";
     public static final String ROLE_DOES_NOT_EXISTS = "user.login.role_not_exist";
+    public static  final  String ERROR_SERVE = "error serve";
 
     public static final String INCORRECT_VERIFICATION_CODE = "Incorrect verification code";
 
     public static final String EMAIL_ALREADY_EXISTS = "Email already exists";
     public static final String VERIFICATION_CODE_HAS_EXPIRED = "Verification code has expired";
+    public static final String USER_DOES_NOT_EXIST = "User does not exist";
 
 
 }

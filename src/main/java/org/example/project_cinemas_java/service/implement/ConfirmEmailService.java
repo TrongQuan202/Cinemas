@@ -3,25 +3,26 @@ package org.example.project_cinemas_java.service.implement;
 import org.example.project_cinemas_java.exceptions.ConfirmEmailExpired;
 import org.example.project_cinemas_java.exceptions.DataNotFoundException;
 import org.example.project_cinemas_java.model.ConfirmEmail;
-import org.example.project_cinemas_java.model.EmailMessage;
 import org.example.project_cinemas_java.model.User;
-import org.example.project_cinemas_java.payload.request.auth_request.ConfirmCodeRequest;
 import org.example.project_cinemas_java.repository.ConfirmEmailRepo;
+import org.example.project_cinemas_java.repository.UserRepo;
 import org.example.project_cinemas_java.service.iservice.IConfirmEmailService;
 import org.example.project_cinemas_java.utils.MessageKeys;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessagePreparator;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.Random;
 
 @Service
 public class ConfirmEmailService implements IConfirmEmailService {
     @Autowired
     private ConfirmEmailRepo confirmEmailRepo;
+    @Autowired
+    private UserRepo userRepo;
 
     @Autowired
     private JavaMailSender javaMailSender;
@@ -45,9 +46,9 @@ public class ConfirmEmailService implements IConfirmEmailService {
     }
 
     @Override
-    public void sendConfirmEmail(User user) {
+    public void sendConfirmEmail(String email) {
         ConfirmEmail confirmEmail = ConfirmEmail.builder()
-                .user(user)
+                .user(null)
                 .confirmCode(generateConfirmCode())
                 .expiredTime(LocalDateTime.now().plusSeconds(60))
                 .isConfirm(false)
@@ -58,7 +59,7 @@ public class ConfirmEmailService implements IConfirmEmailService {
         //todo Gửi email với mã code và thông tin
         String subject ="Xác nhận email của bạn";
         String content = "Mã xác thực của bạn là: " + confirmEmail.getConfirmCode();
-        senEmail(user.getEmail(),subject,content);
+        senEmail(email,subject,content);
     }
 
     @Override

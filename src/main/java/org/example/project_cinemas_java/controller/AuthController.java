@@ -7,9 +7,7 @@ import org.example.project_cinemas_java.exceptions.DataNotFoundException;
 import org.example.project_cinemas_java.exceptions.DisabledException;
 import org.example.project_cinemas_java.model.ConfirmEmail;
 import org.example.project_cinemas_java.model.User;
-import org.example.project_cinemas_java.payload.request.auth_request.ConfirmCodeRequest;
-import org.example.project_cinemas_java.payload.request.auth_request.LoginRequest;
-import org.example.project_cinemas_java.payload.request.auth_request.RegisterRequest;
+import org.example.project_cinemas_java.payload.request.auth_request.*;
 import org.example.project_cinemas_java.repository.ConfirmEmailRepo;
 import org.example.project_cinemas_java.repository.UserRepo;
 import org.example.project_cinemas_java.repository.UserStatusRepo;
@@ -20,6 +18,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -43,9 +42,10 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest registerRequest)  {
         try {
-            User user = authService.register(registerRequest);
-            confirmEmailService.sendConfirmEmail(user);
-            return ResponseEntity.ok().body("Kiểm tra email để xác nhận tài khoản");
+              var string = authService.register(registerRequest);
+//            userRepo.save(user);
+//            confirmEmailService.sendConfirmEmail(user);
+            return ResponseEntity.ok().body(string);
         } catch (DataIntegrityViolationException ex){
             return ResponseEntity.badRequest().body(ex.getMessage());
         }catch (IllegalStateException ex){
@@ -76,25 +76,72 @@ public class AuthController {
         }
     }
 
-    @GetMapping("/confirm-register")
-    public ResponseEntity<?> confirmEmail (@RequestBody String confirmCode){
+    @PostMapping("/confirm-register")
+    public ResponseEntity<?> confirmRegister (@RequestParam String confirmCode, @RequestBody RegisterRequest registerRequest){
         try {
             ConfirmEmail confirmEmail = confirmEmailRepo.findConfirmEmailByConfirmCode(confirmCode);
-            User user = userRepo.findByConfirmEmails(confirmEmail);
-
-            var isConfirm = confirmEmailService.confirmEmail(confirmCode);
+//            User user = userRepo.findByConfirmEmails(confirmEmail);
+            boolean isConfirm = confirmEmailService.confirmEmail(confirmCode);
             if(isConfirm){
-                user.setActive(true);
-                user.setUserStatus(userStatusRepo.findById(1).orElse(null));
-                userRepo.save(user);
+                authService.saveUser(registerRequest);
+                confirmEmail.setUser(null);
+                confirmEmailRepo.delete(confirmEmail);
             }
             return ResponseEntity.ok().body("Đăng kí thành công");
-        } catch (DataNotFoundException ex){
+        }catch (DataNotFoundException ex){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
         }catch (ConfirmEmailExpired ex){
-            return ResponseEntity.badRequest().body(ex.getMessage());
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(ex.getMessage());
+        }catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
+
+    }
+
+    @PutMapping("/change-password")
+    public ResponseEntity<?> changePassword(@RequestBody ChangePasswordRequest changePasswordRequest){
+        try {
+            var result = authService.changePassword(changePasswordRequest);
+            return ResponseEntity.ok().body(result);
+        }catch (DataNotFoundException ex){
+            return ResponseEntity.badRequest().body(ex.getMessage());
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassword(@RequestBody ForgotPasswordRequest forgotPasswordRequest){
+        try {
+            var result = authService.forgotPassword(forgotPasswordRequest);
+            return ResponseEntity.ok().body(result);
+        }catch (DataNotFoundException ex){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        }
+        catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+    @PutMapping("/confirm-new-password")
+    public ResponseEntity<?> confirmNewPassword(@RequestBody ConfirmNewPasswordRequest confirmNewPasswordRequest){
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        try {
+            ConfirmEmail confirmEmail = confirmEmailRepo.findConfirmEmailByConfirmCode(confirmNewPasswordRequest.getConfirmCode());
+            User user = userRepo.findByConfirmEmails(confirmEmail);
+            var isConfirm = confirmEmailService.confirmEmail(confirmNewPasswordRequest.getConfirmCode());
+            if(isConfirm){
+                user.setPassword(passwordEncoder.encode(confirmNewPasswordRequest.getNewPassword()));
+                userRepo.save(user);
+                confirmEmail.setUser(null);
+                confirmEmailRepo.delete(confirmEmail);
+            }
+            return ResponseEntity.ok().body("Tạo mật khẩu mới thành công");
+        } catch (DataNotFoundException ex){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        }catch (ConfirmEmailExpired ex) {
+            return ResponseEntity.badRequest().body(ex.getMessage());
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+
     }
 }

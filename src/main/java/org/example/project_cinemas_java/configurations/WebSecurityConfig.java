@@ -40,10 +40,9 @@ public class WebSecurityConfig {
                             .requestMatchers(
                                     String.format("%s/users/register", apiPrefix),
                                     String.format("%s/users/login", apiPrefix),
-                                    String.format("%s/courseType/top3CourseType", apiPrefix),
-                                    String.format("%s/notification/getAllNoti", apiPrefix),
-                                    String.format("%s/notification/addNoti", apiPrefix),
-                                    String.format("%s/users/confirm-register", apiPrefix)
+                                    String.format("%s/users/confirm-register", apiPrefix),
+                                    String.format("%s/users/forgot-password", apiPrefix),
+                                    String.format("%s/users/confirm-new-password", apiPrefix)
                             )
                             .permitAll()
                             .requestMatchers(POST,
@@ -72,7 +71,8 @@ public class WebSecurityConfig {
                             .requestMatchers(POST, String.format("/%s/course/**",apiPrefix)).permitAll()
                             .requestMatchers(POST, String.format("/%s/user/refreshtoken",apiPrefix)).hasRole("ADMIN")
                             .requestMatchers(POST, String.format("/%s/user/refreshtoken",apiPrefix)).hasRole("USER")
-
+                            .requestMatchers(POST, String.format("/%s/users/change-password",apiPrefix)).hasRole("ADMIN")
+                            .requestMatchers(POST, String.format("/%s/users/change-password",apiPrefix)).hasRole("USER")
                             .anyRequest().authenticated();
                     //.anyRequest().permitAll();
 
