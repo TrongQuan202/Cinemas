@@ -28,5 +28,37 @@ public class MessageKeys {
     public static final String VERIFICATION_CODE_HAS_EXPIRED = "Verification code has expired";
     public static final String USER_DOES_NOT_EXIST = "User does not exist";
 
+    public static final String CINEMA_ALREADY_EXISTS = "Cinema already exists";
+    public static final String CINEMA_DOES_NOT_EXIST = "Cinema does not exist";
+
+    public static final String ADDRESS_ALREADY_EXIST = "Address already exist";
+    public static final String NAME_CINEMA_ALREADY_EXIST = "Name of Cinema already exist";
+    public static final String CODE_ALREADY_EXIST = "Code already exist";
+
+    public static final String ROOM_ALREADY_EXIST = "Room already exist";
+
+    public static final String NAME_ALREADY_EXIST = "Name already exist";
+
+    public static final String ROOM_DOES_NOT_EXIST = "Room does not exist";
+
+    public static final String SEAT_ALREADY_EXIST = "Seat already exist";
+
+    public static final String SEAT_TYPE_DOES_NOT_EXITS = "Seat type does not exist";
+    public static final String SEAT_STATUS_DOES_NOT_EXITS = "Seat status does not exist";
+
+    public static final String SEAT_DOES_NOT_EXITS = "Seat does not exist";
+    public static final String FOOD_ALREADY_EXIST = "Food already exist";
+    public static final String FOOD_DOES_NOT_EXIST = "Food does not exist";
+
+    public static final String IMAGE_ALREADY_EXIST = "Image already exist";
+
+    public static final String HERO_IMAGE_ALREADY_EXIST = "Hero image already exist";
+
+    public static final String TRAILER_ALREADY_EXIST = "Trailer already exist";
+
+    public static final String MOVIE_TYPE_DOES_NOT_EXIST = "Movie type does not exist";
+
+    public static final String RATE_DOES_NOT_EXIST = "Rate does not exist";
+    public static final String MOVIE_DOES_NOT_EXIST = "Movie does not exist";
 
 }

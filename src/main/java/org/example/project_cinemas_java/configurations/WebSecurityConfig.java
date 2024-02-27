@@ -42,37 +42,28 @@ public class WebSecurityConfig {
                                     String.format("%s/users/login", apiPrefix),
                                     String.format("%s/users/confirm-register", apiPrefix),
                                     String.format("%s/users/forgot-password", apiPrefix),
-                                    String.format("%s/users/confirm-new-password", apiPrefix)
+                                    String.format("%s/users/confirm-new-password", apiPrefix),
+                                    String.format("%s/movie/top-movies", apiPrefix)
                             )
                             .permitAll()
-                            .requestMatchers(POST,
-                                    String.format("%s/post/**", apiPrefix)).permitAll()
-                            .requestMatchers(DELETE,
-                                    String.format("%s/post/**", apiPrefix)).permitAll()
-                            .requestMatchers(PUT,
-                                    String.format("%s/post/**", apiPrefix)).permitAll()
-                            .requestMatchers(PUT,
-                                    String.format("%s/adminApprovePost/**", apiPrefix)).hasRole("ADMIN")
-                            .requestMatchers(GET,
-                                    String.format("%s/adminApprovePost/**", apiPrefix)).hasRole("ADMIN")
-                            .requestMatchers(GET,
-                                    String.format("%s/users/getAllUser", apiPrefix)).hasRole("ADMIN")
-                            .requestMatchers(PUT,
-                                    String.format("%s/users/lock-user", apiPrefix)).hasRole("ADMIN")
-                            .requestMatchers(GET,
-                                    String.format("%s/users/total-user-count", apiPrefix)).hasRole("ADMIN")
-                            .requestMatchers(GET,String.format("%s/users/total-user-locked", apiPrefix)).hasRole("ADMIN")
-                            .requestMatchers(GET,String.format("%s/post/total-post-count", apiPrefix)).hasRole("ADMIN")
-                            .requestMatchers(GET,String.format("%s/course/total-course-count", apiPrefix)).hasRole("ADMIN")
-                            .requestMatchers(POST, String.format("/%s/userCourse/**",apiPrefix)).permitAll()
-                            .requestMatchers(PUT, String.format("/%s/userCourse/**",apiPrefix)).permitAll()
-                            .requestMatchers(GET, String.format("/%s/userCourse/**",apiPrefix)).permitAll()
-                            .requestMatchers(DELETE, String.format("/%s/userCourse/**",apiPrefix)).permitAll()
-                            .requestMatchers(POST, String.format("/%s/course/**",apiPrefix)).permitAll()
                             .requestMatchers(POST, String.format("/%s/user/refreshtoken",apiPrefix)).hasRole("ADMIN")
                             .requestMatchers(POST, String.format("/%s/user/refreshtoken",apiPrefix)).hasRole("USER")
                             .requestMatchers(POST, String.format("/%s/users/change-password",apiPrefix)).hasRole("ADMIN")
                             .requestMatchers(POST, String.format("/%s/users/change-password",apiPrefix)).hasRole("USER")
+
+                            .requestMatchers(POST, String.format("/%s/cinema/create-cinema",apiPrefix)).hasRole("ADMIN")
+                            .requestMatchers(POST, String.format("/%s/room/create-room",apiPrefix)).hasRole("ADMIN")
+                            .requestMatchers(POST, String.format("/%s/seat/create-seat",apiPrefix)).hasRole("ADMIN")
+                            .requestMatchers(POST, String.format("/%s/food/create-food",apiPrefix)).hasRole("ADMIN")
+                            .requestMatchers(POST, String.format("/%s/movie/create-movie",apiPrefix)).hasRole("ADMIN")
+
+                            .requestMatchers(PUT, String.format("/%s/food/update-food",apiPrefix)).hasRole("ADMIN")
+                            .requestMatchers(PUT, String.format("/%s/cinema/update-cinema",apiPrefix)).hasRole("ADMIN")
+                            .requestMatchers(PUT, String.format("/%s/room/update-room",apiPrefix)).hasRole("ADMIN")
+                            .requestMatchers(PUT, String.format("/%s/seat/update-seat",apiPrefix)).hasRole("ADMIN")
+                            .requestMatchers(PUT, String.format("/%s/movie/update-movie",apiPrefix)).hasRole("ADMIN")
+                            .requestMatchers(DELETE, String.format("/%s/cinema/delete-cinema",apiPrefix)).hasRole("ADMIN")
+
                             .anyRequest().authenticated();
                     //.anyRequest().permitAll();
 
