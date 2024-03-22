@@ -2,12 +2,17 @@ package org.example.project_cinemas_java.repository;
 
 import org.example.project_cinemas_java.model.Cinema;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @Repository
 public interface CinemaRepo extends JpaRepository<Cinema, Integer> {
+
+    @Query("SELECT c.nameOfCinema FROM Cinema c WHERE c.address LIKE %:address%")
+    List<String> findByAddressContaining(String address);
+
     Cinema findByCode(String code);
     boolean existsByAddress (String address);
 

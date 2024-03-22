@@ -139,6 +139,8 @@ public class AuthService implements IAuthService {
         LoginDTO loginDTO= LoginDTO.builder()
                 .id(existingUser.getId())
                 .userName(existingUser.getUserName())
+                .email(existingUser.getEmail())
+                .phoneNumber(existingUser.getPhoneNumber())
                 .token(token)
                 .refreshToken(refreshTokens.getToken())
                 .roles(roles)
@@ -148,7 +150,7 @@ public class AuthService implements IAuthService {
 
     @Override
     public String changePassword(ChangePasswordRequest changePasswordRequest) throws Exception {
-        User user = userRepo.findById(changePasswordRequest.getId()).orElse(null);
+        User user = userRepo.findByEmail(changePasswordRequest.getEmail()).orElse(null);
         if(user == null ){
             throw new DataNotFoundException(MessageKeys.USER_DOES_NOT_EXIST);
         }

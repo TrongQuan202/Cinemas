@@ -21,7 +21,7 @@ public class RefreshToken extends BaseEntity{
     private LocalDateTime expiredTime;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "userId", foreignKey = @ForeignKey(name = "fk_RefreshToken_User"), nullable = false)
+    @JoinColumn(name = "userId", foreignKey = @ForeignKey(name = "fk_RefreshToken_User"))
     @JsonManagedReference
     private User user;
 }

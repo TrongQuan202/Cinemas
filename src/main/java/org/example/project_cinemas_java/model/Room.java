@@ -30,7 +30,7 @@ public class Room extends BaseEntity{
     private boolean isActive = true;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "cinemaId", foreignKey = @ForeignKey(name = "fk_Room_Cinema"), nullable = false)
+    @JoinColumn(name = "cinemaId", foreignKey = @ForeignKey(name = "fk_Room_Cinema"))
     @JsonManagedReference
     private Cinema cinema;
 

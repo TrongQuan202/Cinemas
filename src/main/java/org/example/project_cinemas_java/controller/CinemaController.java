@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("${api.prefix}/cinema")
 @RequiredArgsConstructor
@@ -52,6 +54,29 @@ public class CinemaController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
         }
         catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+    @GetMapping("/get-cinema-by-address")
+    public ResponseEntity<?> getCinemaByAddress(@RequestParam String address){
+        try {
+            List<String> cinemas = cinemaService.getCinemaByAddress(address);
+            return ResponseEntity.ok().body(cinemas);
+        }catch (DataNotFoundException ex){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/get-Revenue")
+    public ResponseEntity<?> getRevenueListByCinema(@RequestParam int cinemaId, int year){
+        try {
+            List<Object[]> objects = cinemaService.getRevenueListByCinema(cinemaId,year);
+            return ResponseEntity.ok().body(objects);
+        }catch (DataNotFoundException ex){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        }catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }

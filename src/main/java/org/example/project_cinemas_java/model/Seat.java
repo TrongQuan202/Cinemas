@@ -20,26 +20,31 @@ public class Seat extends BaseEntity{
     private int number;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "seatStatusId", foreignKey = @ForeignKey(name = "fk_Seat_SeatStatus"), nullable = false)
+    @JoinColumn(name = "seatStatusId", foreignKey = @ForeignKey(name = "fk_Seat_SeatStatus"))
     @JsonManagedReference
     private SeatStatus seatsStatus;
 
     private String line;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "roomId", foreignKey = @ForeignKey(name = "fk_Seat_Room"), nullable = false)
+    @JoinColumn(name = "roomId", foreignKey = @ForeignKey(name = "fk_Seat_Room"))
     @JsonManagedReference
     private Room room;
 
     private boolean isActive = true;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "seatTypeId", foreignKey = @ForeignKey(name = "fk_Seat_SeatType"), nullable = false)
+    @JoinColumn(name = "seatTypeId", foreignKey = @ForeignKey(name = "fk_Seat_SeatType"))
     @JsonManagedReference
     private SeatType seatType;
 
     @OneToMany(mappedBy = "seat", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonBackReference
     private Set<Ticket> tickets;
+
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "scheduleId", foreignKey = @ForeignKey(name = "fk_Seat_Schedule"))
+    @JsonManagedReference
+    private Schedule schedule;
 
 }

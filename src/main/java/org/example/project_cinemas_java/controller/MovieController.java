@@ -59,9 +59,7 @@ public class MovieController {
         }
     }
     @GetMapping("/top-movies")
-    public ResponseEntity<?> getMoviesOrderByTicketCount(){
-        return ResponseEntity.ok().body(movieService.getMoviesOrderByTicketCount());
+    public ResponseEntity<?> getMoviesOrderByTicketCount(@RequestParam String nameOfCinema){
+        return ResponseEntity.ok().body(movieService.getMoviesOrderByTicketCount(nameOfCinema));
     }
-
-
 }

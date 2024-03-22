@@ -11,18 +11,18 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "billticket")
+@Table(name = "billTicket")
 @Builder
 public class BillTicket extends BaseEntity {
     private int quantity;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "billId", foreignKey = @ForeignKey(name = "fk_BillTicket_Bill"), nullable = false)
+    @JoinColumn(name = "billId", foreignKey = @ForeignKey(name = "fk_BillTicket_Bill"))
     @JsonManagedReference
     private Bill bill;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "ticketId", foreignKey = @ForeignKey(name = "fk_BillTicket_Ticket"), nullable = false)
+    @JoinColumn(name = "ticketId", foreignKey = @ForeignKey(name = "fk_BillTicket_Ticket"))
     @JsonManagedReference
     private Ticket ticket;
 }

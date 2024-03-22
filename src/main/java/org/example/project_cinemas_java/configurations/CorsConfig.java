@@ -13,7 +13,7 @@ public class CorsConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins("http://localhost:8081") // Thay đổi nguồn tại đây nếu cần thiết
+                .allowedOrigins("http://localhost:8080") // Thay đổi nguồn tại đây nếu cần thiết
                 .allowedMethods("GET", "POST", "PUT", "DELETE")
                 .allowedHeaders("*")
                 .allowCredentials(true);
@@ -24,7 +24,7 @@ public class CorsConfig implements WebMvcConfigurer {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.addAllowedOrigin("http://localhost:8081/"); // Thay đổi nguồn tại đây nếu cần thiết
+        config.addAllowedOrigin("http://localhost:8080/"); // Thay đổi nguồn tại đây nếu cần thiết
         config.addAllowedMethod("GET");
         config.addAllowedMethod("POST");
         config.addAllowedMethod("PUT");

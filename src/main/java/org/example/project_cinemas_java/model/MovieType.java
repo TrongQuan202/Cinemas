@@ -13,7 +13,7 @@ import java.util.Set;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "movietype")
+@Table(name = "movieType")
 @Builder
 public class MovieType extends BaseEntity {
     private String movieTypeName;

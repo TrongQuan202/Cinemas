@@ -23,4 +23,7 @@ public class Role extends BaseEntity{
     @OneToMany(mappedBy = "role", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonBackReference
     private Set<User> users;
+
+    public static String ADMIN = "ADMIN";
+    public static String USER = "USER";
 }

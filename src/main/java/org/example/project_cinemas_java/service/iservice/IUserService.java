@@ -4,4 +4,6 @@ import org.example.project_cinemas_java.model.User;
 
 public interface IUserService {
     void updateInfoUser (User user);
+
+    String getPhoneNumberById(int id)throws Exception;
 }

@@ -36,7 +36,7 @@ public class Promotion extends BaseEntity {
     private boolean isActive = true;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "rankCustomerId", foreignKey = @ForeignKey(name = "fk_Promotion_RankCustomer"), nullable = false)
+    @JoinColumn(name = "rankCustomerId", foreignKey = @ForeignKey(name = "fk_Promotion_RankCustomer"))
     @JsonManagedReference
     private RankCustomer rankcustomer;
 

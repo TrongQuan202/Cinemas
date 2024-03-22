@@ -13,6 +13,8 @@ import java.util.List;
 public class LoginDTO {
     private Integer id;
     private String userName;
+    private String phoneNumber;
+    private String email;
     @JsonProperty("token")
     private String token;
     private String refreshToken;

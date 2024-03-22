@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.MailException;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -131,12 +132,27 @@ public class MovieService implements IMovieService {
     }
 
     @Override
-    public List<MovieTicketCountDTO> getMoviesOrderByTicketCount() {
-        List<Object[]> movieTicketCounts = movieRepo.findMoviesOrderByTicketCount();
+    public List<MovieTicketCountDTO> getMoviesOrderByTicketCount(String nameOfCinema) {
+        List<Object[]> movieTicketCounts = movieRepo.findMoviesOrderByTicketCount(nameOfCinema);
         return movieTicketCounts.stream()
-                .map(objects -> new MovieTicketCountDTO((Integer) objects[0], (String) objects[1], (Long) objects[2]))
+                .map(objects -> {
+                    Integer movieId = (Integer) objects[0];
+                    String movieName = (String) objects[1];
+                    String movieImage = (String) objects[2];
+                    Integer movieDuration = (Integer) objects[3];
+                    String movieTrailer = (String) objects[4];
+                    String movieTypeName = (String) objects[5];
+                    String movieDescription = (String) objects[6];
+                    String movieDirector = (String) objects[7];
+                    String movieLanguage = (String) objects[8];
+                    // Chuyển đổi Timestamp thành LocalDateTime
+                    Timestamp timestamp = (Timestamp) objects[9];
+                    String moviePremiereDate = timestamp != null ? timestamp.toLocalDateTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) : null;
+
+                    return new MovieTicketCountDTO(movieId, movieName, movieImage, movieDuration, movieTrailer,
+                            movieTypeName,movieDescription,movieDirector,movieLanguage, moviePremiereDate);
+                })
                 .collect(Collectors.toList());
     }
 
-
-}
+    }

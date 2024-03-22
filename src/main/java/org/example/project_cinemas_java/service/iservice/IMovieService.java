@@ -12,5 +12,5 @@ public interface IMovieService {
 
     Movie updateMovie(UpdateMovieRequest updateMovieRequest) throws Exception;
 
-    List<MovieTicketCountDTO>  getMoviesOrderByTicketCount();
+    List<MovieTicketCountDTO>  getMoviesOrderByTicketCount(String nameOfCinema);
 }

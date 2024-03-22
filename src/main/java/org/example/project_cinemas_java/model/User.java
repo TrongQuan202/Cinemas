@@ -37,17 +37,17 @@ public class User extends BaseEntity implements UserDetails {
     private boolean isActive = false;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "rankCustomerId", foreignKey = @ForeignKey(name = "fk_User_RankCustomer"), nullable = false)
+    @JoinColumn(name = "rankCustomerId", foreignKey = @ForeignKey(name = "fk_User_RankCustomer"))
     @JsonManagedReference
     private RankCustomer rankcustomer;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "userStatusId", foreignKey = @ForeignKey(name = "fk_User_UserStatus"), nullable = false)
+    @JoinColumn(name = "userStatusId", foreignKey = @ForeignKey(name = "fk_User_UserStatus"))
     @JsonManagedReference
     private UserStatus userStatus;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "roleId", foreignKey = @ForeignKey(name = "fk_User_Role"), nullable = false)
+    @JoinColumn(name = "roleId", foreignKey = @ForeignKey(name = "fk_User_Role"))
     @JsonManagedReference
     private Role role;
 

@@ -1,14 +1,10 @@
 package org.example.project_cinemas_java.service.implement;
 
 import org.example.project_cinemas_java.exceptions.DataNotFoundException;
-import org.example.project_cinemas_java.model.Cinema;
-import org.example.project_cinemas_java.model.Room;
+import org.example.project_cinemas_java.model.*;
 import org.example.project_cinemas_java.payload.request.admin_request.cinema_request.CreateCinemaRequest;
 import org.example.project_cinemas_java.payload.request.admin_request.cinema_request.UpdateCinemaRequest;
-import org.example.project_cinemas_java.repository.CinemaRepo;
-import org.example.project_cinemas_java.repository.RoomRepo;
-import org.example.project_cinemas_java.repository.ScheduleRepo;
-import org.example.project_cinemas_java.repository.SeatRepo;
+import org.example.project_cinemas_java.repository.*;
 import org.example.project_cinemas_java.service.iservice.ICinemaService;
 import org.example.project_cinemas_java.utils.MessageKeys;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +12,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 //@Transactional
@@ -30,6 +27,12 @@ public class CinemaService implements ICinemaService {
     private SeatRepo seatRepo;
     @Autowired
     private ScheduleRepo scheduleRepo;
+    @Autowired
+    private TicketRepo ticketRepo;
+    @Autowired
+    private BillTicketRepo billTicketRepo;
+    @Autowired
+    private BillRepo billRepo;
 
     @Override
     public Cinema createCinema(CreateCinemaRequest createCinemaRequest) throws Exception {
@@ -54,21 +57,7 @@ public class CinemaService implements ICinemaService {
         cinemaRepo.save(newCinema);
         return newCinema;
     }
-//    private boolean isUniqueAddress (CreateCinemaRequest createCinemaRequest){
-//        List<Cinema> cinemasWithSameAddress = cinemaRepo.findByAddressAndCodeNot(createCinemaRequest.getAddress(), createCinemaRequest.getCode());
-//        if(!cinemasWithSameAddress.isEmpty()){
-//            return false;
-//        }
-//        return true;
-//    }
-//
-//    private boolean isUniqueNameOfCinema (CreateCinemaRequest createCinemaRequest){
-//        List<Cinema> cinemasWithSameNameOfCinema = cinemaRepo.findByNameOfCinemaAndCodeNot(createCinemaRequest.getNameOfCinema(),createCinemaRequest.getCode());
-//        if(!cinemasWithSameNameOfCinema.isEmpty()){
-//            return false;
-//        }
-//        return true;
-//    }
+
 
 
     @Override
@@ -128,6 +117,62 @@ public class CinemaService implements ICinemaService {
 
         cinemaRepo.delete(cinema);
         return "Xóa thành cong";
+    }
+
+    @Override
+    public List<String> getCinemaByAddress(String address) throws Exception {
+        if(cinemaRepo.findByAddressContaining(address).isEmpty()){
+            throw new DataNotFoundException(MessageKeys.CINEMA_DOES_NOT_EXIST);
+        }
+        return cinemaRepo.findByAddressContaining(address);
+    }
+
+    @Override
+    public List<Object[]> getRevenueListByCinema(int cinemaId, int year) throws Exception {
+        Cinema cinema = cinemaRepo.findById(cinemaId).orElse(null);
+        if(cinema == null){
+            throw new DataNotFoundException(MessageKeys.CINEMA_DOES_NOT_EXIST);
+        }
+
+        //todo lấy tất cả room theo cinema
+        List<Room> rooms = roomRepo.findAllByCinema(cinema);
+        if(rooms.size() < 1){
+            throw new DataNotFoundException(MessageKeys.ROOM_DOES_NOT_EXIST);
+        }
+
+        //todo lấy tất cả schedue theo list room của cinema
+        List<Schedule> schedulesByRoom = new ArrayList<>();
+        for (Room room:rooms){
+            List<Schedule> schedules = scheduleRepo.findAllByRoom(room);
+            schedulesByRoom.addAll(schedules);
+        }
+        if(schedulesByRoom.size() < 1){
+            throw new DataNotFoundException(MessageKeys.SCHEDULE_DOES_NOT_EXIST);
+        }
+
+        //todo lấy  ticket theo danh sách schedule
+        List<Ticket> ticketsBySchedule = new ArrayList<>();
+        for (Schedule schedule:schedulesByRoom){
+            List<Ticket> tickets = ticketRepo.findAllByScheduleAndCodeNotNullAndPriceTicketGreaterThan(schedule,0);
+            ticketsBySchedule.addAll(tickets);
+        }
+
+        //todo lấy billTicket theo danh sách ticket
+        List<BillTicket> billTicketsByTicket = new ArrayList<>();
+        for (Ticket ticket:ticketsBySchedule){
+            billTicketsByTicket.add(billTicketRepo.findByTicket(ticket));
+        }
+
+        //toto lấy ra danh sách bill theo danh sách billTicket
+        List<Bill> bills = billRepo.findDistinctByBillTicketsIn(billTicketsByTicket);
+
+        List<Integer> billIds = new ArrayList<>();
+        for (Bill bill : bills) {
+            billIds.add(bill.getId());
+        }
+        List<Object[]> objects = billRepo.getMonthlyRevenue(year,billIds);
+
+        return objects;
     }
 
 

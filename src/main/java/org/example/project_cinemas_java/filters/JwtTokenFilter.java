@@ -83,12 +83,17 @@ public class JwtTokenFilter extends OncePerRequestFilter{
                 Pair.of(String.format("%s/roles", apiPrefix), "GET"),
 //                Pair.of(String.format("%s/products", apiPrefix), "GET"),
 //                Pair.of(String.format("%s/categories", apiPrefix), "GET"),
-                Pair.of(String.format("%s/users/register", apiPrefix), "POST"),
-                Pair.of(String.format("%s/users/login", apiPrefix), "POST"),
-                Pair.of(String.format("%s/users/confirm-register", apiPrefix), "POST"),
-                Pair.of(String.format("%s/users/forgot-password", apiPrefix), "POST"),
-                Pair.of(String.format("%s/users/confirm-new-password", apiPrefix), "PUT"),
-                Pair.of(String.format("%s/movie/top-movies", apiPrefix), "GET")
+                Pair.of(String.format("%s/auth/register", apiPrefix), "POST"),
+                Pair.of(String.format("%s/auth/login", apiPrefix), "POST"),
+                Pair.of(String.format("%s/auth/confirm-register", apiPrefix), "POST"),
+                Pair.of(String.format("%s/auth/forgot-password", apiPrefix), "POST"),
+                Pair.of(String.format("%s/auth/confirm-new-password", apiPrefix), "PUT"),
+                Pair.of(String.format("%s/movie/top-movies", apiPrefix), "GET"),
+                Pair.of(String.format("%s/cinema/get-cinema-by-address", apiPrefix), "GET"),
+                Pair.of(String.format("%s/schedule/get-schedule-by-movie", apiPrefix), "GET"),
+                Pair.of(String.format("%s/schedule/get-schedule-by-day-and-movie", apiPrefix), "GET"),
+                Pair.of(String.format("%s/seat/get-all-seat-by-room", apiPrefix), "GET")
+//                Pair.of(String.format("%s/seat/update-seat-status", apiPrefix), "PUT")
         );
         for(Pair<String, String> bypassToken: bypassTokens) {
             if (request.getServletPath().contains(bypassToken.getFirst()) &&

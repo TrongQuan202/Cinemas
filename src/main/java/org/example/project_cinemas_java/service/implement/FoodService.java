@@ -2,6 +2,9 @@ package org.example.project_cinemas_java.service.implement;
 
 import org.example.project_cinemas_java.exceptions.DataNotFoundException;
 import org.example.project_cinemas_java.model.Food;
+import org.example.project_cinemas_java.payload.converter.FoodConverter;
+import org.example.project_cinemas_java.payload.dto.fooddtos.FoodDTO;
+import org.example.project_cinemas_java.payload.dto.fooddtos.ListFoodDTO;
 import org.example.project_cinemas_java.payload.request.admin_request.cinema_request.CreateFoodRequest;
 import org.example.project_cinemas_java.payload.request.admin_request.food_request.UpdateFoodRequest;
 import org.example.project_cinemas_java.repository.FoodRepo;
@@ -9,13 +12,20 @@ import org.example.project_cinemas_java.service.iservice.IFoodService;
 import org.example.project_cinemas_java.utils.MessageKeys;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class FoodService implements IFoodService {
     @Autowired
     private FoodRepo foodRepo;
-
+    @Autowired
+    private FoodConverter foodConverter;
 
     @Override
     public Food createFood(CreateFoodRequest createFoodRequest) throws Exception {
@@ -51,5 +61,14 @@ public class FoodService implements IFoodService {
         foodRepo.save(food);
 
         return food;
+    }
+
+    @Override
+    public List<FoodDTO> getAllFood() {
+        List<FoodDTO> foodDTO = new ArrayList<>();
+        for (Food food:foodRepo.findAll()){
+            foodDTO.add(foodConverter.foodToFoodDTO(food));
+        }
+        return foodDTO;
     }
 }

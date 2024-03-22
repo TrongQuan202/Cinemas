@@ -10,4 +10,6 @@ public interface FoodRepo extends JpaRepository<Food, Integer> {
     boolean existsByNameOfFood(String nameOfFood);
 
     boolean existsByNameOfFoodAndIdNot(String nameOfFood, int foodId);
+
+    Food getFoodByNameOfFood(String nameFood);
 }

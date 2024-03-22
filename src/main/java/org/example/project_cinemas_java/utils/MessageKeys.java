@@ -60,5 +60,7 @@ public class MessageKeys {
 
     public static final String RATE_DOES_NOT_EXIST = "Rate does not exist";
     public static final String MOVIE_DOES_NOT_EXIST = "Movie does not exist";
+    public static final String SCHEDULE_DOES_NOT_EXIST = "Schedule does not exits";
 
+    public static final String RANK_OF_USER_DOES_NOT_EXIST = "Rank of user does not exits";
 }
