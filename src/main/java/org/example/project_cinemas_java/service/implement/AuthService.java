@@ -14,6 +14,7 @@ import org.example.project_cinemas_java.service.iservice.IAuthService;
 import org.example.project_cinemas_java.utils.MessageKeys;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +28,8 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -57,6 +60,13 @@ public class AuthService  implements IAuthService {
     private ConfirmEmailService confirmEmailService;
     @Autowired
     private ConfirmEmailRepo confirmEmailRepo;
+
+    @Value("${jwt.expiration}")
+    private int expirationToken;
+
+    @Value("${jwt.expirationRefreshToken}")
+    private int expirationRefreshToke;
+
     @Override
     public String register(RegisterRequest registerRequest) throws Exception {
         String email = registerRequest.getEmail();
@@ -106,6 +116,15 @@ public class AuthService  implements IAuthService {
 //        }
 //    }
 
+    public String localDateTimeToString(LocalDateTime localDateTime, int timePlus){
+
+        LocalDateTime expiredTime = localDateTime.plusSeconds(timePlus);
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        String expiredTimeString = expiredTime.format(formatter);
+        return expiredTimeString;
+    }
+
     @Override
     public LoginDTO login(LoginRequest loginRequest) throws Exception {
         User existingUser = userRepo.findByEmail(loginRequest.getEmail()).orElse(null);
@@ -142,7 +161,9 @@ public class AuthService  implements IAuthService {
                 .email(existingUser.getEmail())
                 .phoneNumber(existingUser.getPhoneNumber())
                 .token(token)
+                .timeExpiredToken(localDateTimeToString(LocalDateTime.now(),expirationToken))
                 .refreshToken(refreshTokens.getToken())
+                .timeExpiredRefresh(localDateTimeToString(LocalDateTime.now(),expirationRefreshToke))
                 .roles(roles)
                 .build();
         return loginDTO;
