@@ -17,7 +17,9 @@ public class LoginDTO {
     private String email;
     @JsonProperty("token")
     private String token;
+    private String timeExpiredToken;
     private String refreshToken;
+    private String timeExpiredRefresh;
     private List<String> roles;
 
 }
