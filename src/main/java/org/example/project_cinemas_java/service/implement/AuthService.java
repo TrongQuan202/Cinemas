@@ -32,7 +32,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
-public class AuthService implements IAuthService {
+public class AuthService  implements IAuthService {
     @Autowired
     private UserRepo userRepo;
     @Autowired
