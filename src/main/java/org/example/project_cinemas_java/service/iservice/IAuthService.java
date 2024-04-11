@@ -8,7 +8,7 @@ import org.example.project_cinemas_java.payload.request.auth_request.LoginReques
 import org.example.project_cinemas_java.payload.request.auth_request.RegisterRequest;
 
 public interface IAuthService {
-    String register(RegisterRequest registerRequest) throws Exception;
+    String confirmEmail(String email) throws Exception;
 
     LoginDTO login(LoginRequest loginRequest) throws Exception;
 

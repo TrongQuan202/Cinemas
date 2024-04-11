@@ -68,8 +68,7 @@ public class AuthService  implements IAuthService {
     private int expirationRefreshToke;
 
     @Override
-    public String register(RegisterRequest registerRequest) throws Exception {
-        String email = registerRequest.getEmail();
+    public String confirmEmail(String email) throws Exception {
 
         if(userRepo.existsByEmail(email)){
             throw new DataIntegrityViolationException(MessageKeys.EMAIL_ALREADY_EXISTS);
@@ -79,7 +78,7 @@ public class AuthService  implements IAuthService {
         return "Kiểm tra email để lấy mã xác minh tài khoản";
     }
 
-    public void saveUser(RegisterRequest registerRequest){
+    public void register(RegisterRequest registerRequest){
         Role userRole = roleRepo.findById(1).orElseThrow(()
                 -> new IllegalStateException("Role not found with ID 2"));
         User user = User.builder()
