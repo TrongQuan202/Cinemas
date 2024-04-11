@@ -39,10 +39,10 @@ public class AuthController {
     @Autowired
     private UserStatusRepo userStatusRepo;
 
-    @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody RegisterRequest registerRequest)  {
+    @PostMapping("/confirmEmail")
+    public ResponseEntity<?> confirmEmail(@Valid @RequestParam String email)  {
         try {
-              var string = authService.register(registerRequest);
+              var string = authService.confirmEmail(email);
 //            userRepo.save(user);
 //            confirmEmailService.sendConfirmEmail(user);
             return ResponseEntity.ok().body(string);
@@ -76,14 +76,14 @@ public class AuthController {
         }
     }
 
-    @PostMapping("/confirm-register")
+    @PostMapping("/register")
     public ResponseEntity<?> confirmRegister (@RequestParam String confirmCode, @RequestBody RegisterRequest registerRequest){
         try {
             ConfirmEmail confirmEmail = confirmEmailRepo.findConfirmEmailByConfirmCode(confirmCode);
 //            User user = userRepo.findByConfirmEmails(confirmEmail);
             boolean isConfirm = confirmEmailService.confirmEmail(confirmCode);
             if(isConfirm){
-                authService.saveUser(registerRequest);
+                authService.register(registerRequest);
                 confirmEmail.setUser(null);
                 confirmEmailRepo.delete(confirmEmail);
             }
