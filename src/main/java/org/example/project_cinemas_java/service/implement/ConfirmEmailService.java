@@ -47,29 +47,47 @@ public class ConfirmEmailService implements IConfirmEmailService {
 
     @Override
     public void sendConfirmEmail(String email) {
+
+        //todo Gửi email với mã code và thông tin
+        String subject ="Xác nhận email của bạn";
+        String content = generateConfirmCode();
+        senEmail(email,subject,"Mã xác thực của bạn là: " + content);
+
+
         ConfirmEmail confirmEmail = ConfirmEmail.builder()
-                .user(null)
-                .confirmCode(generateConfirmCode())
+                .emailUser(email)
+                .confirmCode(content)
                 .expiredTime(LocalDateTime.now().plusSeconds(60))
                 .isConfirm(false)
                 .requiredTime(LocalDateTime.now())
                 .build();
         confirmEmailRepo.save(confirmEmail);
 
-        //todo Gửi email với mã code và thông tin
-        String subject ="Xác nhận email của bạn";
-        String content = "Mã xác thực của bạn là: " + confirmEmail.getConfirmCode();
-        senEmail(email,subject,content);
+
     }
 
     @Override
-    public boolean confirmEmail(String confirmCode) throws Exception {
-        ConfirmEmail confirmEmail = confirmEmailRepo.findConfirmEmailByConfirmCode(confirmCode);
+    public boolean checkCodeForEmail(String confirmCode, String email) throws Exception {
 
-        if(confirmEmail == null ){
-            throw  new DataNotFoundException(MessageKeys.INCORRECT_VERIFICATION_CODE);
+        //trường hợp email không đúng
+        if(!confirmEmailRepo.existsByEmailUser(email) ){
+            throw  new DataNotFoundException("Email verification is required");
         }
 
+        // trường hợp mã code không đúng
+        ConfirmEmail confirmCodeOfEmail = confirmEmailRepo.findConfirmEmailByConfirmCode(confirmCode);
+
+        if(confirmCodeOfEmail == null) {
+            throw new DataNotFoundException(MessageKeys.INCORRECT_VERIFICATION_CODE);
+        }
+
+        ConfirmEmail confirmEmail = confirmEmailRepo.findConfirmEmailByConfirmCodeAndEmailUser(confirmCode,email);
+
+        if(confirmEmail == null){
+            throw new DataNotFoundException("Invalid code or email");
+        }
+
+        //trường hợp mã code hết hạn
         if (isExpired(confirmEmail)){
             throw new ConfirmEmailExpired(MessageKeys.VERIFICATION_CODE_HAS_EXPIRED);
         }

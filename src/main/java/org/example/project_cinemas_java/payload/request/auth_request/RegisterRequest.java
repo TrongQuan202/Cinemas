@@ -17,4 +17,5 @@ public class RegisterRequest {
     private String password;
     private String retypePassword;
     private String phoneNumber;
+    private String confirmCode;
 }

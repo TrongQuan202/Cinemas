@@ -4,5 +4,5 @@ import org.example.project_cinemas_java.model.User;
 
 public interface IConfirmEmailService {
     void sendConfirmEmail(String email);
-    boolean confirmEmail(String confirmCode) throws Exception;
+    boolean checkCodeForEmail(String confirmCode, String email) throws Exception;
 }

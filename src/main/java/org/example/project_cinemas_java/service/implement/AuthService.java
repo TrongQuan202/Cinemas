@@ -73,7 +73,15 @@ public class AuthService implements IAuthService {
         if(userRepo.existsByEmail(email)){
             throw new DataIntegrityViolationException(MessageKeys.EMAIL_ALREADY_EXISTS);
         }
-        confirmEmailService.sendConfirmEmail(email);
+
+        boolean isConfirmEmail = confirmEmailRepo.existsByEmailUserAndIsConfirm(email,true);
+
+        // nếu isConfirm = true tức là email này đã xác thực --> Email_already_exists
+         if( isConfirmEmail  ){
+            throw new DataIntegrityViolationException("Email is already registered");
+        }
+            confirmEmailService.sendConfirmEmail(email);
+
 
         return "Kiểm tra email để lấy mã xác minh tài khoản";
     }

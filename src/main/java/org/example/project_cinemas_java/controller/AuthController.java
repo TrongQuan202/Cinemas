@@ -37,21 +37,21 @@ public class AuthController {
     @Autowired
     private UserRepo userRepo;
     @Autowired
+
     private UserStatusRepo userStatusRepo;
 
     @PostMapping("/confirmEmail")
-    public ResponseEntity<?> confirmEmail(@Valid @RequestParam String email)  {
+    public ResponseEntity<?> confirmEmail(@Valid @RequestParam String email) {
         try {
-              var string = authService.confirmEmail(email);
+            var string = authService.confirmEmail(email);
 //            userRepo.save(user);
 //            confirmEmailService.sendConfirmEmail(user);
             return ResponseEntity.ok().body(string);
-        } catch (DataIntegrityViolationException ex){
+        } catch (DataIntegrityViolationException ex) {
             return ResponseEntity.badRequest().body(ex.getMessage());
-        }catch (IllegalStateException ex){
+        } catch (IllegalStateException ex) {
             return ResponseEntity.badRequest().body(ex.getMessage());
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
@@ -67,7 +67,7 @@ public class AuthController {
         } catch (AuthenticationException e) {
             // Sai mật khẩu hoặc thông tin đăng nhập không hợp lệ
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
-        }catch (DisabledException e){
+        } catch (DisabledException e) {
             // taif khoản bị vô hiệu hóa
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
         } catch (Exception e) {
@@ -77,71 +77,71 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> confirmRegister (@RequestParam String confirmCode, @RequestBody RegisterRequest registerRequest){
+    public ResponseEntity<?> confirmRegister( @RequestBody RegisterRequest registerRequest) {
         try {
-            ConfirmEmail confirmEmail = confirmEmailRepo.findConfirmEmailByConfirmCode(confirmCode);
+            ConfirmEmail confirmEmail = confirmEmailRepo.findConfirmEmailByConfirmCodeAndEmailUser(registerRequest.getConfirmCode(), registerRequest.getEmail());
 //            User user = userRepo.findByConfirmEmails(confirmEmail);
-            boolean isConfirm = confirmEmailService.confirmEmail(confirmCode);
-            if(isConfirm){
+            boolean isConfirm = confirmEmailService.checkCodeForEmail(registerRequest.getConfirmCode(), registerRequest.getEmail());
+            if (isConfirm) {
                 authService.register(registerRequest);
-                confirmEmail.setUser(null);
-                confirmEmailRepo.delete(confirmEmail);
             }
             return ResponseEntity.ok().body("Đăng kí thành công");
-        }catch (DataNotFoundException ex){
+        } catch (DataNotFoundException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
-        }catch (ConfirmEmailExpired ex){
+        } catch (ConfirmEmailExpired ex) {
             return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(ex.getMessage());
-        }catch (Exception e) {
+        } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
 
     }
 
     @PutMapping("/change-password")
-    public ResponseEntity<?> changePassword(@RequestBody ChangePasswordRequest changePasswordRequest){
+    public ResponseEntity<?> changePassword(@RequestBody ChangePasswordRequest changePasswordRequest) {
         try {
             var result = authService.changePassword(changePasswordRequest);
             return ResponseEntity.ok().body(result);
-        }catch (DataNotFoundException ex){
+        } catch (DataNotFoundException ex) {
             return ResponseEntity.badRequest().body(ex.getMessage());
-        }catch (Exception e){
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
+
     @PostMapping("/forgot-password")
-    public ResponseEntity<?> forgotPassword(@RequestBody ForgotPasswordRequest forgotPasswordRequest){
+    public ResponseEntity<?> forgotPassword(@RequestBody ForgotPasswordRequest forgotPasswordRequest) {
         try {
             var result = authService.forgotPassword(forgotPasswordRequest);
             return ResponseEntity.ok().body(result);
-        }catch (DataNotFoundException ex){
+        } catch (DataNotFoundException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
-    @PutMapping("/confirm-new-password")
-    public ResponseEntity<?> confirmNewPassword(@RequestBody ConfirmNewPasswordRequest confirmNewPasswordRequest){
-        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-        try {
-            ConfirmEmail confirmEmail = confirmEmailRepo.findConfirmEmailByConfirmCode(confirmNewPasswordRequest.getConfirmCode());
-            User user = userRepo.findByConfirmEmails(confirmEmail);
-            var isConfirm = confirmEmailService.confirmEmail(confirmNewPasswordRequest.getConfirmCode());
-            if(isConfirm){
-                user.setPassword(passwordEncoder.encode(confirmNewPasswordRequest.getNewPassword()));
-                userRepo.save(user);
-                confirmEmail.setUser(null);
-                confirmEmailRepo.delete(confirmEmail);
-            }
-            return ResponseEntity.ok().body("Tạo mật khẩu mới thành công");
-        } catch (DataNotFoundException ex){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
-        }catch (ConfirmEmailExpired ex) {
-            return ResponseEntity.badRequest().body(ex.getMessage());
-        }catch (Exception e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-        }
 
+    @PutMapping("/confirm-new-password")
+    public ResponseEntity<?> confirmNewPassword(@RequestBody ConfirmNewPasswordRequest confirmNewPasswordRequest) {
+//        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+//        try {
+//            ConfirmEmail confirmEmail = confirmEmailRepo.findConfirmEmailByConfirmCode(confirmNewPasswordRequest.getConfirmCode());
+//            User user = userRepo.findByConfirmEmails(confirmEmail);
+////            var isConfirm = confirmEmailService.checkCodeForEmail(confirmNewPasswordRequest.getConfirmCode());
+//            if(isConfirm){
+//                user.setPassword(passwordEncoder.encode(confirmNewPasswordRequest.getNewPassword()));
+//                userRepo.save(user);
+//                confirmEmail.setUser(null);
+//                confirmEmailRepo.delete(confirmEmail);
+//            }
+        return ResponseEntity.ok().body("Tạo mật khẩu mới thành công");
+//        } catch (DataNotFoundException ex){
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+//        }catch (ConfirmEmailExpired ex) {
+//            return ResponseEntity.badRequest().body(ex.getMessage());
+//        }catch (Exception e){
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+//        }
+//
+//    }
     }
 }
