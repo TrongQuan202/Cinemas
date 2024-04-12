@@ -15,11 +15,7 @@ import java.time.LocalDateTime;
 @Table(name = "confirmEmail")
 @Builder
 public class ConfirmEmail extends BaseEntity {
-
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "userId", foreignKey = @ForeignKey(name = "fk_ConfirmEmail_User"))
-    @JsonManagedReference
-    private User user;
+    private String emailUser;
 
     private LocalDateTime requiredTime;
 

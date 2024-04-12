@@ -7,7 +7,14 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ConfirmEmailRepo extends JpaRepository<ConfirmEmail, Integer> {
+
+    boolean existsByEmailUserAndIsConfirm(String email, boolean isConfirm);
+
     ConfirmEmail findConfirmEmailByConfirmCode(String confirmCode);
+
+    boolean existsByEmailUser (String email);
+
+    ConfirmEmail findConfirmEmailByConfirmCodeAndEmailUser(String confirmCode, String email);
 
 
 }
