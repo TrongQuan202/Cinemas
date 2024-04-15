@@ -108,7 +108,7 @@ public class AuthController {
         }
     }
 
-    @PostMapping("/forgot-password")
+    @PutMapping("/forgot-password")
     public ResponseEntity<?> forgotPassword(@RequestBody ForgotPasswordRequest forgotPasswordRequest) {
         try {
             var result = authService.forgotPassword(forgotPasswordRequest);
