@@ -1,5 +1,6 @@
 package org.example.project_cinemas_java.service.implement;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.example.project_cinemas_java.components.JwtTokenUtils;
 import org.example.project_cinemas_java.exceptions.ConfirmEmailExpired;
 import org.example.project_cinemas_java.exceptions.DataNotFoundException;
@@ -80,10 +81,9 @@ public class AuthService  implements IAuthService {
          if( isConfirmEmail  ){
             throw new DataIntegrityViolationException("Email is already registered");
         }
-            confirmEmailService.sendConfirmEmail(email);
-
-
-        return "Kiểm tra email để lấy mã xác minh tài khoản";
+         String content = confirmEmailService.generateConfirmCode();
+         confirmEmailService.sendConfirmEmail(email,content);
+         return "Kiểm tra email để lấy mã xác minh tài khoản";
     }
 
     public void register(RegisterRequest registerRequest){
@@ -198,15 +198,20 @@ public class AuthService  implements IAuthService {
     }
 
 
+    public String generateRandomString() {
+        return RandomStringUtils.randomAlphabetic(6);
+    }
     @Override
     public String forgotPassword(ForgotPasswordRequest forgotPasswordRequest) throws Exception {
         User user = userRepo.findByEmail(forgotPasswordRequest.getEmail()).orElse(null);
         if(user == null){
             throw new DataNotFoundException(MessageKeys.EMAIL_DOES_NOT_EXISTS);
         }
-
-        confirmEmailService.sendConfirmEmail(forgotPasswordRequest.getEmail());
-        return "Gửi mã xác nhận về email thành công, vui lòng kiểm tra email";
+        String newPassword = generateRandomString();
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepo.save(user);
+        confirmEmailService.sendConfirmEmail(forgotPasswordRequest.getEmail(),newPassword);
+        return "Mật khẩu mới đã được gửi vào email của bạn!";
     }
 //    public boolean confirmNewPassword(ConfirmNewPasswordRequest confirmNewPasswordRequest){
 //        String confirmCode = confirmNewPasswordRequest.getConfirmCode();

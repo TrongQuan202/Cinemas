@@ -53,7 +53,7 @@ public class WebSecurityConfig {
                             )
                             .permitAll()
                             .requestMatchers(POST, String.format("/%s/auth/refreshtoken",apiPrefix)).hasAnyRole(Role.USER,Role.ADMIN)
-                            .requestMatchers(POST, String.format("/%s/auth/change-password",apiPrefix)).hasAnyRole(Role.USER,Role.ADMIN)
+
 
                             .requestMatchers(POST, String.format("/%s/cinema/create-cinema",apiPrefix)).hasRole("ADMIN")
                             .requestMatchers(POST, String.format("/%s/room/create-room",apiPrefix)).hasRole("ADMIN")
@@ -71,6 +71,7 @@ public class WebSecurityConfig {
                             .requestMatchers(PUT, String.format("/%s/seat/update-seat",apiPrefix)).hasRole("ADMIN")
                             .requestMatchers(PUT, String.format("/%s/movie/update-movie",apiPrefix)).hasRole("ADMIN")
                             .requestMatchers(PUT, String.format("/%s/billFood/remove-billFood",apiPrefix)).hasAnyRole(Role.USER,Role.ADMIN)
+                            .requestMatchers(PUT, String.format("/%s/auth/change-password",apiPrefix)).hasAnyRole(Role.USER,Role.ADMIN)
 
 
                             .requestMatchers(DELETE, String.format("/%s/cinema/delete-cinema",apiPrefix)).hasRole("ADMIN")

@@ -26,7 +26,8 @@ public class ConfirmEmailService implements IConfirmEmailService {
 
     @Autowired
     private JavaMailSender javaMailSender;
-    private String generateConfirmCode() {
+
+    public String generateConfirmCode() {
         Random random = new Random();
         int randomNumber = random.nextInt(900000) + 100000;
         return String.valueOf(randomNumber);
@@ -46,11 +47,11 @@ public class ConfirmEmailService implements IConfirmEmailService {
     }
 
     @Override
-    public void sendConfirmEmail(String email) {
+    public void sendConfirmEmail(String email, String content) {
 
         //todo Gửi email với mã code và thông tin
         String subject ="Xác nhận email của bạn";
-        String content = generateConfirmCode();
+//        String content = generateConfirmCode();
         senEmail(email,subject,"Mã xác thực của bạn là: " + content);
 
 

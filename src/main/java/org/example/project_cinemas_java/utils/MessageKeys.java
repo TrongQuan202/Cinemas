@@ -17,7 +17,7 @@ public class MessageKeys {
     public static final String UPLOAD_IMAGES_FILE_MUST_BE_IMAGE = "product.upload_images.file_must_be_image";
     public static final String INSERT_CATEGORY_FAILED = "category.create_category.create_failed";
     public static final String WRONG_PHONE_PASSWORD = "user.login.wrong_phone_password";
-    public static final String EMAIL_DOES_NOT_EXISTS = "Email_not_exist";
+    public static final String EMAIL_DOES_NOT_EXISTS = "Email này chưa được đăng ký";
     public static final String USER_ACCOUNT_IS_DISABLED = "User account is disabled";
     public static final String ROLE_DOES_NOT_EXISTS = "user.login.role_not_exist";
     public static  final  String ERROR_SERVE = "error serve";
