@@ -3,23 +3,25 @@ package org.example.project_cinemas_java.service.implement;
 import org.example.project_cinemas_java.exceptions.DataIntegrityViolationException;
 import org.example.project_cinemas_java.exceptions.DataNotFoundException;
 import org.example.project_cinemas_java.exceptions.InvalidMovieDataException;
+import org.example.project_cinemas_java.model.Cinema;
 import org.example.project_cinemas_java.model.Movie;
-import org.example.project_cinemas_java.payload.dto.moviedtos.MovieTicketCountDTO;
+import org.example.project_cinemas_java.model.MovieType;
+import org.example.project_cinemas_java.model.Type;
+import org.example.project_cinemas_java.payload.converter.MovieConverter;
+import org.example.project_cinemas_java.payload.dto.moviedtos.MovieDTO;
 import org.example.project_cinemas_java.payload.request.admin_request.movie_request.CreateMovieRequest;
 import org.example.project_cinemas_java.payload.request.admin_request.movie_request.UpdateMovieRequest;
-import org.example.project_cinemas_java.repository.MovieRepo;
-import org.example.project_cinemas_java.repository.MovieTypeRepo;
-import org.example.project_cinemas_java.repository.RateRepo;
+import org.example.project_cinemas_java.repository.*;
 import org.example.project_cinemas_java.service.iservice.IMovieService;
 import org.example.project_cinemas_java.utils.MessageKeys;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.MailException;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,7 +32,17 @@ public class MovieService implements IMovieService {
     @Autowired
     private MovieTypeRepo movieTypeRepo;
     @Autowired
+    private TypeRepo typeRepo;
+    @Autowired
     private RateRepo rateRepo;
+    @Autowired
+    private MovieTypeService movieTypeService;
+    @Autowired
+    private TypeService typeService;
+    @Autowired
+    private CinemaRepo cinemaRepo;
+    @Autowired
+    private MovieConverter movieConverter;
 
     public LocalDateTime stringToLocalDateTime (String time){
         DateTimeFormatter endTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
@@ -51,12 +63,10 @@ public class MovieService implements IMovieService {
     @Override
     public Movie createMovie(CreateMovieRequest createMovieRequest) throws Exception {
 
-        if(!movieTypeRepo.existsById(createMovieRequest.getMovieTypeId())){
+        if(!typeRepo.existsByMovieTypeName(createMovieRequest.getMovieTypeName())){
             throw new DataNotFoundException(MessageKeys.MOVIE_TYPE_DOES_NOT_EXIST);
         }
-        if(!rateRepo.existsById(createMovieRequest.getRateId())){
-            throw new DataNotFoundException(MessageKeys.RATE_DOES_NOT_EXIST);
-        }
+
         if(movieRepo.existsByImage(createMovieRequest.getImage())){
               throw  new DataIntegrityViolationException(MessageKeys.IMAGE_ALREADY_EXIST);
         }
@@ -70,6 +80,15 @@ public class MovieService implements IMovieService {
             throw new InvalidMovieDataException("The end time must be after the premiere time!");
         }
 
+        //tạo type cho movie thêm vào
+        Type type = typeService.createType(createMovieRequest.getMovieTypeName());
+
+        //thêm cinema vào phim
+        Cinema cinema = cinemaRepo.findByCode(createMovieRequest.getCodeCinema());
+        if(cinema == null){
+            throw new DataNotFoundException(MessageKeys.CINEMA_DOES_NOT_EXIST);
+        }
+
         Movie movie = Movie.builder()
                 .movieDuration(createMovieRequest.getMovieDuration())
                 .endTime(stringToLocalDateTime(createMovieRequest.getEndTime()))
@@ -79,13 +98,20 @@ public class MovieService implements IMovieService {
                 .image(createMovieRequest.getImage())
                 .herolmage(createMovieRequest.getHerolmage())
                 .language(createMovieRequest.getLanguage())
-                .movietype(movieTypeRepo.findById(createMovieRequest.getMovieTypeId()).orElse(null))
                 .name(createMovieRequest.getName())
-                .rate(rateRepo.findById(createMovieRequest.getRateId()).orElse(null))
                 .trailer(createMovieRequest.getTrailer())
+                .slug(createMovieRequest.getSlug())
+                .cinema(cinema)
                 .isActive(false)
                 .build();
         movieRepo.save(movie);
+
+        //sau khi có phim thì thêm vào bảng MovieType
+        if(movieTypeRepo.existsByMovieAndType(movie,type)){
+            throw  new DataIntegrityViolationException("MovieType early exits");
+        }
+        MovieType movieType = movieTypeService.createMovieType(movie,type);
+        movieTypeRepo.save(movieType);
 
         return movie;
     }
@@ -122,7 +148,6 @@ public class MovieService implements IMovieService {
         movie.setImage(updateMovieRequest.getImage());
         movie.setHerolmage(updateMovieRequest.getHerolmage());
         movie.setLanguage(updateMovieRequest.getLanguage());
-        movie.setMovietype(movieTypeRepo.findById(updateMovieRequest.getMovieTypeId()).orElse(null));
         movie.setName(updateMovieRequest.getName());
         movie.setRate(rateRepo.findById(updateMovieRequest.getRateId()).orElse(null));
         movie.setTrailer(updateMovieRequest.getTrailer());
@@ -132,27 +157,16 @@ public class MovieService implements IMovieService {
     }
 
     @Override
-    public List<MovieTicketCountDTO> getMoviesOrderByTicketCount(String nameOfCinema) {
-        List<Object[]> movieTicketCounts = movieRepo.findMoviesOrderByTicketCount(nameOfCinema);
-        return movieTicketCounts.stream()
-                .map(objects -> {
-                    Integer movieId = (Integer) objects[0];
-                    String movieName = (String) objects[1];
-                    String movieImage = (String) objects[2];
-                    Integer movieDuration = (Integer) objects[3];
-                    String movieTrailer = (String) objects[4];
-                    String movieTypeName = (String) objects[5];
-                    String movieDescription = (String) objects[6];
-                    String movieDirector = (String) objects[7];
-                    String movieLanguage = (String) objects[8];
-                    // Chuyển đổi Timestamp thành LocalDateTime
-                    Timestamp timestamp = (Timestamp) objects[9];
-                    String moviePremiereDate = timestamp != null ? timestamp.toLocalDateTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) : null;
-
-                    return new MovieTicketCountDTO(movieId, movieName, movieImage, movieDuration, movieTrailer,
-                            movieTypeName,movieDescription,movieDirector,movieLanguage, moviePremiereDate);
-                })
-                .collect(Collectors.toList());
-    }
-
+    public List<MovieDTO> getAllMovieByCinema(String nameOfCinema) throws Exception{
+        Cinema cinema = cinemaRepo.findBynameOfCinema(nameOfCinema);
+        if(cinema == null){
+            throw new DataNotFoundException(MessageKeys.CINEMA_DOES_NOT_EXIST);
+        }
+        List<MovieDTO> movieDTOS = new ArrayList<>();
+        List<Movie> movies = movieRepo.findAllByCinema(cinema);
+        for (Movie movie: movies){
+            movieDTOS.add(movieConverter.movieToMovieDTO(movie));
+        }
+        return movieDTOS;
+        }
     }

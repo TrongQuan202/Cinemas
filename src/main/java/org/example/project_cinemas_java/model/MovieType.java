@@ -1,13 +1,11 @@
 package org.example.project_cinemas_java.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.Set;
 
 @Entity
 @Data
@@ -15,13 +13,17 @@ import java.util.Set;
 @NoArgsConstructor
 @Table(name = "movieType")
 @Builder
-public class MovieType extends BaseEntity {
-    private String movieTypeName;
+public class MovieType extends BaseEntity{
 
-    private boolean isActive = true;
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "typeId" , foreignKey = @ForeignKey(name = "fk_MovieType_Type"))
+    @JsonManagedReference
+    private Type type;
 
-    @OneToMany(mappedBy = "movietype", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonBackReference
-    private Set<Movie> movies;
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "movieId" , foreignKey = @ForeignKey(name = "fk_MovieType_Movie"))
+    @JsonManagedReference
+    private Movie movie;
 
+    private boolean isActive;
 }

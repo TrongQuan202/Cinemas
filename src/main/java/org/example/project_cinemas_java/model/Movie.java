@@ -19,6 +19,8 @@ import java.util.Set;
 public class Movie extends BaseEntity {
     private int movieDuration;
 
+    private String slug;
+
     private LocalDateTime endTime;
 
     private LocalDateTime premiereDate;
@@ -33,10 +35,9 @@ public class Movie extends BaseEntity {
 
     private String language;
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "movieTypeId" , foreignKey = @ForeignKey(name = "fk_Movie_MovieType"))
-    @JsonManagedReference
-    private MovieType movietype;
+    @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonBackReference
+    private Set<MovieType> movieTypes;
 
     private String name;
 
@@ -44,6 +45,11 @@ public class Movie extends BaseEntity {
     @JoinColumn(name ="rateId", foreignKey = @ForeignKey(name = "fk_Movie_Rate"))
     @JsonManagedReference
     private Rate rate;
+
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "cinemaId", foreignKey = @ForeignKey(name = "fk_Movie_Cinema"))
+    @JsonManagedReference
+    private Cinema cinema;
 
     @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonBackReference

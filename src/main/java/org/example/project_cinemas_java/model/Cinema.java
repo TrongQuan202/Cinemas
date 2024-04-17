@@ -30,4 +30,9 @@ public class Cinema extends  BaseEntity{
     @JsonBackReference
     private Set<Room> rooms;
 
+    @OneToMany(mappedBy = "cinema", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonBackReference
+    private Set<Movie> movies;
+
+
 }

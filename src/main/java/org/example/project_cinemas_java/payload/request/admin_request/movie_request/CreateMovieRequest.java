@@ -31,8 +31,11 @@ public class CreateMovieRequest {
 
     private String trailer;
 
-    private int movieTypeId;
+    private String movieTypeName;
 
-    private int rateId;
+    private String slug;
+
+    private String codeCinema;
+
 
 }

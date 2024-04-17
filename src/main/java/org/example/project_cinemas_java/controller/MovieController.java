@@ -1,6 +1,7 @@
 package org.example.project_cinemas_java.controller;
 
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.example.project_cinemas_java.exceptions.DataNotFoundException;
 import org.example.project_cinemas_java.exceptions.InvalidMovieDataException;
 import org.example.project_cinemas_java.model.Food;
@@ -58,8 +59,15 @@ public class MovieController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
-    @GetMapping("/top-movies")
-    public ResponseEntity<?> getMoviesOrderByTicketCount(@RequestParam String nameOfCinema){
-        return ResponseEntity.ok().body(movieService.getMoviesOrderByTicketCount(nameOfCinema));
+
+    @GetMapping("/get-all-movie-by-cinema")
+    public ResponseEntity<?> getAllMovieByCinema(@RequestParam String nameOfCinema){
+        try {
+            return ResponseEntity.ok().body(movieService.getAllMovieByCinema(nameOfCinema));
+        }catch (DataNotFoundException ex){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        }catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
     }
 }
