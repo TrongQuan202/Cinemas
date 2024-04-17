@@ -15,7 +15,7 @@ public interface CinemaRepo extends JpaRepository<Cinema, Integer> {
 
     Cinema findByCode(String code);
     boolean existsByAddress (String address);
-
+    Cinema findBynameOfCinema(String nameOfCinema);
     boolean existsByNameOfCinema(String nameOfCinema);
 
     boolean existsByCode (String code);

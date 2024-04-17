@@ -1,7 +1,7 @@
 package org.example.project_cinemas_java.service.iservice;
 
 import org.example.project_cinemas_java.model.Movie;
-import org.example.project_cinemas_java.payload.dto.moviedtos.MovieTicketCountDTO;
+import org.example.project_cinemas_java.payload.dto.moviedtos.MovieDTO;
 import org.example.project_cinemas_java.payload.request.admin_request.movie_request.CreateMovieRequest;
 import org.example.project_cinemas_java.payload.request.admin_request.movie_request.UpdateMovieRequest;
 
@@ -12,5 +12,5 @@ public interface IMovieService {
 
     Movie updateMovie(UpdateMovieRequest updateMovieRequest) throws Exception;
 
-    List<MovieTicketCountDTO>  getMoviesOrderByTicketCount(String nameOfCinema);
+    List<MovieDTO>  getAllMovieByCinema(String nameOfCinema) throws Exception;
 }
