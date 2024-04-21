@@ -70,4 +70,14 @@ public class MovieController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
+    @GetMapping("/get-movie-detail")
+    public ResponseEntity<?> getMovieDetail(@RequestParam String slug){
+        try {
+            return ResponseEntity.ok().body(movieService.getMovieDetail(slug));
+        }catch (DataNotFoundException ex){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        }catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
 }

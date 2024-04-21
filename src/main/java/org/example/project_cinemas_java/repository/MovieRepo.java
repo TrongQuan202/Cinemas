@@ -13,6 +13,8 @@ import java.util.List;
 public interface MovieRepo extends JpaRepository<Movie, Integer> {
     boolean existsByImage( String image);
 
+    Movie findBySlug(String slug);
+
     boolean existsByTrailer(String trailer);
 
     List<Movie> findAllByCinema(Cinema cinema);

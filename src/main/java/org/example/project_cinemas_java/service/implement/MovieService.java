@@ -3,12 +3,10 @@ package org.example.project_cinemas_java.service.implement;
 import org.example.project_cinemas_java.exceptions.DataIntegrityViolationException;
 import org.example.project_cinemas_java.exceptions.DataNotFoundException;
 import org.example.project_cinemas_java.exceptions.InvalidMovieDataException;
-import org.example.project_cinemas_java.model.Cinema;
-import org.example.project_cinemas_java.model.Movie;
-import org.example.project_cinemas_java.model.MovieType;
-import org.example.project_cinemas_java.model.Type;
+import org.example.project_cinemas_java.model.*;
 import org.example.project_cinemas_java.payload.converter.MovieConverter;
 import org.example.project_cinemas_java.payload.dto.moviedtos.MovieDTO;
+import org.example.project_cinemas_java.payload.dto.moviedtos.MovieDetailDTO;
 import org.example.project_cinemas_java.payload.request.admin_request.movie_request.CreateMovieRequest;
 import org.example.project_cinemas_java.payload.request.admin_request.movie_request.UpdateMovieRequest;
 import org.example.project_cinemas_java.repository.*;
@@ -43,6 +41,8 @@ public class MovieService implements IMovieService {
     private CinemaRepo cinemaRepo;
     @Autowired
     private MovieConverter movieConverter;
+    @Autowired
+    private ActorMovieRepo actorMovieRepo;
 
     public LocalDateTime stringToLocalDateTime (String time){
         DateTimeFormatter endTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
@@ -149,7 +149,6 @@ public class MovieService implements IMovieService {
         movie.setHerolmage(updateMovieRequest.getHerolmage());
         movie.setLanguage(updateMovieRequest.getLanguage());
         movie.setName(updateMovieRequest.getName());
-        movie.setRate(rateRepo.findById(updateMovieRequest.getRateId()).orElse(null));
         movie.setTrailer(updateMovieRequest.getTrailer());
         movieRepo.save(movie);
 
@@ -169,4 +168,15 @@ public class MovieService implements IMovieService {
         }
         return movieDTOS;
         }
+
+    @Override
+    public MovieDetailDTO getMovieDetail(String slug) throws Exception {
+        Movie movie = movieRepo.findBySlug(slug);
+        if(movie == null){
+            throw new DataNotFoundException(MessageKeys.MOVIE_DOES_NOT_EXIST);
+        }
+        MovieDetailDTO movieDetailDTO = movieConverter.movieToMovieDetailDTO(movie);
+
+        return movieDetailDTO;
     }
+}

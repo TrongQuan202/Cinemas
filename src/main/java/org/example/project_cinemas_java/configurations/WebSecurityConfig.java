@@ -45,9 +45,11 @@ public class WebSecurityConfig {
                                     String.format("%s/auth/forgot-password", apiPrefix),
                                     String.format("%s/auth/confirm-new-password", apiPrefix),
                                     String.format("%s/movie/get-all-movie-by-cinema", apiPrefix),
+                                    String.format("%s/movie/get-movie-detail", apiPrefix),
                                     String.format("%s/cinema/get-cinema-by-address", apiPrefix),
                                     String.format("%s/schedule/get-schedule-by-movie", apiPrefix),
                                     String.format("%s/schedule/get-schedule-by-day-and-movie", apiPrefix),
+                                    String.format("%s/schedule/get-all-schedule-by-movie", apiPrefix),
                                     String.format("%s/seat/get-all-seat-by-room", apiPrefix)
 //                                    String.format("%s/seat/update-seat-status", apiPrefix)
                             )

@@ -15,6 +15,7 @@ public interface ScheduleRepo extends JpaRepository<Schedule, Integer> {
 
     boolean deleteAllByRoom(Room room);
 
+
     List<Schedule> findAllByMovieId(int id);
     List<Schedule> findAllByRoom(Room room);
 
@@ -30,7 +31,7 @@ public interface ScheduleRepo extends JpaRepository<Schedule, Integer> {
     @Query(value = "SELECT SUBSTRING(s.start_at, 12, 5) AS StartTime, r.capacity, r.name, r.id " +
             "FROM cinemalts.schedule s " +
             "JOIN cinemalts.room r ON s.room_id = r.id " +
-            "WHERE s.movie_id = :movieId AND DATE_FORMAT(s.start_at, '%Y-%m-%d') = STR_TO_DATE(:startDate, '%d-%m-%Y') " +
+            "WHERE s.movie_id = :movieId AND DATE_FORMAT(s.start_at, '%Y-%m-%d') = STR_TO_DATE(:startDate, '%d/%m/%Y') " +
             "ORDER BY StartTime", nativeQuery = true)
     
     List<Object[]> findScheduleByMovieIdAndStartDate(@Param("movieId") int movieId, @Param("startDate") String startDate);

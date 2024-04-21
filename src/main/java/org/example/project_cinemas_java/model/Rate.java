@@ -16,11 +16,9 @@ import java.util.Set;
 @Table(name = "rate")
 @Builder
 public class Rate extends BaseEntity{
-    private String description;
-
-    private String code;
+    private int starNumber;
 
     @OneToMany(mappedBy = "rate", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonBackReference
-    private Set<Movie> movies;
+    private Set<MovieRate> movieRates;
 }

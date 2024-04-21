@@ -41,10 +41,9 @@ public class Movie extends BaseEntity {
 
     private String name;
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name ="rateId", foreignKey = @ForeignKey(name = "fk_Movie_Rate"))
-    @JsonManagedReference
-    private Rate rate;
+    @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonBackReference
+    private Set<MovieRate> movieRates;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "cinemaId", foreignKey = @ForeignKey(name = "fk_Movie_Cinema"))
@@ -54,6 +53,10 @@ public class Movie extends BaseEntity {
     @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonBackReference
     private Set<Schedule> schedules;
+
+    @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonBackReference
+    private Set<ActorMovie> actorMovies;
 
     private String trailer;
 
