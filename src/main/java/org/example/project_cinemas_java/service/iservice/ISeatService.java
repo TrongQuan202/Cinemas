@@ -19,4 +19,6 @@ public interface ISeatService {
     List<SeatsByRoomDTO> resetSeats(String dayMonthYear, String startTime, int movieId, int roomId) throws Exception;
 
     List<SeatsByRoomDTO> resetSeatByUser(String dayMonthYear, String startTime, int movieId, int roomId,String tokenOfUser) throws Exception;
+
+    List<SeatsByRoomDTO> getAllSeat(int scheduleId) throws Exception;
 }

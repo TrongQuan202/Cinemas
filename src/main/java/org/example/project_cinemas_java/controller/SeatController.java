@@ -3,6 +3,7 @@ package org.example.project_cinemas_java.controller;
 import lombok.RequiredArgsConstructor;
 import org.example.project_cinemas_java.exceptions.DataNotFoundException;
 import org.example.project_cinemas_java.model.Seat;
+import org.example.project_cinemas_java.payload.dto.scheduledtos.ScheduleDTO;
 import org.example.project_cinemas_java.payload.dto.seatdtos.SeatsByRoomDTO;
 import org.example.project_cinemas_java.payload.request.admin_request.seat_request.CreateSeatRequest;
 import org.example.project_cinemas_java.payload.request.admin_request.seat_request.UpdateSeatRequest;
@@ -96,6 +97,18 @@ public class SeatController {
         }catch (DataNotFoundException ex){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
         }catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/get-all-seat")
+    public ResponseEntity<?> getAllSeat(@RequestParam int scheduleId) {
+        try {
+            List<SeatsByRoomDTO> seatsByRoomDTOS= seatService.getAllSeat(scheduleId);
+            return ResponseEntity.ok().body(seatsByRoomDTOS);
+        } catch (DataNotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }

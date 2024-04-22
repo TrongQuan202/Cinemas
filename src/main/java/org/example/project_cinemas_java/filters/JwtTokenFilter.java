@@ -91,7 +91,8 @@ public class JwtTokenFilter extends OncePerRequestFilter{
                 Pair.of(String.format("%s/schedule/get-schedule-by-movie", apiPrefix), "GET"),
                 Pair.of(String.format("%s/schedule/get-schedule-by-day-and-movie", apiPrefix), "GET"),
                 Pair.of(String.format("%s/schedule/get-all-schedule-by-movie", apiPrefix), "GET"),
-                Pair.of(String.format("%s/seat/get-all-seat-by-room", apiPrefix), "GET")
+                Pair.of(String.format("%s/seat/get-all-seat-by-room", apiPrefix), "GET"),
+                Pair.of(String.format("%s/seat/get-all-seat", apiPrefix), "GET")
 //                Pair.of(String.format("%s/seat/update-seat-status", apiPrefix), "PUT")
         );
         for(Pair<String, String> bypassToken: bypassTokens) {

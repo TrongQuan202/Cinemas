@@ -21,7 +21,7 @@ public class Ticket extends BaseEntity{
 
     private double priceTicket;
 
-    private boolean isActive =true;
+    private boolean isActive ;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "scheduleId", foreignKey = @ForeignKey(name = "fk_Ticket_Schedule"))
@@ -32,6 +32,13 @@ public class Ticket extends BaseEntity{
     @JoinColumn(name = "seatId", foreignKey = @ForeignKey(name = "fk_Ticket_Seat"))
     @JsonManagedReference
     private Seat seat;
+
+    private int seatStatus;
+
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "userId", foreignKey = @ForeignKey(name = "fk_Ticket_User"))
+    @JsonManagedReference
+    private User user;
 
     @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonBackReference

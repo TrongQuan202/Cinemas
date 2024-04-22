@@ -21,6 +21,8 @@ public interface SeatRepo extends JpaRepository<Seat, Integer> {
 
     List<Seat> findAllByRoomAndSchedule(Room room, Schedule schedule);
 
+
+
 //    List<Seat> findAllByTickets(Set<Ticket> tickets);
 //    @Query(nativeQuery = true,
 //           value = "SELECT s FROM cinemalts.seat s WHERE s.ticket IN :tickets")
