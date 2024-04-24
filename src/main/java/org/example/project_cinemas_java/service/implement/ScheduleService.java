@@ -99,13 +99,14 @@ public class ScheduleService implements IScheduleService {
                 Set<ScheduleByDayDTO> scheduleByDayDTOS = new HashSet<>();
                 for (Object[] obj: objects){
                     String startAt = (String) obj[0];
-                    Integer capacity = (Integer) obj[1];
-
-                    ScheduleByDayDTO scheduleByDTO = new ScheduleByDayDTO(startAt, capacity);
+                    Integer scheduleId = (Integer) obj[1];
+                    Integer capacity = (Integer) obj[2];
+                    ScheduleByDayDTO scheduleByDTO = new ScheduleByDayDTO(scheduleId,startAt, capacity);
                     scheduleByDayDTOS.add(scheduleByDTO);
                 }
 
                 ScheduleDTO scheduleDTO = ScheduleDTO.builder()
+
                         .day(formattedDate)
                         .scheduleByDayDTOSet(scheduleByDayDTOS)
                         .build();

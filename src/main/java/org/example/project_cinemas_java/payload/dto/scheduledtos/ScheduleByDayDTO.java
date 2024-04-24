@@ -8,6 +8,7 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 public class ScheduleByDayDTO {
+    private Integer scheduleId;
     private String startAt;
     private Integer capacity;
 }

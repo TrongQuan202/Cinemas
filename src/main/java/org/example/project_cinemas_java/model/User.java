@@ -63,6 +63,10 @@ public class User extends BaseEntity implements UserDetails {
     @JsonBackReference
     private Set<MovieRate> movieRates;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonBackReference
+    private Set<Ticket> tickets;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<SimpleGrantedAuthority> authorityList=  new ArrayList<>();

@@ -21,6 +21,7 @@ public interface ScheduleRepo extends JpaRepository<Schedule, Integer> {
 
     Schedule findByRoom(Room room);
 
+
     @Query(nativeQuery = true,
             value = "SELECT DISTINCT DATE_FORMAT(s.start_at, '%d-%m-%Y') AS dayMonthYear " +
             "FROM cinemalts.schedule s " +
@@ -28,7 +29,7 @@ public interface ScheduleRepo extends JpaRepository<Schedule, Integer> {
             "ORDER BY STR_TO_DATE(dayMonthYear, '%d-%m-%Y') ASC")
     List<String> findDistinctDayMonthYearByMovieId(@Param("movieId") int movieId);
 
-    @Query(value = "SELECT SUBSTRING(s.start_at, 12, 5) AS StartTime, r.capacity, r.name, r.id " +
+    @Query(value = "SELECT SUBSTRING(s.start_at, 12, 5) AS StartTime, s.id, r.capacity, r.name, r.id " +
             "FROM cinemalts.schedule s " +
             "JOIN cinemalts.room r ON s.room_id = r.id " +
             "WHERE s.movie_id = :movieId AND DATE_FORMAT(s.start_at, '%Y-%m-%d') = STR_TO_DATE(:startDate, '%d/%m/%Y') " +

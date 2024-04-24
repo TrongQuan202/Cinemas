@@ -323,4 +323,27 @@ public class SeatService implements ISeatService {
         }
         return null;
     }
+
+    @Override
+    public List<SeatsByRoomDTO> getAllSeat(int scheduleId) throws Exception {
+        Schedule schedule = scheduleRepo.findById(scheduleId).orElse(null);
+        if(schedule == null ){
+            throw new DataNotFoundException(MessageKeys.SCHEDULE_DOES_NOT_EXIST);
+        }
+        List<SeatsByRoomDTO> seatsByRoomDTOS = new ArrayList<>();
+        for (Seat seat:seatRepo.findAllByRoom(schedule.getRoom())){
+            SeatsByRoomDTO seatsByRoomDTO = new SeatsByRoomDTO();
+            seatsByRoomDTO.setId(seat.getId());
+            seatsByRoomDTO.setScheduleId(scheduleId);
+            seatsByRoomDTO.setSeatLine(seat.getLine());
+            seatsByRoomDTO.setSeatNumber(seat.getNumber());
+            seatsByRoomDTO.setSeatStatus(ticketRepo.findTicketByScheduleAndSeat(schedule,seat).getSeatStatus());
+            seatsByRoomDTO.setSeatType(seat.getSeatType().getId());
+
+            seatsByRoomDTOS.add(seatsByRoomDTO);
+        }
+
+
+        return seatsByRoomDTOS;
+    }
 }

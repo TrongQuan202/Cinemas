@@ -9,6 +9,8 @@ import lombok.*;
 @Builder
 public class SeatsByRoomDTO {
     private Integer id;
+    private Integer userId;
+    private Integer scheduleId;
     private String seatLine;
     private Integer seatNumber;
     private Integer seatStatus;

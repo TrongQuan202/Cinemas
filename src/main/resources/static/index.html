@@ -8,7 +8,7 @@
 <body>
 <script>
 
-    const socket = io('/mynamespace')
+    const socket = io('/chat')
 
     socket.on('hello', (arg) => {
         console.log('connected', arg)
@@ -27,7 +27,7 @@
     }
 
 </script>
-
+<h1>Hello Đoàn Trọng Quân</h1>
 <input id="input" type="text"/>
 <button onclick="submit()">Submit</button>
 

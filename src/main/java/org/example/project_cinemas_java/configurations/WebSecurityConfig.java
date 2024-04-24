@@ -50,10 +50,13 @@ public class WebSecurityConfig {
                                     String.format("%s/schedule/get-schedule-by-movie", apiPrefix),
                                     String.format("%s/schedule/get-schedule-by-day-and-movie", apiPrefix),
                                     String.format("%s/schedule/get-all-schedule-by-movie", apiPrefix),
-                                    String.format("%s/seat/get-all-seat-by-room", apiPrefix)
+                                    String.format("%s/seat/get-all-seat-by-room", apiPrefix),
+                                    "/chat/**"
+
 //                                    String.format("%s/seat/update-seat-status", apiPrefix)
                             )
                             .permitAll()
+
                             .requestMatchers(POST, String.format("/%s/auth/refreshtoken",apiPrefix)).hasAnyRole(Role.USER,Role.ADMIN)
 
 
@@ -98,10 +101,11 @@ public class WebSecurityConfig {
             @Override
             public void customize(CorsConfigurer<HttpSecurity> httpSecurityCorsConfigurer) {
                 CorsConfiguration configuration = new CorsConfiguration();
-                configuration.setAllowedOrigins(List.of("*"));
+                configuration.setAllowedOrigins(List.of("http://localhost:3000"));
                 configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
                 configuration.setAllowedHeaders(Arrays.asList("authorization", "content-type", "x-auth-token"));
                 configuration.setExposedHeaders(List.of("x-auth-token"));
+                configuration.setAllowCredentials(true);
                 UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
                 source.registerCorsConfiguration("/**", configuration);
                 httpSecurityCorsConfigurer.configurationSource(source);
