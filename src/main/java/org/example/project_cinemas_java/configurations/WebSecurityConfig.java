@@ -54,7 +54,7 @@ public class WebSecurityConfig {
                                     String.format("%s/schedule/get-all-schedule-by-movie", apiPrefix),
                                     String.format("%s/seat/get-all-seat-by-room", apiPrefix),
                                     String.format("%s/seat/get-all-seat", apiPrefix),
-                                    "/ws/**"
+                                    "/booking/**"
 //                                    String.format("%s/seat/update-seat-status", apiPrefix)
                             )
                             .permitAll()
@@ -97,9 +97,11 @@ public class WebSecurityConfig {
                     //.anyRequest().permitAll();
 
                 })
-                .csrf(AbstractHttpConfigurer::disable)
-                .headers(httpSecurityHeadersConfigurer -> httpSecurityHeadersConfigurer.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable));
-
+                .csrf(AbstractHttpConfigurer::disable);
+//                .headers(headers -> headers
+//                                .frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin
+//                                )
+//                        );
         http.cors(new Customizer<CorsConfigurer<HttpSecurity>>() {
             @Override
             public void customize(CorsConfigurer<HttpSecurity> httpSecurityCorsConfigurer) {

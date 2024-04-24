@@ -8,7 +8,7 @@ import lombok.*;
 @NoArgsConstructor
 @Getter
 @Setter
-public class BookingRequest {
+public class SelectScheduleRequest {
     private String day;
     private String time;
 

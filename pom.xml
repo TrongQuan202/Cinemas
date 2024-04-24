@@ -21,6 +21,7 @@
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-messaging</artifactId>
         </dependency>
+
         <dependency>
             <groupId>io.socket</groupId>
             <artifactId>socket.io-server</artifactId>
