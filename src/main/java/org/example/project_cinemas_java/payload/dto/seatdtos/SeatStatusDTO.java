@@ -8,6 +8,7 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 public class SeatStatusDTO {
-    private Integer user;
+    private Integer id;
     private Integer seatStatus;
+    private Integer userId;
 }

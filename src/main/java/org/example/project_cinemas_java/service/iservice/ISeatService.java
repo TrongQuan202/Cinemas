@@ -1,9 +1,11 @@
 package org.example.project_cinemas_java.service.iservice;
 
 import org.example.project_cinemas_java.model.Seat;
+import org.example.project_cinemas_java.payload.dto.seatdtos.SeatStatusDTO;
 import org.example.project_cinemas_java.payload.dto.seatdtos.SeatsByRoomDTO;
 import org.example.project_cinemas_java.payload.request.admin_request.seat_request.CreateSeatRequest;
 import org.example.project_cinemas_java.payload.request.admin_request.seat_request.UpdateSeatRequest;
+import org.example.project_cinemas_java.payload.request.seat_request.SeatStatusRequest;
 
 import java.util.List;
 
@@ -21,4 +23,6 @@ public interface ISeatService {
     List<SeatsByRoomDTO> resetSeatByUser(String dayMonthYear, String startTime, int movieId, int roomId,String tokenOfUser) throws Exception;
 
     List<SeatsByRoomDTO> getAllSeat(int scheduleId) throws Exception;
+
+    SeatStatusDTO updateSeatStatus(SeatStatusRequest seatStatusRequest) throws Exception;
 }

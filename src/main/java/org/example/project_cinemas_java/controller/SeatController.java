@@ -3,16 +3,18 @@ package org.example.project_cinemas_java.controller;
 import lombok.RequiredArgsConstructor;
 import org.example.project_cinemas_java.exceptions.DataNotFoundException;
 import org.example.project_cinemas_java.model.Seat;
-import org.example.project_cinemas_java.payload.dto.scheduledtos.ScheduleDTO;
+import org.example.project_cinemas_java.payload.dto.seatdtos.SeatStatusDTO;
 import org.example.project_cinemas_java.payload.dto.seatdtos.SeatsByRoomDTO;
 import org.example.project_cinemas_java.payload.request.admin_request.seat_request.CreateSeatRequest;
 import org.example.project_cinemas_java.payload.request.admin_request.seat_request.UpdateSeatRequest;
+import org.example.project_cinemas_java.payload.request.seat_request.SeatStatusRequest;
 import org.example.project_cinemas_java.service.implement.SeatService;
-import org.example.project_cinemas_java.service.iservice.ISeatService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -111,5 +113,14 @@ public class SeatController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
+    }
+
+    @MessageMapping("/booking")
+    @SendTo("/topic/seatStatus")
+    public SeatStatusDTO send(@RequestBody SeatStatusRequest seatStatusRequest) throws Exception {
+            SeatStatusDTO seatStatusDTO= seatService.updateSeatStatus(seatStatusRequest);
+            return seatStatusDTO;
+
+
     }
 }

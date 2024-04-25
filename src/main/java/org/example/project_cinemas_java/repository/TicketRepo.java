@@ -1,9 +1,6 @@
 package org.example.project_cinemas_java.repository;
 
-import org.example.project_cinemas_java.model.BillTicket;
-import org.example.project_cinemas_java.model.Schedule;
-import org.example.project_cinemas_java.model.Seat;
-import org.example.project_cinemas_java.model.Ticket;
+import org.example.project_cinemas_java.model.*;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -21,6 +18,6 @@ public interface TicketRepo extends JpaRepository<Ticket, Integer> {
 //    Set<Ticket> findAllByBillTicketSet(Set<BillTicket> billTickets);
     List<Ticket> findAllByScheduleAndCodeNotNullAndPriceTicketGreaterThan(Schedule schedule, int value);
 
-
+    Ticket findByUserAndSeat(User user, Seat seat);
 
 }

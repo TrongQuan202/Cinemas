@@ -4,9 +4,11 @@ import org.example.project_cinemas_java.components.JwtTokenUtils;
 import org.example.project_cinemas_java.exceptions.DataNotFoundException;
 import org.example.project_cinemas_java.model.*;
 import org.example.project_cinemas_java.payload.converter.SeatConverter;
+import org.example.project_cinemas_java.payload.dto.seatdtos.SeatStatusDTO;
 import org.example.project_cinemas_java.payload.dto.seatdtos.SeatsByRoomDTO;
 import org.example.project_cinemas_java.payload.request.admin_request.seat_request.CreateSeatRequest;
 import org.example.project_cinemas_java.payload.request.admin_request.seat_request.UpdateSeatRequest;
+import org.example.project_cinemas_java.payload.request.seat_request.SeatStatusRequest;
 import org.example.project_cinemas_java.repository.*;
 import org.example.project_cinemas_java.service.iservice.ISeatService;
 import org.example.project_cinemas_java.utils.MessageKeys;
@@ -345,5 +347,43 @@ public class SeatService implements ISeatService {
 
 
         return seatsByRoomDTOS;
+    }
+
+    @Override
+    public SeatStatusDTO updateSeatStatus(SeatStatusRequest seatStatusRequest) throws Exception {
+        User existingUser = userRepo.findById(seatStatusRequest.getUserId()).orElse(null);
+        if(existingUser == null) {
+            throw new DataNotFoundException(MessageKeys.USER_DOES_NOT_EXIST);
+        }
+        Seat seat = seatRepo.findById(seatStatusRequest.getSeatId()).orElse(null);
+        if(seat == null) {
+            throw new DataNotFoundException(MessageKeys.SEAT_DOES_NOT_EXITS);
+        }
+
+        Ticket ticket = ticketRepo.findByUserAndSeat(existingUser, seat);
+        if(ticket == null) {
+            throw new Exception();
+        }
+
+        //set lại seatStatus thành 3 ( đang được giữ )
+        if(seatStatusRequest.getSeatStatus() == 3){
+            ticket.setSeatStatus(3);
+            ticket.setUser(existingUser);
+            ticketRepo.save(ticket);
+        }
+        //set lại seatStatus thành 1 ( ghế trống )
+        if(seatStatusRequest.getSeatStatus() == 1){
+            ticket.setSeatStatus(1);
+            ticket.setUser(existingUser);
+            ticketRepo.save(ticket);
+        }
+
+        SeatStatusDTO seatStatusDTO = SeatStatusDTO.builder()
+                .userId(existingUser.getId())
+                .seatStatus(seatStatusRequest.getSeatStatus())
+                .id(seatStatusRequest.getSeatId())
+                .build();
+
+        return seatStatusDTO;
     }
 }
