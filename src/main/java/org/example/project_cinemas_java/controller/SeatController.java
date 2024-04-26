@@ -1,6 +1,7 @@
 package org.example.project_cinemas_java.controller;
 
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.example.project_cinemas_java.exceptions.DataNotFoundException;
 import org.example.project_cinemas_java.model.Seat;
 import org.example.project_cinemas_java.payload.dto.seatdtos.SeatStatusDTO;
@@ -117,10 +118,21 @@ public class SeatController {
 
     @MessageMapping("/booking")
     @SendTo("/topic/seatStatus")
-    public SeatStatusDTO send(@RequestBody SeatStatusRequest seatStatusRequest) throws Exception {
-            SeatStatusDTO seatStatusDTO= seatService.updateSeatStatus(seatStatusRequest);
-            return seatStatusDTO;
+    public String send(String s){
+        return s;
+    }
 
 
+
+    @PutMapping("/update-seatStatus")
+    public ResponseEntity<?> update(@RequestBody SeatStatusRequest seatStatusRequest) {
+        try {
+             SeatStatusDTO seatsByRoomDTOS  = seatService.updateSeatStatus(seatStatusRequest);
+            return ResponseEntity.ok().body(seatsByRoomDTOS);
+        } catch (DataNotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
     }
 }

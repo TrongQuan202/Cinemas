@@ -53,6 +53,7 @@ public class WebSecurityConfig {
                                     String.format("%s/schedule/get-schedule-by-day-and-movie", apiPrefix),
                                     String.format("%s/schedule/get-all-schedule-by-movie", apiPrefix),
                                     String.format("%s/seat/get-all-seat-by-room", apiPrefix),
+                                    String.format("%s/seat/update-seatStatus", apiPrefix),
                                     String.format("%s/seat/get-all-seat", apiPrefix),
                                     "/booking/**")
 

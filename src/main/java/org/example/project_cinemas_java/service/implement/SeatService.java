@@ -359,8 +359,9 @@ public class SeatService implements ISeatService {
         if(seat == null) {
             throw new DataNotFoundException(MessageKeys.SEAT_DOES_NOT_EXITS);
         }
+        Schedule schedule = scheduleRepo.findById(seatStatusRequest.getSchedule()).orElse(null);
+        Ticket ticket = ticketRepo.findTicketByScheduleAndSeat(schedule,seat);
 
-        Ticket ticket = ticketRepo.findByUserAndSeat(existingUser, seat);
         if(ticket == null) {
             throw new Exception();
         }
