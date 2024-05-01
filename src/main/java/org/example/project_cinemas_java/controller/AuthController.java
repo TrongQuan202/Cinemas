@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.project_cinemas_java.exceptions.ConfirmEmailExpired;
 import org.example.project_cinemas_java.exceptions.DataNotFoundException;
 import org.example.project_cinemas_java.exceptions.DisabledException;
+import org.example.project_cinemas_java.exceptions.TokenRefreshException;
 import org.example.project_cinemas_java.model.ConfirmEmail;
 import org.example.project_cinemas_java.model.User;
 import org.example.project_cinemas_java.payload.request.auth_request.*;
@@ -13,6 +14,7 @@ import org.example.project_cinemas_java.repository.UserRepo;
 import org.example.project_cinemas_java.repository.UserStatusRepo;
 import org.example.project_cinemas_java.service.implement.AuthService;
 import org.example.project_cinemas_java.service.implement.ConfirmEmailService;
+import org.example.project_cinemas_java.service.implement.RefreshTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -37,8 +39,9 @@ public class AuthController {
     @Autowired
     private UserRepo userRepo;
     @Autowired
-
     private UserStatusRepo userStatusRepo;
+    @Autowired
+    private RefreshTokenService refreshTokenService;
 
     @PostMapping("/confirmEmail")
     public ResponseEntity<?> confirmEmail(@Valid @RequestParam String email) {
@@ -143,5 +146,19 @@ public class AuthController {
 //        }
 //
 //    }
+    }
+
+    @GetMapping("/refresh-token")
+    public ResponseEntity<?> refreshToken(@RequestParam String refreshToken) {
+        try {
+            var result = refreshTokenService.refreshToken(refreshToken);
+            return ResponseEntity.ok().body(result);
+        } catch (TokenRefreshException ex){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ex.getMessage());
+        }catch (DataNotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        }catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
     }
 }

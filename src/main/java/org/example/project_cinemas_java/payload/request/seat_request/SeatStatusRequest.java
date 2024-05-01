@@ -12,8 +12,9 @@ import lombok.*;
 public class SeatStatusRequest {
     private Integer seatId;
     private Integer userId;
-    private Integer seatStatus;
+    private Integer status;
     private Integer schedule;
+    private Integer seatType;
 
     public static SeatStatusRequest fromJson(String json) throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();

@@ -20,4 +20,9 @@ public interface TicketRepo extends JpaRepository<Ticket, Integer> {
 
     Ticket findByUserAndSeat(User user, Seat seat);
 
+    List<Ticket> findAllByUserAndSchedule(User user, Schedule schedule);
+
+    List<Ticket> findAllByUserAndSeatTypeAndSchedule(User user, int seatType, Schedule schedule);
+
+
 }

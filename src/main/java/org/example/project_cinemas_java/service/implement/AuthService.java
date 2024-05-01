@@ -132,6 +132,13 @@ public class AuthService  implements IAuthService {
         return expiredTimeString;
     }
 
+    public String convertLocalDateTime (LocalDateTime localDateTime){
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        String expiredTimeString = localDateTime.format(formatter);
+        return expiredTimeString;
+    }
+
     @Override
     public LoginDTO login(LoginRequest loginRequest) throws Exception {
         User existingUser = userRepo.findByEmail(loginRequest.getEmail()).orElse(null);
@@ -157,9 +164,6 @@ public class AuthService  implements IAuthService {
                 .map(item -> item.getAuthority())
                 .collect(Collectors.toList());
 
-        //sinh ngẫu nhiên 1 token từ existingUser
-        String token = jwtTokenUtils.generateToken(existingUser);
-
         RefreshToken refreshTokens = refreshTokenService.createRefreshToken(existingUser.getId());
 
         LoginDTO loginDTO= LoginDTO.builder()
@@ -167,10 +171,10 @@ public class AuthService  implements IAuthService {
                 .userName(existingUser.getUserName())
                 .email(existingUser.getEmail())
                 .phoneNumber(existingUser.getPhoneNumber())
-                .token(token)
-                .timeExpiredToken(localDateTimeToString(LocalDateTime.now(),expirationToken))
-                .refreshToken(refreshTokens.getToken())
-                .timeExpiredRefresh(localDateTimeToString(LocalDateTime.now(),expirationRefreshToke))
+                .token(refreshTokens.getAccessToken())
+                .timeExpiredToken(convertLocalDateTime(refreshTokens.getTimeExpiredAccess()))
+                .refreshToken(refreshTokens.getRefreshToken())
+                .timeExpiredRefresh(convertLocalDateTime(refreshTokens.getTimeExpiredRefresh()))
                 .roles(roles)
                 .build();
         return loginDTO;

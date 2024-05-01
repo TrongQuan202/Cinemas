@@ -15,6 +15,8 @@ import lombok.NoArgsConstructor;
 @Builder
 public class MovieType extends BaseEntity{
 
+    private String movieTypeName;
+
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "typeId" , foreignKey = @ForeignKey(name = "fk_MovieType_Type"))
     @JsonManagedReference

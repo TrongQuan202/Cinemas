@@ -5,6 +5,7 @@ import org.example.project_cinemas_java.exceptions.DataNotFoundException;
 import org.example.project_cinemas_java.exceptions.InvalidMovieDataException;
 import org.example.project_cinemas_java.model.*;
 import org.example.project_cinemas_java.payload.converter.MovieConverter;
+import org.example.project_cinemas_java.payload.dto.moviedtos.MovieByScheduleDTO;
 import org.example.project_cinemas_java.payload.dto.moviedtos.MovieDTO;
 import org.example.project_cinemas_java.payload.dto.moviedtos.MovieDetailDTO;
 import org.example.project_cinemas_java.payload.request.admin_request.movie_request.CreateMovieRequest;
@@ -20,7 +21,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -43,6 +46,8 @@ public class MovieService implements IMovieService {
     private MovieConverter movieConverter;
     @Autowired
     private ActorMovieRepo actorMovieRepo;
+    @Autowired
+    private ScheduleRepo scheduleRepo;
 
     public LocalDateTime stringToLocalDateTime (String time){
         DateTimeFormatter endTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
@@ -178,5 +183,23 @@ public class MovieService implements IMovieService {
         MovieDetailDTO movieDetailDTO = movieConverter.movieToMovieDetailDTO(movie);
 
         return movieDetailDTO;
+    }
+
+    @Override
+    public MovieByScheduleDTO getMovieBySchedule(int scheduleId) throws Exception {
+        Schedule schedule = scheduleRepo.findById(scheduleId).orElse(null);
+        if(schedule == null){
+            throw new DataNotFoundException(MessageKeys.SCHEDULE_DOES_NOT_EXIST);
+        }
+
+        MovieByScheduleDTO movieByScheduleDTO = new MovieByScheduleDTO();
+        movieByScheduleDTO.setMovieName(schedule.getMovie().getName());
+        Set<String> movieTypeName = new HashSet<>();
+        for (MovieType movieType:movieTypeRepo.findAllByMovie(schedule.getMovie())){
+            movieTypeName.add(movieType.getMovieTypeName());
+        }
+        movieByScheduleDTO.setMovieType(movieTypeName);
+        movieByScheduleDTO.setImg(schedule.getMovie().getImage());
+        return null;
     }
 }

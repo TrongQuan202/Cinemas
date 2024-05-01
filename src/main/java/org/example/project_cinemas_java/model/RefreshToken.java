@@ -16,9 +16,13 @@ import java.time.LocalDateTime;
 @Table(name = "refreshToken")
 @Builder
 public class RefreshToken extends BaseEntity{
-    private String token;
+    private String accessToken;
 
-    private LocalDateTime expiredTime;
+    private LocalDateTime timeExpiredAccess;
+
+    private String refreshToken;
+
+    private LocalDateTime timeExpiredRefresh;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "userId", foreignKey = @ForeignKey(name = "fk_RefreshToken_User"))

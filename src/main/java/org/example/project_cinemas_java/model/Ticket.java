@@ -23,6 +23,8 @@ public class Ticket extends BaseEntity{
 
     private boolean isActive ;
 
+    private int seatType;
+
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "scheduleId", foreignKey = @ForeignKey(name = "fk_Ticket_Schedule"))
     @JsonManagedReference

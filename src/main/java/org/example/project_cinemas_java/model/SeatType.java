@@ -17,6 +17,7 @@ import java.util.Set;
 @Builder
 public class SeatType extends BaseEntity{
     private String nameType;
+    private float price;
 
     @OneToMany(mappedBy = "seatType", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonBackReference

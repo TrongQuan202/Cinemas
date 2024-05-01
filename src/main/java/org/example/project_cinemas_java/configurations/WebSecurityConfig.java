@@ -55,6 +55,7 @@ public class WebSecurityConfig {
                                     String.format("%s/seat/get-all-seat-by-room", apiPrefix),
                                     String.format("%s/seat/update-seatStatus", apiPrefix),
                                     String.format("%s/seat/get-all-seat", apiPrefix),
+                                    String.format("%s/auth/refresh-token", apiPrefix),
                                     "/booking/**")
 
 //                                    String.format("%s/seat/update-seat-status", apiPrefix)
@@ -86,6 +87,7 @@ public class WebSecurityConfig {
                             .requestMatchers(PUT, String.format("/%s/seat/update-seat-status",apiPrefix)).hasAnyRole(Role.USER,Role.ADMIN)
                             .requestMatchers(PUT, String.format("/%s/seat/reset-seat-status",apiPrefix)).hasAnyRole(Role.USER,Role.ADMIN)
                             .requestMatchers(PUT, String.format("/%s/seat/reset-seat-by-user",apiPrefix)).hasAnyRole(Role.USER,Role.ADMIN)
+                            .requestMatchers(PUT, String.format("/%s/seat/reset-seat-status-by-user",apiPrefix)).hasAnyRole(Role.USER,Role.ADMIN)
 
                             .requestMatchers(GET, String.format("/%s/schedule/get-price-by-schedule",apiPrefix)).hasAnyRole(Role.USER,Role.ADMIN)
                             .requestMatchers(GET, String.format("/%s/user/get-phone-user",apiPrefix)).hasAnyRole(Role.USER,Role.ADMIN)

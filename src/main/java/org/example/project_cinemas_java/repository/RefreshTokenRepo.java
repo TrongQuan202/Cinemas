@@ -6,4 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface RefreshTokenRepo extends JpaRepository<RefreshToken, Integer> {
+
+    RefreshToken findByRefreshToken(String refreshToken);
 }

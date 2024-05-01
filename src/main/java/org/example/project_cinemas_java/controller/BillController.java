@@ -7,6 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -20,10 +23,19 @@ public class BillController {
     private BillService billService;
 
     @PostMapping("/create-bill")
-    public ResponseEntity<?> createBill(@RequestParam String email){
+    public ResponseEntity<?> createBill(){
         try {
-            billService.createBill(email);
-            return ResponseEntity.ok().body("create bill sucess");
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
+                UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+                // Lấy email của người dùng từ UserDetails
+                String email = userDetails.getUsername();
+                // Gọi service để tạo hóa đơn
+                billService.createBill(email);
+                return ResponseEntity.ok().body("create bill success");
+            } else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
+            }
         }catch (DataIntegrityViolationException ex){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
         }catch (DataNotFoundException ex){

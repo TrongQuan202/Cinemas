@@ -1,6 +1,7 @@
 package org.example.project_cinemas_java.service.iservice;
 
 import org.example.project_cinemas_java.model.Movie;
+import org.example.project_cinemas_java.payload.dto.moviedtos.MovieByScheduleDTO;
 import org.example.project_cinemas_java.payload.dto.moviedtos.MovieDTO;
 import org.example.project_cinemas_java.payload.dto.moviedtos.MovieDetailDTO;
 import org.example.project_cinemas_java.payload.request.admin_request.movie_request.CreateMovieRequest;
@@ -16,4 +17,6 @@ public interface IMovieService {
     List<MovieDTO>  getAllMovieByCinema(String nameOfCinema) throws Exception;
 
     MovieDetailDTO getMovieDetail(String slug)throws  Exception;
+
+    MovieByScheduleDTO getMovieBySchedule(int scheduleId) throws Exception;
 }
