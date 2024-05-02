@@ -200,6 +200,14 @@ public class MovieService implements IMovieService {
         }
         movieByScheduleDTO.setMovieType(movieTypeName);
         movieByScheduleDTO.setImg(schedule.getMovie().getImage());
-        return null;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        movieByScheduleDTO.setDay(schedule.getStartAt().format(formatter));
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("HH:mm");
+        movieByScheduleDTO.setStartAt(schedule.getStartAt().format(format));
+        movieByScheduleDTO.setCinemaName(schedule.getRoom().getCinema().getNameOfCinema());
+        movieByScheduleDTO.setRomName(schedule.getRoom().getName());
+        movieByScheduleDTO.setDuration(schedule.getMovie().getMovieDuration());
+
+        return movieByScheduleDTO;
     }
 }

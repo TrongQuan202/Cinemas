@@ -21,6 +21,8 @@ public class Movie extends BaseEntity {
 
     private String slug;
 
+    private String name;
+
     private LocalDateTime endTime;
 
     private LocalDateTime premiereDate;
@@ -35,11 +37,13 @@ public class Movie extends BaseEntity {
 
     private String language;
 
+    private String trailer;
+
+    private boolean isActive = true;
+
     @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonBackReference
     private Set<MovieType> movieTypes;
-
-    private String name;
 
     @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonBackReference
@@ -58,7 +62,5 @@ public class Movie extends BaseEntity {
     @JsonBackReference
     private Set<ActorMovie> actorMovies;
 
-    private String trailer;
 
-    private boolean isActive = true;
 }

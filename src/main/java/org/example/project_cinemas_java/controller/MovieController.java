@@ -82,4 +82,14 @@ public class MovieController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
+    @GetMapping("/get-movie-by-schedule")
+    public ResponseEntity<?> getMovieBySchedule(@RequestParam int schedule){
+        try {
+            return ResponseEntity.ok().body(movieService.getMovieBySchedule(schedule));
+        }catch (DataNotFoundException ex){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        }catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
 }

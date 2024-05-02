@@ -4,10 +4,14 @@ import lombok.RequiredArgsConstructor;
 import org.example.project_cinemas_java.exceptions.DataNotFoundException;
 import org.example.project_cinemas_java.exceptions.VoucherExpired;
 import org.example.project_cinemas_java.payload.dto.promotiondtos.PromotionDTO;
+import org.example.project_cinemas_java.payload.dto.seatdtos.SeatStatusDTO;
 import org.example.project_cinemas_java.service.implement.PromotionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -23,10 +27,19 @@ public class PromotionController {
     private PromotionService promotionService;
 
     @GetMapping("/get-all-promotion-by-user")
-    public ResponseEntity<?> getAllPromotionByUser(@RequestParam String email){
+    public ResponseEntity<?> getAllPromotionByUser(){
         try {
-            List<PromotionDTO> promotionDTOS = promotionService.getAllPromotionByUser(email);
-            return ResponseEntity.ok().body(promotionDTOS);
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
+                UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+                // Lấy email của người dùng từ UserDetails
+                String email = userDetails.getUsername();
+
+                List<PromotionDTO> promotionDTOS = promotionService.getAllPromotionByUser(email);
+                return ResponseEntity.ok().body(promotionDTOS);
+            } else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
+            }
         }catch (DataNotFoundException ex){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
         }catch (Exception e){

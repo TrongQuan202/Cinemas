@@ -373,6 +373,7 @@ public class SeatService implements ISeatService {
             throw new Exception();
         }
         SeatSelectedDTO seatSelectedDTO = new SeatSelectedDTO();
+//        Set<String> seats = new HashSet<>();
         //set lại seatStatus thành 3 ( đang được giữ )
         if(seatStatusRequest.getStatus() == 3 && seatStatusRequest.getSeatType() == 1){
             ticket.setCode(generateCode());
@@ -420,8 +421,15 @@ public class SeatService implements ISeatService {
             List<Ticket> tickets = ticketRepo.findAllByUserAndSeatTypeAndSchedule(existingUser,1,schedule);
             seatSelectedDTO.setSeatSelectedCount(tickets.size());
             seatSelectedDTO.setPrice(priceTicket(tickets));
-            List<Ticket> ticketsByUserAndSchedule = ticketRepo.findAllByUserAndSchedule(existingUser,schedule);
             seatSelectedDTO.setTotalMoney(bill.getTotalMoney());
+
+            List<Ticket> ticketsByUserAndSchedule = ticketRepo.findAllByUserAndSchedule(existingUser,schedule);
+            Set<String> seats = new HashSet<>();
+            for (Ticket ticket1:ticketsByUserAndSchedule){
+                seats.add(ticket1.getSeat().getLine() + ticket1.getSeat().getNumber());
+            }
+
+            seatSelectedDTO.setSeatSelected(seats);
 
         }
 
@@ -472,7 +480,12 @@ public class SeatService implements ISeatService {
             seatSelectedDTO.setSeatSelectedCount(tickets.size());
             seatSelectedDTO.setPrice(priceTicket(tickets));
             List<Ticket> ticketsByUserAndSchedule = ticketRepo.findAllByUserAndSchedule(existingUser,schedule);
-            seatSelectedDTO.setTotalMoney(bill.getTotalMoney());
+            Set<String> seats = new HashSet<>();
+            for (Ticket ticket1:ticketsByUserAndSchedule){
+                seats.add(ticket1.getSeat().getLine() + ticket1.getSeat().getNumber());
+            }
+
+            seatSelectedDTO.setSeatSelected(seats);
         }
 
 
@@ -522,7 +535,12 @@ public class SeatService implements ISeatService {
             seatSelectedDTO.setSeatSelectedCount(tickets.size());
             seatSelectedDTO.setPrice(priceTicket(tickets));
             List<Ticket> ticketsByUserAndSchedule = ticketRepo.findAllByUserAndSchedule(existingUser,schedule);
-            seatSelectedDTO.setTotalMoney(bill.getTotalMoney());
+            Set<String> seats = new HashSet<>();
+            for (Ticket ticket1:ticketsByUserAndSchedule){
+                seats.add(ticket1.getSeat().getLine() + ticket1.getSeat().getNumber());
+            }
+
+            seatSelectedDTO.setSeatSelected(seats);
         }
 
         //set lại seatStatus thành 1 ( ghế trống )
@@ -559,6 +577,13 @@ public class SeatService implements ISeatService {
             seatSelectedDTO.setSeatSelectedCount(tickets.size());
             seatSelectedDTO.setPrice(priceTicket(tickets));
             seatSelectedDTO.setTotalMoney(bill.getTotalMoney());
+            List<Ticket> ticketsByUserAndSchedule = ticketRepo.findAllByUserAndSchedule(existingUser,schedule);
+            Set<String> seats = new HashSet<>();
+            for (Ticket ticket1:ticketsByUserAndSchedule){
+                seats.add(ticket1.getSeat().getLine() + ticket1.getSeat().getNumber());
+            }
+
+            seatSelectedDTO.setSeatSelected(seats);
         }
 
         if(seatStatusRequest.getStatus() == 1 && seatStatusRequest.getSeatType() == 2){
@@ -592,6 +617,13 @@ public class SeatService implements ISeatService {
             seatSelectedDTO.setSeatSelectedCount(tickets.size());
             seatSelectedDTO.setPrice(priceTicket(tickets));
             seatSelectedDTO.setTotalMoney(bill.getTotalMoney());
+            List<Ticket> ticketsByUserAndSchedule = ticketRepo.findAllByUserAndSchedule(existingUser,schedule);
+            Set<String> seats = new HashSet<>();
+            for (Ticket ticket1:ticketsByUserAndSchedule){
+                seats.add(ticket1.getSeat().getLine() + ticket1.getSeat().getNumber());
+            }
+
+            seatSelectedDTO.setSeatSelected(seats);
         }
 
         if(seatStatusRequest.getStatus() == 1 && seatStatusRequest.getSeatType() == 3){
@@ -623,6 +655,13 @@ public class SeatService implements ISeatService {
             seatSelectedDTO.setSeatSelectedCount(tickets.size());
             seatSelectedDTO.setPrice(priceTicket(tickets));
             seatSelectedDTO.setTotalMoney(bill.getTotalMoney());
+            List<Ticket> ticketsByUserAndSchedule = ticketRepo.findAllByUserAndSchedule(existingUser,schedule);
+            Set<String> seats = new HashSet<>();
+            for (Ticket ticket1:ticketsByUserAndSchedule){
+                seats.add(ticket1.getSeat().getLine() + ticket1.getSeat().getNumber());
+            }
+
+            seatSelectedDTO.setSeatSelected(seats);
         }
 
 //        SeatStatusDTO seatStatusDTO = SeatStatusDTO.builder()
