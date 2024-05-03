@@ -17,11 +17,11 @@ import java.util.Set;
 @Table(name = "movie")
 @Builder
 public class Movie extends BaseEntity {
+    private String name;
+
     private int movieDuration;
 
     private String slug;
-
-    private String name;
 
     private LocalDateTime endTime;
 
