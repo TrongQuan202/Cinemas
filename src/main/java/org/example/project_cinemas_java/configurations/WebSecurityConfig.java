@@ -98,6 +98,7 @@ public class WebSecurityConfig {
                             .requestMatchers(GET, String.format("/%s/promotion/get-discount-amount",apiPrefix)).hasAnyRole(Role.USER,Role.ADMIN)
                             .requestMatchers(GET, String.format("/%s/payment/vnpay-payment",apiPrefix)).hasAnyRole(Role.USER,Role.ADMIN)
                             .requestMatchers(GET, String.format("/%s/cinema/get-Revenue",apiPrefix)).hasRole(Role.ADMIN)
+                            .requestMatchers(GET, String.format("/%s/movie/get-movie-by-admin",apiPrefix)).hasRole(Role.ADMIN)
                             .anyRequest().authenticated();
                     //.anyRequest().permitAll();
 

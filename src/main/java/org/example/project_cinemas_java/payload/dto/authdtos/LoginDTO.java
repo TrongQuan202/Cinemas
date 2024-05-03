@@ -20,6 +20,6 @@ public class LoginDTO {
     private String timeExpiredToken;
     private String refreshToken;
     private String timeExpiredRefresh;
-    private List<String> roles;
+    private String roles;
 
 }
