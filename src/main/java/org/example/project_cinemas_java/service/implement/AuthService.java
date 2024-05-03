@@ -160,9 +160,7 @@ public class AuthService  implements IAuthService {
 
         //Lấy role của user
         User userDetails = (User) userDetailsService.loadUserByUsername(loginRequest.getEmail());
-        List<String> roles = userDetails.getAuthorities().stream()
-                .map(item -> item.getAuthority())
-                .collect(Collectors.toList());
+        String roles = userDetails.getAuthorities().toString();
 
         RefreshToken refreshTokens = refreshTokenService.createRefreshToken(existingUser.getId());
 

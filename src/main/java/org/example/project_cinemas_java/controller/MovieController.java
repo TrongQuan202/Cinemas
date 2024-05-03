@@ -92,4 +92,8 @@ public class MovieController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
+    @GetMapping("/get-movie-by-admin")
+    public ResponseEntity<?> getMovieByAdmin(){
+        return ResponseEntity.ok().body(movieService.getMovieByAdmin());
+    }
 }

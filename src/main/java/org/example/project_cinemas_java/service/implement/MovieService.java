@@ -5,6 +5,7 @@ import org.example.project_cinemas_java.exceptions.DataNotFoundException;
 import org.example.project_cinemas_java.exceptions.InvalidMovieDataException;
 import org.example.project_cinemas_java.model.*;
 import org.example.project_cinemas_java.payload.converter.MovieConverter;
+import org.example.project_cinemas_java.payload.dto.moviedtos.MovieByAdminDTO;
 import org.example.project_cinemas_java.payload.dto.moviedtos.MovieByScheduleDTO;
 import org.example.project_cinemas_java.payload.dto.moviedtos.MovieDTO;
 import org.example.project_cinemas_java.payload.dto.moviedtos.MovieDetailDTO;
@@ -209,5 +210,17 @@ public class MovieService implements IMovieService {
         movieByScheduleDTO.setDuration(schedule.getMovie().getMovieDuration());
 
         return movieByScheduleDTO;
+    }
+
+    @Override
+    public List<MovieByAdminDTO> getMovieByAdmin() {
+        List<MovieByAdminDTO> movieByAdminDTOS = new ArrayList<>();
+        for (Movie movie:movieRepo.findAll()){
+            MovieByAdminDTO movieByAdminDTO = new MovieByAdminDTO();
+            movieByAdminDTO.setMovieName(movie.getName());
+            movieByAdminDTO.setImage(movie.getImage());
+            movieByAdminDTOS.add(movieByAdminDTO);
+        }
+        return movieByAdminDTOS;
     }
 }
