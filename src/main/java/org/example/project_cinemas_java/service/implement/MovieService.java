@@ -11,9 +11,13 @@ import org.example.project_cinemas_java.payload.dto.moviedtos.MovieDTO;
 import org.example.project_cinemas_java.payload.dto.moviedtos.MovieDetailDTO;
 import org.example.project_cinemas_java.payload.request.admin_request.movie_request.CreateMovieRequest;
 import org.example.project_cinemas_java.payload.request.admin_request.movie_request.UpdateMovieRequest;
+import org.example.project_cinemas_java.payload.request.auth_request.RegisterRequest;
+import org.example.project_cinemas_java.payload.request.movie_request.ActorRequest;
+import org.example.project_cinemas_java.payload.request.movie_request.MovieTypeRequest;
 import org.example.project_cinemas_java.repository.*;
 import org.example.project_cinemas_java.service.iservice.IMovieService;
 import org.example.project_cinemas_java.utils.MessageKeys;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -49,6 +53,10 @@ public class MovieService implements IMovieService {
     private ActorMovieRepo actorMovieRepo;
     @Autowired
     private ScheduleRepo scheduleRepo;
+    @Autowired
+    private ActorRepo actorRepo;
+    @Autowired
+    private ModelMapper modelMapper;
 
     public LocalDateTime stringToLocalDateTime (String time){
         DateTimeFormatter endTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
@@ -69,10 +77,6 @@ public class MovieService implements IMovieService {
     @Override
     public Movie createMovie(CreateMovieRequest createMovieRequest) throws Exception {
 
-        if(!typeRepo.existsByMovieTypeName(createMovieRequest.getMovieTypeName())){
-            throw new DataNotFoundException(MessageKeys.MOVIE_TYPE_DOES_NOT_EXIST);
-        }
-
         if(movieRepo.existsByImage(createMovieRequest.getImage())){
               throw  new DataIntegrityViolationException(MessageKeys.IMAGE_ALREADY_EXIST);
         }
@@ -85,16 +89,17 @@ public class MovieService implements IMovieService {
         if (!checkEndTimeAfterPremiereDate(createMovieRequest.getEndTime(),createMovieRequest.getPremiereDate())){
             throw new InvalidMovieDataException("The end time must be after the premiere time!");
         }
-
-        //tạo type cho movie thêm vào
-        Type type = typeService.createType(createMovieRequest.getMovieTypeName());
-
         //thêm cinema vào phim
-        Cinema cinema = cinemaRepo.findByCode(createMovieRequest.getCodeCinema());
+        Cinema cinema = cinemaRepo.findBynameOfCinema(createMovieRequest.getCodeCinema());
         if(cinema == null){
             throw new DataNotFoundException(MessageKeys.CINEMA_DOES_NOT_EXIST);
         }
-
+        boolean isUpcoming;
+        if(createMovieRequest.getIsUpcoming() == "Phim sắp chiếu"){
+            isUpcoming = false;
+        }else {
+            isUpcoming =true;
+        }
         Movie movie = Movie.builder()
                 .movieDuration(createMovieRequest.getMovieDuration())
                 .endTime(stringToLocalDateTime(createMovieRequest.getEndTime()))
@@ -108,16 +113,26 @@ public class MovieService implements IMovieService {
                 .trailer(createMovieRequest.getTrailer())
                 .slug(createMovieRequest.getSlug())
                 .cinema(cinema)
+                .isUpcoming(isUpcoming)
                 .isActive(false)
                 .build();
         movieRepo.save(movie);
 
-        //sau khi có phim thì thêm vào bảng MovieType
-        if(movieTypeRepo.existsByMovieAndType(movie,type)){
-            throw  new DataIntegrityViolationException("MovieType early exits");
+        for (MovieTypeRequest type:createMovieRequest.getType()){
+            Type type1 = typeRepo.findByMovieTypeName(type.getName());
+            MovieType movieType = new MovieType();
+            movieType.setMovie(movie);
+            movieType.setType(type1);
+            movieTypeRepo.save(movieType);
         }
-        MovieType movieType = movieTypeService.createMovieType(movie,type);
-        movieTypeRepo.save(movieType);
+        for (ActorRequest ac:createMovieRequest.getActor()){
+            Actor actor = actorRepo.findByName(ac.getName());
+            ActorMovie actorMovie = new ActorMovie();
+            actorMovie.setMovie(movie);
+            actorMovie.setMovie(movie);
+            actorMovie.setActor(actor);
+            actorMovieRepo.save(actorMovie);
+        }
 
         return movie;
     }
@@ -216,11 +231,12 @@ public class MovieService implements IMovieService {
     public List<MovieByAdminDTO> getMovieByAdmin() {
         List<MovieByAdminDTO> movieByAdminDTOS = new ArrayList<>();
         for (Movie movie:movieRepo.findAll()){
-            MovieByAdminDTO movieByAdminDTO = new MovieByAdminDTO();
-            movieByAdminDTO.setMovieName(movie.getName());
-            movieByAdminDTO.setImage(movie.getImage());
-            movieByAdminDTOS.add(movieByAdminDTO);
+            movieByAdminDTOS.add(movieToMovieByAdminDTO(movie));
         }
         return movieByAdminDTOS;
+    }
+
+    public MovieByAdminDTO movieToMovieByAdminDTO(Movie movie){
+        return this.modelMapper.map(movie, MovieByAdminDTO.class);
     }
 }

@@ -2,6 +2,7 @@ package org.example.project_cinemas_java.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.example.project_cinemas_java.exceptions.DataIntegrityViolationException;
 import org.example.project_cinemas_java.exceptions.DataNotFoundException;
 import org.example.project_cinemas_java.exceptions.InvalidMovieDataException;
 import org.example.project_cinemas_java.model.Food;
@@ -13,7 +14,6 @@ import org.example.project_cinemas_java.payload.request.admin_request.movie_requ
 import org.example.project_cinemas_java.payload.request.admin_request.room_request.CreateRoomRequest;
 import org.example.project_cinemas_java.service.implement.MovieService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;

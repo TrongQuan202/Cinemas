@@ -7,4 +7,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface TypeRepo extends JpaRepository<Type, Integer> {
     boolean existsByMovieTypeName(String movieTypeName);
+
+    Type findByMovieTypeName(String name);
 }

@@ -1,8 +1,11 @@
 package org.example.project_cinemas_java.payload.request.admin_request.movie_request;
 
 import lombok.*;
+import org.example.project_cinemas_java.payload.request.movie_request.ActorRequest;
+import org.example.project_cinemas_java.payload.request.movie_request.MovieTypeRequest;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @Builder
@@ -31,11 +34,15 @@ public class CreateMovieRequest {
 
     private String trailer;
 
-    private String movieTypeName;
+    private List<MovieTypeRequest> type;
+
+    private List<ActorRequest> actor;
 
     private String slug;
 
     private String codeCinema;
+
+    private String isUpcoming;
 
 
 }

@@ -3,6 +3,7 @@ package org.example.project_cinemas_java.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.project_cinemas_java.exceptions.DataNotFoundException;
+import org.example.project_cinemas_java.payload.dto.scheduledtos.ScheduleByAdminDTO;
 import org.example.project_cinemas_java.payload.dto.scheduledtos.ScheduleDTO;
 import org.example.project_cinemas_java.service.implement.ScheduleService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +44,18 @@ public class ScheduleController {
     public ResponseEntity<?> getAllScheduleByMovie(@RequestParam String slug) {
         try {
             List<ScheduleDTO> scheduleDTOS= scheduleService.getAllScheduleByMovie(slug);
+            return ResponseEntity.ok().body(scheduleDTOS);
+        } catch (DataNotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/get-all-schedule-by-admin")
+    public ResponseEntity<?> getAllScheduleByAdmin() {
+        try {
+            List<ScheduleByAdminDTO> scheduleDTOS= scheduleService.getAllScheduleByAdmin();
             return ResponseEntity.ok().body(scheduleDTOS);
         } catch (DataNotFoundException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());

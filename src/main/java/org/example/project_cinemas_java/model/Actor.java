@@ -32,6 +32,7 @@ public class Actor extends BaseEntity{
     private String height;
     private String nationality;
 
+
     @OneToMany(mappedBy = "actor", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonBackReference
     private Set<ImageActor> imageActors;

@@ -25,13 +25,13 @@ public class Schedule extends BaseEntity{
     private LocalDateTime endAt;
 
     private String code;
-
+    private String name;
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "movieId", foreignKey = @ForeignKey(name = "fk_Schedule_Movie"))
     @JsonManagedReference
     private Movie movie;
 
-    private String name;
+
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "roomId", foreignKey = @ForeignKey(name = "fk_Schedule_Room"))

@@ -2,10 +2,9 @@ package org.example.project_cinemas_java.service.implement;
 
 import org.example.project_cinemas_java.exceptions.DataNotFoundException;
 import org.example.project_cinemas_java.model.Movie;
-import org.example.project_cinemas_java.payload.dto.scheduledtos.DayMonthYearOfScheduleByMovieDTO;
-import org.example.project_cinemas_java.payload.dto.scheduledtos.ScheduleByDayAndMovieDTO;
-import org.example.project_cinemas_java.payload.dto.scheduledtos.ScheduleByDayDTO;
-import org.example.project_cinemas_java.payload.dto.scheduledtos.ScheduleDTO;
+import org.example.project_cinemas_java.model.Schedule;
+import org.example.project_cinemas_java.payload.dto.scheduledtos.*;
+import org.example.project_cinemas_java.payload.request.schedule_request.CreateScheduleRequest;
 import org.example.project_cinemas_java.repository.MovieRepo;
 import org.example.project_cinemas_java.repository.RoomRepo;
 import org.example.project_cinemas_java.repository.ScheduleRepo;
@@ -16,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.*;
@@ -114,5 +114,34 @@ public class ScheduleService implements IScheduleService {
             }
         }
         return scheduleDTOS;
+    }
+
+    public String localDateTimeToString (LocalDateTime localDateTime){
+        // Định dạng LocalDateTime thành chuỗi
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        String formattedDateTime = localDateTime.format(formatter);
+        return formattedDateTime;
+    }
+
+    @Override
+    public List<ScheduleByAdminDTO> getAllScheduleByAdmin() throws Exception {
+        List<ScheduleByAdminDTO> scheduleByAdminDTOS = new ArrayList<>();
+        for (Schedule schedule:scheduleRepo.findAll()){
+            ScheduleByAdminDTO scheduleByAdminDTO = new ScheduleByAdminDTO();
+            scheduleByAdminDTO.setCode(schedule.getCode());
+            scheduleByAdminDTO.setStartAt(localDateTimeToString(schedule.getStartAt()));
+            scheduleByAdminDTO.setEndAt(localDateTimeToString(schedule.getEndAt()));
+            scheduleByAdminDTO.setMovie(schedule.getMovie().getName());
+            scheduleByAdminDTO.setRoom(schedule.getRoom().getName());
+            scheduleByAdminDTO.setPrice(schedule.getPrice());
+            scheduleByAdminDTOS.add(scheduleByAdminDTO);
+        }
+        return scheduleByAdminDTOS;
+    }
+
+    @Override
+    public Schedule createSchedule(CreateScheduleRequest createScheduleRequest) throws Exception {
+
+        return null;
     }
 }
