@@ -43,6 +43,14 @@ public class Movie extends BaseEntity {
 
     private boolean isUpcoming;
 
+    public boolean isUpcoming() {
+        return isUpcoming;
+    }
+
+    public void setUpcoming(boolean upcoming) {
+        isUpcoming = upcoming;
+    }
+
     @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonBackReference
     private Set<MovieType> movieTypes;

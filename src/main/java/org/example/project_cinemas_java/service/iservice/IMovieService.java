@@ -1,19 +1,17 @@
 package org.example.project_cinemas_java.service.iservice;
 
 import org.example.project_cinemas_java.model.Movie;
-import org.example.project_cinemas_java.payload.dto.moviedtos.MovieByAdminDTO;
-import org.example.project_cinemas_java.payload.dto.moviedtos.MovieByScheduleDTO;
-import org.example.project_cinemas_java.payload.dto.moviedtos.MovieDTO;
-import org.example.project_cinemas_java.payload.dto.moviedtos.MovieDetailDTO;
+import org.example.project_cinemas_java.payload.dto.moviedtos.*;
 import org.example.project_cinemas_java.payload.request.admin_request.movie_request.CreateMovieRequest;
-import org.example.project_cinemas_java.payload.request.admin_request.movie_request.UpdateMovieRequest;
+
+import org.example.project_cinemas_java.payload.request.movie_request.MovieTypeRequest;
 
 import java.util.List;
 
 public interface IMovieService {
     Movie createMovie(CreateMovieRequest createMovieRequest) throws Exception;
 
-    Movie updateMovie(UpdateMovieRequest updateMovieRequest) throws Exception;
+    CreateMovieRequest updateMovie(CreateMovieRequest createMovieRequest) throws Exception;
 
     List<MovieDTO>  getAllMovieByCinema(String nameOfCinema) throws Exception;
 
@@ -22,4 +20,10 @@ public interface IMovieService {
     MovieByScheduleDTO getMovieBySchedule(int scheduleId) throws Exception;
 
     List<MovieByAdminDTO> getMovieByAdmin();
+
+    CreateMovieRequest getMovie(String slug)throws Exception;
+
+    List<MovieTypeRequest> getAllMovieType();
+
+    List<MovieScheduleAdminDTO> getAllMovieScheduleDTO();
 }

@@ -3,6 +3,7 @@ package org.example.project_cinemas_java.controller;
 import lombok.RequiredArgsConstructor;
 import org.example.project_cinemas_java.exceptions.DataNotFoundException;
 import org.example.project_cinemas_java.model.Cinema;
+import org.example.project_cinemas_java.payload.dto.cinemadtos.CinemaNameDTO;
 import org.example.project_cinemas_java.payload.request.admin_request.cinema_request.CreateCinemaRequest;
 import org.example.project_cinemas_java.payload.request.admin_request.cinema_request.UpdateCinemaRequest;
 import org.example.project_cinemas_java.service.implement.CinemaService;
@@ -79,6 +80,13 @@ public class CinemaController {
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
+    }
+
+    @GetMapping("/get-all-cinema-name")
+    public ResponseEntity<?> getAllCinemaName(){
+        List< String> cinemaNameDTOS = cinemaService.getAllCinemaName();
+        return ResponseEntity.ok().body(cinemaNameDTOS);
+
     }
 
 

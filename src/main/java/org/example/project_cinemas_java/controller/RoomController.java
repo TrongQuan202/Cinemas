@@ -3,6 +3,7 @@ package org.example.project_cinemas_java.controller;
 import lombok.RequiredArgsConstructor;
 import org.example.project_cinemas_java.exceptions.DataNotFoundException;
 import org.example.project_cinemas_java.model.Room;
+import org.example.project_cinemas_java.payload.dto.roomdtos.RoomScheduleByAdminDTO;
 import org.example.project_cinemas_java.payload.request.admin_request.room_request.CreateRoomRequest;
 import org.example.project_cinemas_java.payload.request.admin_request.room_request.UpdateRoomRequest;
 import org.example.project_cinemas_java.service.implement.RoomService;
@@ -11,6 +12,8 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("${api.prefix}/room")
@@ -46,4 +49,12 @@ public class RoomController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
+
+    @GetMapping("/get-all-room-schedule-by-admin")
+    public ResponseEntity<?> getAllRoomScheduleByAdmin() {
+        List<RoomScheduleByAdminDTO> roomScheduleByAdminDTOS = roomService.getAllRoomScheduleByAdmin();
+        return ResponseEntity.ok().body(roomScheduleByAdminDTOS);
+
+    }
+
 }

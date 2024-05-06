@@ -57,6 +57,12 @@ public class WebSecurityConfig {
                                     String.format("%s/seat/update-seatStatus", apiPrefix),
                                     String.format("%s/seat/get-all-seat", apiPrefix),
                                     String.format("%s/auth/refresh-token", apiPrefix),
+                                    String.format("%s/actor/get-all-actor-name", apiPrefix),
+                                    String.format("%s/cinema/get-all-cinema-name", apiPrefix),
+                                    String.format("%s/movie/get-movie-type-name", apiPrefix),
+                                    String.format("%s/movie/get-movie", apiPrefix),
+                                    String.format("%s/movie/get-all-movie-schedule-by-admin", apiPrefix),
+                                    String.format("%s/room/get-all-room-schedule-by-admin", apiPrefix),
                                     "/booking/**")
 
 //                                    String.format("%s/seat/update-seat-status", apiPrefix)
@@ -80,7 +86,7 @@ public class WebSecurityConfig {
                             .requestMatchers(PUT, String.format("/%s/cinema/update-cinema",apiPrefix)).hasRole("ADMIN")
                             .requestMatchers(PUT, String.format("/%s/room/update-room",apiPrefix)).hasRole("ADMIN")
                             .requestMatchers(PUT, String.format("/%s/seat/update-seat",apiPrefix)).hasRole("ADMIN")
-                            .requestMatchers(PUT, String.format("/%s/movie/update-movie",apiPrefix)).hasRole("ADMIN")
+                            .requestMatchers(PUT, String.format("/%s/movie/update-movie",apiPrefix)).hasRole(Role.ADMIN)
                             .requestMatchers(PUT, String.format("/%s/billFood/remove-billFood",apiPrefix)).hasAnyRole(Role.USER,Role.ADMIN)
                             .requestMatchers(PUT, String.format("/%s/auth/change-password",apiPrefix)).hasAnyRole(Role.USER,Role.ADMIN)
 
@@ -99,8 +105,9 @@ public class WebSecurityConfig {
                             .requestMatchers(GET, String.format("/%s/promotion/get-discount-amount",apiPrefix)).hasAnyRole(Role.USER,Role.ADMIN)
                             .requestMatchers(GET, String.format("/%s/payment/vnpay-payment",apiPrefix)).hasAnyRole(Role.USER,Role.ADMIN)
                             .requestMatchers(GET, String.format("/%s/cinema/get-Revenue",apiPrefix)).hasRole(Role.ADMIN)
-                            .requestMatchers(GET, String.format("/%s/movie/get-movie-by-admin",apiPrefix)).hasRole(Role.ADMIN)
+                            .requestMatchers(GET, String.format("/%s/movie/get-all-movie-by-admin",apiPrefix)).hasRole(Role.ADMIN)
                             .requestMatchers(GET, String.format("/%s/schedule/get-all-schedule-by-admin",apiPrefix)).hasRole(Role.ADMIN)
+
                             .anyRequest().authenticated();
                     //.anyRequest().permitAll();
 

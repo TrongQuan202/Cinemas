@@ -5,13 +5,9 @@ import org.example.project_cinemas_java.exceptions.DataNotFoundException;
 import org.example.project_cinemas_java.exceptions.InvalidMovieDataException;
 import org.example.project_cinemas_java.model.*;
 import org.example.project_cinemas_java.payload.converter.MovieConverter;
-import org.example.project_cinemas_java.payload.dto.moviedtos.MovieByAdminDTO;
-import org.example.project_cinemas_java.payload.dto.moviedtos.MovieByScheduleDTO;
-import org.example.project_cinemas_java.payload.dto.moviedtos.MovieDTO;
-import org.example.project_cinemas_java.payload.dto.moviedtos.MovieDetailDTO;
+import org.example.project_cinemas_java.payload.dto.moviedtos.*;
+
 import org.example.project_cinemas_java.payload.request.admin_request.movie_request.CreateMovieRequest;
-import org.example.project_cinemas_java.payload.request.admin_request.movie_request.UpdateMovieRequest;
-import org.example.project_cinemas_java.payload.request.auth_request.RegisterRequest;
 import org.example.project_cinemas_java.payload.request.movie_request.ActorRequest;
 import org.example.project_cinemas_java.payload.request.movie_request.MovieTypeRequest;
 import org.example.project_cinemas_java.repository.*;
@@ -66,9 +62,9 @@ public class MovieService implements IMovieService {
     }
 
     public boolean checkEndTimeAfterPremiereDate(String endTime, String premiereDate){
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
-        LocalDateTime endTimeDateTime = LocalDateTime.parse(endTime + " 00:00:00", formatter);
-        LocalDateTime premiereDateTime = LocalDateTime.parse(premiereDate + " 00:00:00", formatter);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS");
+        LocalDateTime endTimeDateTime = LocalDateTime.parse(endTime, formatter);
+        LocalDateTime premiereDateTime = LocalDateTime.parse(premiereDate, formatter);
         if (endTimeDateTime.isBefore(premiereDateTime)) {
             return false;
         }
@@ -94,8 +90,8 @@ public class MovieService implements IMovieService {
         if(cinema == null){
             throw new DataNotFoundException(MessageKeys.CINEMA_DOES_NOT_EXIST);
         }
-        boolean isUpcoming;
-        if(createMovieRequest.getIsUpcoming() == "Phim sắp chiếu"){
+        boolean isUpcoming = Boolean.parseBoolean(null);
+        if(createMovieRequest.getIsUpcoming().equals("Phim sắp chiếu")){
             isUpcoming = false;
         }else {
             isUpcoming =true;
@@ -138,42 +134,79 @@ public class MovieService implements IMovieService {
     }
 
     @Override
-    public Movie updateMovie(UpdateMovieRequest updateMovieRequest) throws Exception {
-        Movie movie = movieRepo.findById(updateMovieRequest.getMovieId()).orElse(null);
+    public CreateMovieRequest updateMovie(CreateMovieRequest createMovieRequest) throws Exception {
+        Movie movie = movieRepo.findBySlug(createMovieRequest.getSlug());
         if(movie == null){
             throw new DataNotFoundException(MessageKeys.MOVIE_DOES_NOT_EXIST);
         }
-        if(movieRepo.existsByHerolmageAndIdNot(updateMovieRequest.getHerolmage(), updateMovieRequest.getMovieId())){
+        if(movieRepo.existsByHerolmageAndSlugNot(createMovieRequest.getHerolmage(), createMovieRequest.getSlug())){
             throw new DataIntegrityViolationException("Hero Image already exists");
         }
-        if(movieRepo.existsByImageAndIdNot(updateMovieRequest.getImage(),updateMovieRequest.getMovieId())){
+        if(movieRepo.existsByImageAndSlugNot(createMovieRequest.getImage(),createMovieRequest.getSlug())){
             throw new DataIntegrityViolationException("Image already exists");
         }
-        if(movieRepo.existsByTrailerAndIdNot(updateMovieRequest.getTrailer(),updateMovieRequest.getMovieId())){
+        if(movieRepo.existsByTrailerAndSlugNot(createMovieRequest.getTrailer(),createMovieRequest.getSlug())){
             throw new DataIntegrityViolationException("Trailer already exists");
         }
-        if (!checkEndTimeAfterPremiereDate(updateMovieRequest.getEndTime(),updateMovieRequest.getPremiereDate())){
+        if (!checkEndTimeAfterPremiereDate(createMovieRequest.getEndTime(),createMovieRequest.getPremiereDate())){
             throw new InvalidMovieDataException("The end time must be after the premiere time!");
         }
-        if(!movieTypeRepo.existsById(updateMovieRequest.getMovieTypeId())){
-            throw new DataNotFoundException(MessageKeys.MOVIE_TYPE_DOES_NOT_EXIST);
+
+        System.out.println(createMovieRequest.getEndTime());
+        boolean isUpcoming = Boolean.parseBoolean(null);
+        if(createMovieRequest.getIsUpcoming().equals("Phim sắp chiếu")){
+            isUpcoming = false;
+        }else {
+            isUpcoming =true;
         }
-        if(!rateRepo.existsById(updateMovieRequest.getRateId())){
-            throw new DataNotFoundException(MessageKeys.RATE_DOES_NOT_EXIST);
-        }
-        movie.setMovieDuration(updateMovieRequest.getMovieDuration());
-        movie.setEndTime(stringToLocalDateTime(updateMovieRequest.getEndTime()));
-        movie.setPremiereDate(stringToLocalDateTime(updateMovieRequest.getPremiereDate()));
-        movie.setDescription(updateMovieRequest.getDescription());
-        movie.setDirector(updateMovieRequest.getDirector());
-        movie.setImage(updateMovieRequest.getImage());
-        movie.setHerolmage(updateMovieRequest.getHerolmage());
-        movie.setLanguage(updateMovieRequest.getLanguage());
-        movie.setName(updateMovieRequest.getName());
-        movie.setTrailer(updateMovieRequest.getTrailer());
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS");
+
+        movie.setMovieDuration(createMovieRequest.getMovieDuration());
+        movie.setEndTime(LocalDateTime.parse(createMovieRequest.getEndTime(), formatter));
+
+        movie.setPremiereDate(LocalDateTime.parse(createMovieRequest.getPremiereDate(), formatter));
+
+        movie.setDescription(createMovieRequest.getDescription());
+        movie.setDirector(createMovieRequest.getDirector());
+        movie.setImage(createMovieRequest.getImage());
+        movie.setHerolmage(createMovieRequest.getHerolmage());
+        movie.setLanguage(createMovieRequest.getLanguage());
+        movie.setName(createMovieRequest.getName());
+        movie.setTrailer(createMovieRequest.getTrailer());
+        movie.setUpcoming(isUpcoming);
+        movie.setSlug(createMovieRequest.getSlug());
         movieRepo.save(movie);
 
-        return movie;
+        for (MovieType movieType:movieTypeRepo.findAllByMovie(movie)){
+            movieType.setMovie(null);
+            movieType.setType(null);
+            movieTypeRepo.delete(movieType);
+        }
+
+        for (MovieTypeRequest type:createMovieRequest.getType()){
+            Type type1 = typeRepo.findByMovieTypeName(type.getName());
+            MovieType movieType = new MovieType();
+            movieType.setMovie(movie);
+            movieType.setType(type1);
+            movieTypeRepo.save(movieType);
+        }
+
+        for (ActorMovie actorMovie:actorMovieRepo.findAllByMovie(movie)){
+            actorMovie.setMovie(null);
+            actorMovie.setActor(null);
+            actorMovieRepo.delete(actorMovie);
+        }
+        for (ActorRequest ac:createMovieRequest.getActor()){
+            Actor actor = actorRepo.findByName(ac.getName());
+            ActorMovie actorMovie = new ActorMovie();
+            actorMovie.setMovie(movie);
+            actorMovie.setMovie(movie);
+            actorMovie.setActor(actor);
+            actorMovieRepo.save(actorMovie);
+        }
+
+        return createMovieRequest;
     }
 
     @Override
@@ -235,6 +268,72 @@ public class MovieService implements IMovieService {
         }
         return movieByAdminDTOS;
     }
+
+    @Override
+    public CreateMovieRequest getMovie(String slug) throws Exception {
+        Movie movie = movieRepo.findBySlug(slug);
+        if(movie == null){
+            throw new DataNotFoundException(MessageKeys.MOVIE_DOES_NOT_EXIST);
+        }
+        CreateMovieRequest movieRequest = new CreateMovieRequest();
+
+        List<ActorRequest> actorRequests = new ArrayList<>();
+        for (ActorMovie actorMovie:actorMovieRepo.findAllByMovie(movie)){
+            ActorRequest actorRequest = new ActorRequest();
+            actorRequest.setName(actorMovie.getActor().getName());
+            actorRequests.add(actorRequest);
+        }
+
+        List<MovieTypeRequest> movieTypeRequests = new ArrayList<>();
+        for (MovieType movieType:movieTypeRepo.findAllByMovie(movie)){
+            MovieTypeRequest movieTypeRequest = new MovieTypeRequest();
+            movieTypeRequest.setName(movieType.getType().getMovieTypeName());
+            movieTypeRequests.add(movieTypeRequest);
+        }
+        movieRequest.setMovieDuration(movie.getMovieDuration());
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS");
+        movieRequest.setEndTime(movie.getEndTime().format(formatter));
+        movieRequest.setPremiereDate(movie.getPremiereDate().format(formatter));
+        movieRequest.setDescription(movie.getDescription());
+        movieRequest.setDirector(movie.getDirector());
+        movieRequest.setImage(movie.getImage());
+        movieRequest.setHerolmage(movie.getHerolmage());
+        movieRequest.setLanguage(movie.getLanguage());
+        movieRequest.setName(movie.getName());
+        movieRequest.setTrailer(movie.getTrailer());
+        movieRequest.setSlug(movie.getSlug());
+        movieRequest.setActor(actorRequests);
+        movieRequest.setType(movieTypeRequests);
+        movieRequest.setCodeCinema(movie.getCinema().getNameOfCinema());
+        movieRequest.setIsUpcoming(movie.isUpcoming() ? "Phim đang chiếu" : "Phim sắp chiếu");
+
+        return movieRequest;
+    }
+
+    @Override
+    public List<MovieTypeRequest> getAllMovieType() {
+        List<MovieTypeRequest> movieTypeRequests =new ArrayList<>();
+        for (Type type :typeRepo.findAll()){
+            MovieTypeRequest movieTypeRequest = new MovieTypeRequest();
+            movieTypeRequest.setName(type.getMovieTypeName());
+            movieTypeRequests.add(movieTypeRequest);
+        }
+        return movieTypeRequests;
+    }
+
+    @Override
+    public List<MovieScheduleAdminDTO> getAllMovieScheduleDTO() {
+        List<MovieScheduleAdminDTO> movieScheduleAdminDTOS = new ArrayList<>();
+        for (Movie movie:movieRepo.findAll()){
+            MovieScheduleAdminDTO movieScheduleAdminDTO = new MovieScheduleAdminDTO();
+            movieScheduleAdminDTO.setName(movie.getName());
+            movieScheduleAdminDTO.setId(movie.getId());
+            movieScheduleAdminDTOS.add(movieScheduleAdminDTO);
+        }
+        return movieScheduleAdminDTOS;
+    }
+
 
     public MovieByAdminDTO movieToMovieByAdminDTO(Movie movie){
         return this.modelMapper.map(movie, MovieByAdminDTO.class);

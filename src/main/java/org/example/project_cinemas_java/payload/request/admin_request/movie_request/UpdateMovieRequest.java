@@ -30,7 +30,5 @@ public class UpdateMovieRequest {
 
     private String trailer;
 
-    private int movieTypeId;
 
-    private int rateId;
 }

@@ -3,6 +3,7 @@ package org.example.project_cinemas_java.service.implement;
 import org.example.project_cinemas_java.exceptions.DataNotFoundException;
 import org.example.project_cinemas_java.model.Cinema;
 import org.example.project_cinemas_java.model.Room;
+import org.example.project_cinemas_java.payload.dto.roomdtos.RoomScheduleByAdminDTO;
 import org.example.project_cinemas_java.payload.request.admin_request.room_request.CreateRoomRequest;
 import org.example.project_cinemas_java.payload.request.admin_request.room_request.UpdateRoomRequest;
 import org.example.project_cinemas_java.repository.CinemaRepo;
@@ -13,6 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class RoomService implements IRoomService {
@@ -73,5 +77,17 @@ public class RoomService implements IRoomService {
 
         roomRepo.save(room);
         return room;
+    }
+
+    @Override
+    public List<RoomScheduleByAdminDTO> getAllRoomScheduleByAdmin() {
+        List<RoomScheduleByAdminDTO> roomScheduleByAdminDTOS = new ArrayList<>();
+        for (Room room: roomRepo.findAll()){
+            RoomScheduleByAdminDTO roomScheduleByAdminDTO = new RoomScheduleByAdminDTO();
+            roomScheduleByAdminDTO.setRoomName(room.getName());
+            roomScheduleByAdminDTO.setId(room.getId());
+            roomScheduleByAdminDTOS.add(roomScheduleByAdminDTO);
+        }
+        return roomScheduleByAdminDTOS;
     }
 }

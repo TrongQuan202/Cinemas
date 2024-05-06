@@ -21,11 +21,11 @@ public interface MovieRepo extends JpaRepository<Movie, Integer> {
 
     boolean existsByHerolmage(String heroImage);
 
-    boolean existsByImageAndIdNot(String image, int id);
+    boolean existsByImageAndSlugNot(String image, String slug);
 
-    boolean existsByHerolmageAndIdNot(String heroImage, int id);
+    boolean existsByHerolmageAndSlugNot(String heroImage, String slug);
 
-    boolean existsByTrailerAndIdNot(String trailer, int id);
+    boolean existsByTrailerAndSlugNot(String trailer, String slug);
 
     @Query(nativeQuery = true, value = "SELECT m.id, m.name, m.image, m.movie_duration, m.trailer, m.movie_type_name, m.description, m.director, m.language, m.premiere_date " +
             "FROM (" +
