@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -19,6 +20,7 @@ public interface ScheduleRepo extends JpaRepository<Schedule, Integer> {
     List<Schedule> findAllByMovieId(int id);
     List<Schedule> findAllByRoom(Room room);
 
+    Schedule findByRoomIdAndMovieIdAndStartAt(int roomId, int movieId, LocalDateTime startAt);
     Schedule findByRoom(Room room);
 
 
