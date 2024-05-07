@@ -4,7 +4,7 @@ import org.example.project_cinemas_java.exceptions.DataNotFoundException;
 import org.example.project_cinemas_java.model.Movie;
 import org.example.project_cinemas_java.model.Schedule;
 import org.example.project_cinemas_java.payload.dto.scheduledtos.*;
-import org.example.project_cinemas_java.payload.request.schedule_request.CreateScheduleRequest;
+import org.example.project_cinemas_java.payload.request.admin_request.schedule_request.CreateScheduleRequest;
 import org.example.project_cinemas_java.repository.MovieRepo;
 import org.example.project_cinemas_java.repository.RoomRepo;
 import org.example.project_cinemas_java.repository.ScheduleRepo;
@@ -17,7 +17,6 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.TextStyle;
 import java.util.*;
 
 @Service
@@ -139,9 +138,28 @@ public class ScheduleService implements IScheduleService {
         return scheduleByAdminDTOS;
     }
 
+    public static LocalDateTime stringToLocalDateTime(String time) {
+        DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
+        LocalDateTime localDateTime = LocalDateTime.parse(time, inputFormatter);
+
+        // Định dạng lại đối tượng LocalDateTime thành "yyyy-MM-dd HH:mm:ss.SSSSSS"
+        DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS");
+        String formattedDateTime = localDateTime.format(outputFormatter);
+
+        // Chuyển đổi lại từ chuỗi định dạng "yyyy-MM-dd HH:mm:ss.SSSSSS" thành LocalDateTime
+        return LocalDateTime.parse(formattedDateTime, outputFormatter);
+    }
+
+    public boolean hasOverlap(LocalDateTime startAt1, LocalDateTime endAt1, LocalDateTime startAt2, LocalDateTime endAt2) {
+        return !startAt1.isAfter(endAt2) && !startAt2.isAfter(endAt1);
+    }
+
     @Override
     public Schedule createSchedule(CreateScheduleRequest createScheduleRequest) throws Exception {
-
+        Schedule schedule = scheduleRepo
+        LocalDateTime start = stringToLocalDateTime(createScheduleRequest.getStartAt());
+        LocalDateTime end = stringToLocalDateTime(createScheduleRequest.getEndTime());
+        if(hasOverlap())
         return null;
     }
 }

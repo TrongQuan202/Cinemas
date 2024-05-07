@@ -22,6 +22,8 @@ public interface ScheduleRepo extends JpaRepository<Schedule, Integer> {
     Schedule findByRoom(Room room);
 
 
+
+
     @Query(nativeQuery = true,
             value = "SELECT DISTINCT DATE_FORMAT(s.start_at, '%d-%m-%Y') AS dayMonthYear " +
             "FROM cinemalts.schedule s " +
