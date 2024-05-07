@@ -2,9 +2,12 @@ package org.example.project_cinemas_java.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.example.project_cinemas_java.exceptions.DataIntegrityViolationException;
 import org.example.project_cinemas_java.exceptions.DataNotFoundException;
+import org.example.project_cinemas_java.model.Schedule;
 import org.example.project_cinemas_java.payload.dto.scheduledtos.ScheduleByAdminDTO;
 import org.example.project_cinemas_java.payload.dto.scheduledtos.ScheduleDTO;
+import org.example.project_cinemas_java.payload.request.admin_request.schedule_request.CreateScheduleRequest;
 import org.example.project_cinemas_java.service.implement.ScheduleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -64,6 +67,17 @@ public class ScheduleController {
         }
     }
 
+    @PostMapping("/create-schedule")
+    public ResponseEntity<?> createSchedule(@RequestBody CreateScheduleRequest createScheduleRequest) {
+        try {
+            Schedule schedule= scheduleService.createSchedule(createScheduleRequest);
+            return ResponseEntity.ok().body(schedule);
+        } catch (DataIntegrityViolationException ex) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
 
 
 

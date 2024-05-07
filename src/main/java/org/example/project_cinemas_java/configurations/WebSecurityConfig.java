@@ -80,6 +80,7 @@ public class WebSecurityConfig {
                             .requestMatchers(POST, String.format("/%s/payment/submitOrder",apiPrefix)).hasAnyRole(Role.USER,Role.ADMIN)
                             .requestMatchers(POST, String.format("/%s/billFood/create-billFood",apiPrefix)).hasAnyRole(Role.USER,Role.ADMIN)
                             .requestMatchers(POST, String.format("/%s/actor/create-actor",apiPrefix)).hasRole(Role.ADMIN)
+                            .requestMatchers(POST, String.format("/%s/schedule/create-schedule",apiPrefix)).hasRole(Role.ADMIN)
 
 
                             .requestMatchers(PUT, String.format("/%s/food/update-food",apiPrefix)).hasRole("ADMIN")
@@ -107,6 +108,7 @@ public class WebSecurityConfig {
                             .requestMatchers(GET, String.format("/%s/cinema/get-Revenue",apiPrefix)).hasRole(Role.ADMIN)
                             .requestMatchers(GET, String.format("/%s/movie/get-all-movie-by-admin",apiPrefix)).hasRole(Role.ADMIN)
                             .requestMatchers(GET, String.format("/%s/schedule/get-all-schedule-by-admin",apiPrefix)).hasRole(Role.ADMIN)
+                            .requestMatchers(GET, String.format("/%s/user/get-all-user-by-admin",apiPrefix)).hasRole(Role.ADMIN)
 
                             .anyRequest().authenticated();
                     //.anyRequest().permitAll();

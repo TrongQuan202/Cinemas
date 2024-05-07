@@ -2,6 +2,7 @@ package org.example.project_cinemas_java.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.example.project_cinemas_java.exceptions.DataNotFoundException;
+import org.example.project_cinemas_java.payload.dto.userdto.UserDTO;
 import org.example.project_cinemas_java.service.implement.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -10,6 +11,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("${api.prefix}/user")
@@ -28,6 +31,13 @@ public class UserController {
         }catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
+    }
+
+    @GetMapping("/get-all-user-by-admin")
+    public ResponseEntity<?> getAllUserByAdmin(){
+            List<UserDTO> userDTOS = userService.getAllUserByAdmin();
+            return ResponseEntity.ok().body(userDTOS);
+
     }
 
 }

@@ -1,5 +1,6 @@
 package org.example.project_cinemas_java.repository;
 
+import org.example.project_cinemas_java.model.Movie;
 import org.example.project_cinemas_java.model.Room;
 import org.example.project_cinemas_java.model.Schedule;
 import org.example.project_cinemas_java.payload.dto.scheduledtos.DayMonthYearOfScheduleByMovieDTO;
@@ -20,7 +21,8 @@ public interface ScheduleRepo extends JpaRepository<Schedule, Integer> {
     List<Schedule> findAllByMovieId(int id);
     List<Schedule> findAllByRoom(Room room);
 
-    Schedule findByRoomIdAndMovieIdAndStartAt(int roomId, int movieId, LocalDateTime startAt);
+    Schedule findByRoomAndMovieAndStartAt(Room room, Movie movie, LocalDateTime startAt);
+
     Schedule findByRoom(Room room);
 
 
@@ -62,4 +64,13 @@ public interface ScheduleRepo extends JpaRepository<Schedule, Integer> {
             @Param("roomId") int roomId,
             @Param("date") String date,
             @Param("time") String time);
+
+    @Query(value = "SELECT * FROM cinemalts.schedule " +
+            "WHERE movie_id = :movieId " +
+            "AND room_id = :roomId " +
+            "AND start_at = :startAt", nativeQuery = true)
+
+    Schedule findScheduleByMovieIdAndRoomIdAndStartAt(@Param("movieId") int movieId,
+                                                            @Param("roomId") int roomId,
+                                                            @Param("startAt") String startAt);
 }

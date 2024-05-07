@@ -1,7 +1,9 @@
 package org.example.project_cinemas_java.service.implement;
 
+import org.example.project_cinemas_java.exceptions.DataIntegrityViolationException;
 import org.example.project_cinemas_java.exceptions.DataNotFoundException;
 import org.example.project_cinemas_java.model.Movie;
+import org.example.project_cinemas_java.model.Room;
 import org.example.project_cinemas_java.model.Schedule;
 import org.example.project_cinemas_java.payload.dto.scheduledtos.*;
 import org.example.project_cinemas_java.payload.request.admin_request.schedule_request.CreateScheduleRequest;
@@ -139,15 +141,17 @@ public class ScheduleService implements IScheduleService {
     }
 
     public static LocalDateTime stringToLocalDateTime(String time) {
-        DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
-        LocalDateTime localDateTime = LocalDateTime.parse(time, inputFormatter);
 
-        // Định dạng lại đối tượng LocalDateTime thành "yyyy-MM-dd HH:mm:ss.SSSSSS"
-        DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS");
-        String formattedDateTime = localDateTime.format(outputFormatter);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS");
+        LocalDateTime localDateTime = LocalDateTime.parse(time, formatter);
 
-        // Chuyển đổi lại từ chuỗi định dạng "yyyy-MM-dd HH:mm:ss.SSSSSS" thành LocalDateTime
-        return LocalDateTime.parse(formattedDateTime, outputFormatter);
+        return localDateTime;
+    }
+
+    public static String formatDateTime(String time) {
+        // Loại bỏ ký tự 'T' và định dạng lại chuỗi
+        String formattedDateTime = time.replace("T", "");
+        return formattedDateTime;
     }
 
     public boolean hasOverlap(LocalDateTime startAt1, LocalDateTime endAt1, LocalDateTime startAt2, LocalDateTime endAt2) {
@@ -156,10 +160,33 @@ public class ScheduleService implements IScheduleService {
 
     @Override
     public Schedule createSchedule(CreateScheduleRequest createScheduleRequest) throws Exception {
-        Schedule schedule = scheduleRepo
+
         LocalDateTime start = stringToLocalDateTime(createScheduleRequest.getStartAt());
         LocalDateTime end = stringToLocalDateTime(createScheduleRequest.getEndTime());
-        if(hasOverlap())
-        return null;
+        Movie movie = movieRepo.findById(createScheduleRequest.getMovie()).orElse(null);
+        Room room = roomRepo.findById(createScheduleRequest.getRoom()).orElse(null);
+
+        Schedule scheduleCheck = scheduleRepo.findScheduleByMovieIdAndRoomIdAndStartAt(createScheduleRequest.getMovie(),createScheduleRequest.getRoom(),createScheduleRequest.getStartAt());
+        if(scheduleCheck != null){
+            throw new DataIntegrityViolationException("Trùng lịch! Vui lòng thử lại");
+        }
+
+
+        for (Schedule schedule: scheduleRepo.findAll()){
+            if(hasOverlap(start,end, schedule.getStartAt(),schedule.getEndAt())) {
+                throw new DataIntegrityViolationException("Trùng lịch! Vui lòng thử lại");
+            }
+        }
+        Schedule schedule = new Schedule();
+        schedule.setCode(createScheduleRequest.getCode());
+        schedule.setStartAt(start);
+        schedule.setEndAt(end);
+        schedule.setRoom(room);
+        schedule.setMovie(movie);
+        schedule.setPrice(Float.parseFloat(createScheduleRequest.getPrice()));
+        schedule.setName(createScheduleRequest.getName());
+        scheduleRepo.save(schedule);
+
+        return schedule;
     }
 }

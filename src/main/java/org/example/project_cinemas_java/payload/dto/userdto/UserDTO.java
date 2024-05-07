@@ -5,10 +5,19 @@ import lombok.Data;
 import java.time.LocalDate;
 @Data
 public class UserDTO {
-    private int id;
-    private String tenTaiKhoan;
+    private String userName;
+
     private String email;
-    private String soDienThoai;
-    private String tenNguoiDung;
-    private LocalDate ngaySinh;
+
+    private String name;
+
+    private String role;
+
+    private String phoneNumber;
+
+    private String isActive;
+
+    private String rank;
+
+    private int point;
 }
