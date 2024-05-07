@@ -25,6 +25,8 @@ public class Bill extends BaseEntity {
 
     private LocalDateTime createTime;
 
+    private int month;
+
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "customerId", foreignKey = @ForeignKey(name = "fk_Bill_User"))
     @JsonManagedReference

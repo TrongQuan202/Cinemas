@@ -81,7 +81,7 @@ public class WebSecurityConfig {
                             .requestMatchers(POST, String.format("/%s/billFood/create-billFood",apiPrefix)).hasAnyRole(Role.USER,Role.ADMIN)
                             .requestMatchers(POST, String.format("/%s/actor/create-actor",apiPrefix)).hasRole(Role.ADMIN)
                             .requestMatchers(POST, String.format("/%s/schedule/create-schedule",apiPrefix)).hasRole(Role.ADMIN)
-
+                            .requestMatchers(POST, String.format("/%s/user/confirm-author",apiPrefix)).hasAnyRole(Role.USER,Role.ADMIN)
 
                             .requestMatchers(PUT, String.format("/%s/food/update-food",apiPrefix)).hasRole("ADMIN")
                             .requestMatchers(PUT, String.format("/%s/cinema/update-cinema",apiPrefix)).hasRole("ADMIN")

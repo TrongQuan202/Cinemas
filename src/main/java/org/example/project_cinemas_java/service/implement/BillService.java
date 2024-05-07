@@ -50,6 +50,7 @@ public class BillService implements IBillService {
         bill.setTradingCode(generateCode());
         LocalDateTime timeNow = LocalDateTime.now();
         bill.setCreateTime(timeNow);
+        bill.setMonth(timeNow.getMonthValue());
         bill.setUser(user);
         bill.setName("Bill of"+ user.getName());
         bill.setUpdateTime(timeNow);

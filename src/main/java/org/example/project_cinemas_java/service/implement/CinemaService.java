@@ -3,6 +3,7 @@ package org.example.project_cinemas_java.service.implement;
 import org.example.project_cinemas_java.exceptions.DataNotFoundException;
 import org.example.project_cinemas_java.model.*;
 import org.example.project_cinemas_java.payload.dto.cinemadtos.CinemaNameDTO;
+import org.example.project_cinemas_java.payload.dto.cinemadtos.RevenueCinemaDTO;
 import org.example.project_cinemas_java.payload.request.admin_request.cinema_request.CreateCinemaRequest;
 import org.example.project_cinemas_java.payload.request.admin_request.cinema_request.UpdateCinemaRequest;
 import org.example.project_cinemas_java.repository.*;
@@ -183,6 +184,12 @@ public class CinemaService implements ICinemaService {
             cinemaNameDTOS.add(cinema.getNameOfCinema());
         }
         return cinemaNameDTOS;
+    }
+
+    @Override
+    public RevenueCinemaDTO getRevenueCinema() throws Exception {
+
+        return null;
     }
 
 
