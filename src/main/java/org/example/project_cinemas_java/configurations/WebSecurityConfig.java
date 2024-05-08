@@ -109,7 +109,7 @@ public class WebSecurityConfig {
                             .requestMatchers(GET, String.format("/%s/movie/get-all-movie-by-admin",apiPrefix)).hasRole(Role.ADMIN)
                             .requestMatchers(GET, String.format("/%s/schedule/get-all-schedule-by-admin",apiPrefix)).hasRole(Role.ADMIN)
                             .requestMatchers(GET, String.format("/%s/user/get-all-user-by-admin",apiPrefix)).hasRole(Role.ADMIN)
-
+                            .requestMatchers(GET, String.format("/%s/cinema/get-all-revenue",apiPrefix)).hasRole(Role.ADMIN)
                             .anyRequest().authenticated();
                     //.anyRequest().permitAll();
 
@@ -123,7 +123,7 @@ public class WebSecurityConfig {
             @Override
             public void customize(CorsConfigurer<HttpSecurity> httpSecurityCorsConfigurer) {
                 CorsConfiguration configuration = new CorsConfiguration();
-                configuration.setAllowedOrigins(List.of("http://localhost:3000"));
+                configuration.setAllowedOrigins(List.of("http://localhost:3000","http://localhost:3001"));
                 configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
                 configuration.setAllowedHeaders(Arrays.asList("authorization", "content-type", "x-auth-token"));
                 configuration.setExposedHeaders(List.of("x-auth-token"));

@@ -10,7 +10,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class RevenueCinemaDTO {
-    private List<String> months;
+    private String months;
 
-    private List<Float> revenue;
+    private Double revenue;
 }

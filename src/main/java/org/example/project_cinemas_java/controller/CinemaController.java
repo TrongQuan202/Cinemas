@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.project_cinemas_java.exceptions.DataNotFoundException;
 import org.example.project_cinemas_java.model.Cinema;
 import org.example.project_cinemas_java.payload.dto.cinemadtos.CinemaNameDTO;
+import org.example.project_cinemas_java.payload.dto.cinemadtos.RevenueCinemaDTO;
 import org.example.project_cinemas_java.payload.request.admin_request.cinema_request.CreateCinemaRequest;
 import org.example.project_cinemas_java.payload.request.admin_request.cinema_request.UpdateCinemaRequest;
 import org.example.project_cinemas_java.service.implement.CinemaService;
@@ -87,6 +88,16 @@ public class CinemaController {
         List< String> cinemaNameDTOS = cinemaService.getAllCinemaName();
         return ResponseEntity.ok().body(cinemaNameDTOS);
 
+    }
+
+    @GetMapping("/get-all-revenue")
+    public ResponseEntity<?> getRevenueCinema(){
+        try {
+            List<RevenueCinemaDTO> revenueCinemaDTOS = cinemaService.getRevenueCinema();
+            return ResponseEntity.ok().body(revenueCinemaDTOS);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
 

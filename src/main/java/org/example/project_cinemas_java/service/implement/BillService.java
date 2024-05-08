@@ -42,22 +42,37 @@ public class BillService implements IBillService {
         if(user == null){
             throw new DataNotFoundException(MessageKeys.USER_DOES_NOT_EXIST);
         }
-        if(billRepo.existsByUser(user)){
-            throw new DataIntegrityViolationException("Bill already exits");
+        Bill billByUser = billRepo.findBillByUserAndBillstatusId(user,3);
+
+        if( billByUser != null){
+            billByUser.setTotalMoney(0);
+            billByUser.setTradingCode(generateCode());
+            LocalDateTime timeNow = LocalDateTime.now();
+            billByUser.setCreateTime(timeNow);
+            billByUser.setMonth(timeNow.getMonthValue());
+            billByUser.setUser(user);
+            billByUser.setName("Bill of"+ user.getName());
+            billByUser.setUpdateTime(timeNow);
+            billByUser.setPromotion(null);
+            billByUser.setBillstatus(billStatusRepo.findById(3).orElse(null));
+            billByUser.setActive(true);
+            billRepo.save(billByUser);
+
+        }else {
+            Bill bill = new Bill();
+            bill.setTotalMoney(0);
+            bill.setTradingCode(generateCode());
+            LocalDateTime timeNow = LocalDateTime.now();
+            bill.setCreateTime(timeNow);
+            bill.setMonth(timeNow.getMonthValue());
+            bill.setUser(user);
+            bill.setName("Bill of"+ user.getName());
+            bill.setUpdateTime(timeNow);
+            bill.setPromotion(null);
+            bill.setBillstatus(billStatusRepo.findById(3).orElse(null));
+            bill.setActive(true);
+            billRepo.save(bill);
         }
-        Bill bill = new Bill();
-        bill.setTotalMoney(0);
-        bill.setTradingCode(generateCode());
-        LocalDateTime timeNow = LocalDateTime.now();
-        bill.setCreateTime(timeNow);
-        bill.setMonth(timeNow.getMonthValue());
-        bill.setUser(user);
-        bill.setName("Bill of"+ user.getName());
-        bill.setUpdateTime(timeNow);
-        bill.setPromotion(null);
-        bill.setBillstatus(billStatusRepo.findById(3).orElse(null));
-        bill.setActive(true);
-        billRepo.save(bill);
     }
 
 }

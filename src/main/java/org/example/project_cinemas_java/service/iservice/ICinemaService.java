@@ -21,5 +21,5 @@ public interface ICinemaService {
 
     List<String> getAllCinemaName();
 
-    RevenueCinemaDTO getRevenueCinema()throws Exception;
+    List<RevenueCinemaDTO> getRevenueCinema()throws Exception;
 }

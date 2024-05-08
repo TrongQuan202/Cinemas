@@ -3,6 +3,7 @@ package org.example.project_cinemas_java.service.implement;
 import org.example.project_cinemas_java.exceptions.DataIntegrityViolationException;
 import org.example.project_cinemas_java.exceptions.DataNotFoundException;
 import org.example.project_cinemas_java.model.User;
+import org.example.project_cinemas_java.payload.dto.userdto.UserAccountDTO;
 import org.example.project_cinemas_java.payload.dto.userdto.UserDTO;
 import org.example.project_cinemas_java.payload.request.auth_request.ConfirmAuthorRequest;
 import org.example.project_cinemas_java.repository.RoleRepo;
@@ -97,6 +98,15 @@ public class UserService implements IUserService {
             }
             return userDTOS;
             }
+
+    @Override
+    public List<UserAccountDTO> getProfileUser(String email) {
+        User user = userRepo.findByEmail(email).orElse(null);
+        if(user == null){
+
+        }
+        return List.of();
     }
+}
 
 
