@@ -1,8 +1,11 @@
 package org.example.project_cinemas_java.repository;
 
+import jakarta.persistence.Tuple;
 import org.example.project_cinemas_java.model.Cinema;
+import org.example.project_cinemas_java.payload.dto.cinemadtos.RevenueCinemaDTO;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -34,4 +37,11 @@ public interface CinemaRepo extends JpaRepository<Cinema, Integer> {
     List<Cinema> findAllByNameOfCinema(String nameOfCiname);
 
     List<Cinema> findAllByCode(String code);
+
+    @Query(value = "SELECT DATE_FORMAT(b.create_time, '%Y-%m') AS months, SUM(b.total_money) AS revenue " +
+            "FROM cinemalts.bill b " +
+            "GROUP BY DATE_FORMAT(b.create_time, '%Y-%m') " +
+            "ORDER BY months DESC " +
+            "LIMIT 6", nativeQuery = true)
+    List<Tuple> findRevenueByMonth();
 }

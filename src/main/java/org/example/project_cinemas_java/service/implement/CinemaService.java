@@ -1,5 +1,6 @@
 package org.example.project_cinemas_java.service.implement;
 
+import jakarta.persistence.Tuple;
 import org.example.project_cinemas_java.exceptions.DataNotFoundException;
 import org.example.project_cinemas_java.model.*;
 import org.example.project_cinemas_java.payload.dto.cinemadtos.CinemaNameDTO;
@@ -15,7 +16,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 //@Transactional
 @Service
@@ -187,9 +190,15 @@ public class CinemaService implements ICinemaService {
     }
 
     @Override
-    public RevenueCinemaDTO getRevenueCinema() throws Exception {
+    public List<RevenueCinemaDTO> getRevenueCinema() throws Exception {
+        List<Tuple> s = cinemaRepo.findRevenueByMonth();
+        List<RevenueCinemaDTO> revenueCinemaDTOS = s.stream()
+                .map(t -> new RevenueCinemaDTO(
+                        t.get(0, String.class),
+                        t.get(1, Double.class)
+                )).collect(Collectors.toList());
 
-        return null;
+        return revenueCinemaDTOS;
     }
 
 
