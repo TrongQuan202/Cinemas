@@ -8,6 +8,7 @@ import org.example.project_cinemas_java.exceptions.DisabledException;
 import org.example.project_cinemas_java.exceptions.TokenRefreshException;
 import org.example.project_cinemas_java.model.ConfirmEmail;
 import org.example.project_cinemas_java.model.User;
+import org.example.project_cinemas_java.payload.dto.userdto.UserDTO;
 import org.example.project_cinemas_java.payload.request.auth_request.*;
 import org.example.project_cinemas_java.repository.ConfirmEmailRepo;
 import org.example.project_cinemas_java.repository.UserRepo;
@@ -19,9 +20,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("${api.prefix}/auth")
@@ -102,8 +108,17 @@ public class AuthController {
     @PutMapping("/change-password")
     public ResponseEntity<?> changePassword(@RequestBody ChangePasswordRequest changePasswordRequest) {
         try {
-            var result = authService.changePassword(changePasswordRequest);
-            return ResponseEntity.ok().body(result);
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
+                UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+                // Lấy email của người dùng từ UserDetails
+                String email = userDetails.getUsername();
+
+                String s = authService.changePassword(email,changePasswordRequest);
+                return ResponseEntity.ok().body(s);
+            } else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
+            }
         } catch (DataNotFoundException ex) {
             return ResponseEntity.badRequest().body(ex.getMessage());
         } catch (Exception e) {

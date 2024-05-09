@@ -12,7 +12,7 @@ public interface IAuthService {
 
     LoginDTO login(LoginRequest loginRequest) throws Exception;
 
-    String changePassword(ChangePasswordRequest changePasswordRequest) throws Exception;
+    String changePassword(String email, ChangePasswordRequest changePasswordRequest) throws Exception;
 
     String forgotPassword(ForgotPasswordRequest forgotPasswordRequest)throws Exception;
 }

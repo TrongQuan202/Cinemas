@@ -179,8 +179,8 @@ public class AuthService  implements IAuthService {
     }
 
     @Override
-    public String changePassword(ChangePasswordRequest changePasswordRequest) throws Exception {
-        User user = userRepo.findByEmail(changePasswordRequest.getEmail()).orElse(null);
+    public String changePassword(String email,ChangePasswordRequest changePasswordRequest) throws Exception {
+        User user = userRepo.findByEmail(email).orElse(null);
         if(user == null ){
             throw new DataNotFoundException(MessageKeys.USER_DOES_NOT_EXIST);
         }
