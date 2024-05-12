@@ -104,7 +104,6 @@ public class AuthController {
         }
 
     }
-
     @PutMapping("/change-password")
     public ResponseEntity<?> changePassword(@RequestBody ChangePasswordRequest changePasswordRequest) {
         try {

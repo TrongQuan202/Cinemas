@@ -18,6 +18,7 @@ public interface BillRepo extends JpaRepository<Bill, Integer> {
 
     Bill findByUser(User user);
 
+    Bill findBillByUserAndBillstatusIdAndTradingCode(User user,int statusId, String code);
     List<Bill> findAllByUser(User user);
 
     Bill findBillByUserAndBillstatus(User user, BillStatus billStatus);

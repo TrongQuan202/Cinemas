@@ -1,12 +1,17 @@
 package org.example.project_cinemas_java.service.implement;
 
+import org.example.project_cinemas_java.exceptions.DataIntegrityViolationException;
 import org.example.project_cinemas_java.exceptions.DataNotFoundException;
 import org.example.project_cinemas_java.exceptions.VoucherExpired;
+import org.example.project_cinemas_java.model.Bill;
 import org.example.project_cinemas_java.model.Promotion;
 import org.example.project_cinemas_java.model.RankCustomer;
 import org.example.project_cinemas_java.model.User;
 import org.example.project_cinemas_java.payload.converter.PromotionConverter;
 import org.example.project_cinemas_java.payload.dto.promotiondtos.PromotionDTO;
+import org.example.project_cinemas_java.payload.dto.promotiondtos.PromotionOfBillDTO;
+import org.example.project_cinemas_java.payload.request.promotion_request.PromotionOfBillRequest;
+import org.example.project_cinemas_java.repository.BillRepo;
 import org.example.project_cinemas_java.repository.PromotionRepo;
 import org.example.project_cinemas_java.repository.RankCustomerRepo;
 import org.example.project_cinemas_java.repository.UserRepo;
@@ -26,7 +31,8 @@ public class PromotionService implements IPromotionService {
     private UserRepo userRepo;
     @Autowired
     private RankCustomerRepo rankCustomerRepo;
-
+    @Autowired
+    private BillRepo billRepo;
     private final PromotionConverter promotionConverter;
 
     public PromotionService(PromotionConverter promotionConverter) {
@@ -55,16 +61,35 @@ public class PromotionService implements IPromotionService {
     }
 
     @Override
-    public double getDiscountAmount(String code, double totalMoney) throws Exception {
-        Promotion promotion = promotionRepo.findByName(code);
+    public PromotionOfBillDTO getDiscountAmount(String email, PromotionOfBillRequest promotionOfBillRequest) throws Exception {
+        Promotion promotion = promotionRepo.findByName(promotionOfBillRequest.getCode());
         if(promotion == null){
             throw  new DataNotFoundException("Promotion does not exist");
         }
+        User user  = userRepo.findByEmail(email).orElse(null);
+        if(user == null){
+            throw new DataNotFoundException(MessageKeys.USER_DOES_NOT_EXIST);
+        }
+
         LocalDateTime now = LocalDateTime.now();
         if (now.isAfter(promotion.getEndTime())) {
             throw new VoucherExpired("Voucher Expired");
         }
-        double amountDiscounted = (totalMoney * promotion.getPercent())/100;
-        return amountDiscounted;
+        Bill bill = billRepo.findBillByUserAndBillstatusId(user,3);
+        if(bill == null){
+            throw new DataNotFoundException("Vui lòng thử lại sau ít phút");
+        }
+        if(bill.getTotalMoney() != promotionOfBillRequest.getTotalMoney()){
+            throw new DataIntegrityViolationException("Có lỗi! vui lòng truy cập lại");
+        }
+        double amountDiscounted = (bill.getTotalMoney() * promotion.getPercent())/100;
+        bill.setTotalMoney(bill.getTotalMoney() - amountDiscounted);
+        bill.setPromotion(promotion);
+        billRepo.save(bill);
+        PromotionOfBillDTO promotionOfBillDTO = new PromotionOfBillDTO();
+        promotionOfBillDTO.setDiscountAmount(amountDiscounted);
+        promotionOfBillDTO.setFinalAmount(bill.getTotalMoney());
+
+        return promotionOfBillDTO;
     }
 }

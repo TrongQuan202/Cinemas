@@ -1,15 +1,10 @@
 package org.example.project_cinemas_java.service.implement;
 
 import org.example.project_cinemas_java.exceptions.DataNotFoundException;
-import org.example.project_cinemas_java.model.Bill;
-import org.example.project_cinemas_java.model.Promotion;
-import org.example.project_cinemas_java.model.User;
+import org.example.project_cinemas_java.model.*;
 import org.example.project_cinemas_java.payload.dto.billdtos.BillDTO;
 import org.example.project_cinemas_java.payload.request.bill_request.CreateBillRequest;
-import org.example.project_cinemas_java.repository.BillRepo;
-import org.example.project_cinemas_java.repository.BillStatusRepo;
-import org.example.project_cinemas_java.repository.PromotionRepo;
-import org.example.project_cinemas_java.repository.UserRepo;
+import org.example.project_cinemas_java.repository.*;
 import org.example.project_cinemas_java.service.iservice.IBillService;
 import org.example.project_cinemas_java.utils.MessageKeys;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +12,10 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 @Service
 public class BillService implements IBillService {
@@ -29,6 +27,12 @@ public class BillService implements IBillService {
     private PromotionRepo promotionRepo;
     @Autowired
     private BillStatusRepo billStatusRepo;
+
+    @Autowired
+    private BillTicketRepo billTicketRepo;
+
+    @Autowired
+    private TicketRepo ticketRepo;
 
 
     private String generateCode() {
@@ -73,6 +77,45 @@ public class BillService implements IBillService {
             bill.setActive(true);
             billRepo.save(bill);
         }
+    }
+
+    @Override
+    public String saveBillInformation(int user) throws Exception {
+        User exitstingUser = userRepo.findById(user).orElse(null);
+        if(exitstingUser == null){
+            throw new DataNotFoundException("Thông tin khách hàng bị lỗi! Thử lại sau ít phút");
+        }
+
+        //tìm bill chua thanh toan
+        Bill bill = billRepo.findBillByUserAndBillstatusId(exitstingUser,3);
+        if(bill == null){
+            throw new DataNotFoundException("Không tìm thấy đơn hàng");
+        }
+        Promotion promotion = bill.getPromotion();
+        if (promotion.getQuantity() > 0){
+            promotion.setQuantity(promotion.getQuantity() - 1);
+            promotionRepo.save(promotion);
+        }
+
+        bill.setName(exitstingUser.getUserName() + "đã thanh toán hóa đơn");
+        bill.setBillstatus(billStatusRepo.findById(2).orElse(null));
+        bill.setUpdateTime(LocalDateTime.now());
+        bill.setCreateTime(LocalDateTime.now());
+        billRepo.save(bill);
+
+        Set<BillTicket> billTickets = billTicketRepo.findAllByBill(bill);
+        if(billTickets.isEmpty()){
+            throw new DataNotFoundException("Vui lòng chọn combo");
+        }
+        List<Ticket> tickets = new ArrayList<>();
+        for (BillTicket billTicket: billTickets){
+            tickets.add(billTicket.getTicket());
+        }
+        for (Ticket ticket:tickets){
+            ticket.setSeatStatus(4);
+            ticketRepo.save(ticket);
+        }
+        return bill.getTradingCode();
     }
 
 }

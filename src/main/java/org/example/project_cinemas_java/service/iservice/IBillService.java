@@ -5,4 +5,6 @@ import org.example.project_cinemas_java.payload.request.bill_request.CreateBillR
 
 public interface IBillService {
     void createBill(String email)throws Exception;
+
+    String saveBillInformation(int user)throws Exception;
 }

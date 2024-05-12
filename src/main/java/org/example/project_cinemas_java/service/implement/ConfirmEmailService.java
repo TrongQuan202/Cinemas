@@ -39,7 +39,6 @@ public class ConfirmEmailService implements IConfirmEmailService {
         message.setSubject(subject);
         message.setText(content);
         javaMailSender.send(message);
-
     }
 
     public boolean isExpired(ConfirmEmail confirmEmail) {

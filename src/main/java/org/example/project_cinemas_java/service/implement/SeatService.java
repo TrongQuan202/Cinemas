@@ -46,6 +46,9 @@ public class SeatService implements ISeatService {
     @Autowired
     private BillStatusRepo billStatusRepo;
 
+    @Autowired
+    private BillFoodRepo billFoodRepo;
+
     private final JwtTokenUtils jwtTokenUtils;
 
     private final TicketService ticketService;
@@ -426,7 +429,9 @@ public class SeatService implements ISeatService {
             List<Ticket> ticketsByUserAndSchedule = ticketRepo.findAllByUserAndSchedule(existingUser,schedule);
             Set<String> seats = new HashSet<>();
             for (Ticket ticket1:ticketsByUserAndSchedule){
-                seats.add(ticket1.getSeat().getLine() + ticket1.getSeat().getNumber());
+                if(ticket1.getSeatStatus() != 4){
+                    seats.add(ticket1.getSeat().getLine() + ticket1.getSeat().getNumber());
+                }
             }
 
             seatSelectedDTO.setSeatSelected(seats);
@@ -479,10 +484,13 @@ public class SeatService implements ISeatService {
             List<Ticket> tickets = ticketRepo.findAllByUserAndSeatTypeAndSchedule(existingUser,2,schedule);
             seatSelectedDTO.setSeatSelectedCount(tickets.size());
             seatSelectedDTO.setPrice(priceTicket(tickets));
+            seatSelectedDTO.setTotalMoney(bill.getTotalMoney());
             List<Ticket> ticketsByUserAndSchedule = ticketRepo.findAllByUserAndSchedule(existingUser,schedule);
             Set<String> seats = new HashSet<>();
             for (Ticket ticket1:ticketsByUserAndSchedule){
-                seats.add(ticket1.getSeat().getLine() + ticket1.getSeat().getNumber());
+                if(ticket1.getSeatStatus() != 4){
+                    seats.add(ticket1.getSeat().getLine() + ticket1.getSeat().getNumber());
+                }
             }
 
             seatSelectedDTO.setSeatSelected(seats);
@@ -537,7 +545,10 @@ public class SeatService implements ISeatService {
             List<Ticket> ticketsByUserAndSchedule = ticketRepo.findAllByUserAndSchedule(existingUser,schedule);
             Set<String> seats = new HashSet<>();
             for (Ticket ticket1:ticketsByUserAndSchedule){
-                seats.add(ticket1.getSeat().getLine() + ticket1.getSeat().getNumber());
+                if(ticket1.getSeatStatus() != 4){
+                    seats.add(ticket1.getSeat().getLine() + ticket1.getSeat().getNumber());
+                }
+
             }
 
             seatSelectedDTO.setSeatSelected(seats);
@@ -580,7 +591,10 @@ public class SeatService implements ISeatService {
             List<Ticket> ticketsByUserAndSchedule = ticketRepo.findAllByUserAndSchedule(existingUser,schedule);
             Set<String> seats = new HashSet<>();
             for (Ticket ticket1:ticketsByUserAndSchedule){
-                seats.add(ticket1.getSeat().getLine() + ticket1.getSeat().getNumber());
+                if(ticket1.getSeatStatus() !=4){
+                    seats.add(ticket1.getSeat().getLine() + ticket1.getSeat().getNumber());
+                }
+
             }
 
             seatSelectedDTO.setSeatSelected(seats);
@@ -658,7 +672,10 @@ public class SeatService implements ISeatService {
             List<Ticket> ticketsByUserAndSchedule = ticketRepo.findAllByUserAndSchedule(existingUser,schedule);
             Set<String> seats = new HashSet<>();
             for (Ticket ticket1:ticketsByUserAndSchedule){
-                seats.add(ticket1.getSeat().getLine() + ticket1.getSeat().getNumber());
+                if(ticket1.getSeatStatus() != 4){
+                    seats.add(ticket1.getSeat().getLine() + ticket1.getSeat().getNumber());
+                }
+
             }
 
             seatSelectedDTO.setSeatSelected(seats);
@@ -686,35 +703,51 @@ public class SeatService implements ISeatService {
         List<SeatStatusDTO> seatStatusDTOS = new ArrayList<>();
         List<Ticket> tickets = ticketRepo.findAllByUserAndSchedule(user.get(),schedule);
         for (Ticket ticket:tickets){
-            ticket.setPriceTicket(0);
-            ticket.setCode(null);
-            ticket.setActive(false);
-            ticket.setSeatStatus(1);
-            ticket.setUser(null);
-            ticketRepo.save(ticket);
+            if(ticket.getSeatStatus() == 3){
+                ticket.setPriceTicket(0);
+                ticket.setCode(null);
+                ticket.setActive(false);
+                ticket.setSeatStatus(1);
+                ticket.setUser(null);
+                ticketRepo.save(ticket);
 
-            Bill bill = billRepo.findBillByUserAndBillstatusId(user.get(),3);
-            if(bill == null) {
-                throw new DataNotFoundException("Bill does not exits");
-            }
-            bill.setTotalMoney(0);
-            billRepo.save(bill);
+                Bill bill = billRepo.findBillByUserAndBillstatusId(user.get(),3);
+                if(bill == null) {
+                    throw new DataNotFoundException("Bill does not exits");
+                }
+                List<BillFood> billFoods = billFoodRepo.findAllByBill(bill);
+                if (!billFoods.isEmpty()){
+                    for (BillFood billFood:billFoods){
+                        bill.setTotalMoney(bill.getTotalMoney() - billFood.getFood().getPrice());
+                        billRepo.save(bill);
+                        billFood.setFood(null);
+                        billFood.setBill(null);
+                        billFood.setQuantity(0);
+                        billFoodRepo.delete(billFood);
+                    }
+                }
 
-            Set<BillTicket> billTickets = billTicketRepo.findAllByBill(bill);
-            if(billTickets == null){
-                throw new DataNotFoundException("BillTicket does not exits");
-            }
-            for (BillTicket billTicket:billTickets){
-                billTicket.setTicket(null);
-                billTicket.setBill(null);
-                billTicketRepo.deleteById(billTicket.getId());
+                bill.setTotalMoney(0);
+                billRepo.save(bill);
+
+                Set<BillTicket> billTickets = billTicketRepo.findAllByBill(bill);
+                if(billTickets == null){
+                    throw new DataNotFoundException("BillTicket does not exits");
+                }
+                for (BillTicket billTicket:billTickets){
+                    billTicket.setTicket(null);
+                    billTicket.setBill(null);
+                    billTicketRepo.deleteById(billTicket.getId());
+                }
+
+
+                SeatStatusDTO seatStatusDTO = new SeatStatusDTO();
+                seatStatusDTO.setSeatStatus(ticket.getSeatStatus());
+                seatStatusDTO.setId(ticket.getSeat().getId());
+                seatStatusDTO.setUserId(null);
+                seatStatusDTOS.add(seatStatusDTO);
             }
 
-            SeatStatusDTO seatStatusDTO = new SeatStatusDTO();
-            seatStatusDTO.setSeatStatus(ticket.getSeatStatus());
-            seatStatusDTO.setId(ticket.getSeat().getId());
-            seatStatusDTO.setUserId(null);
-            seatStatusDTOS.add(seatStatusDTO);
         }
         return seatStatusDTOS;
     }
