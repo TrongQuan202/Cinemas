@@ -92,10 +92,13 @@ public class BillService implements IBillService {
             throw new DataNotFoundException("Không tìm thấy đơn hàng");
         }
         Promotion promotion = bill.getPromotion();
-        if (promotion.getQuantity() > 0){
-            promotion.setQuantity(promotion.getQuantity() - 1);
-            promotionRepo.save(promotion);
+        if(promotion != null) {
+            if (promotion.getQuantity() > 0) {
+                promotion.setQuantity(promotion.getQuantity() - 1);
+                promotionRepo.save(promotion);
+            }
         }
+
 
         bill.setName(exitstingUser.getUserName() + "đã thanh toán hóa đơn");
         bill.setBillstatus(billStatusRepo.findById(2).orElse(null));
@@ -104,7 +107,7 @@ public class BillService implements IBillService {
         billRepo.save(bill);
 
         Set<BillTicket> billTickets = billTicketRepo.findAllByBill(bill);
-        if(billTickets.isEmpty()){
+            if(billTickets.isEmpty()){
             throw new DataNotFoundException("Vui lòng chọn combo");
         }
         List<Ticket> tickets = new ArrayList<>();

@@ -32,7 +32,7 @@ public class VNPayController {
     }
 
     @GetMapping("/vnpay-payment")
-    public  String confirmPayment(HttpServletRequest request, Model model){
+    public  ResponseEntity<?> confirmPayment(HttpServletRequest request, Model model){
         int paymentStatus =vnPayService.orderReturn(request);
 
         String orderInfo = request.getParameter("vnp_OrderInfo");
@@ -46,25 +46,23 @@ public class VNPayController {
         model.addAttribute("paymentTime", paymentTime);
         model.addAttribute("transactionId", transactionId);
 
-        return paymentStatus == 1 ? "ordersuccess" : "orderfail";
+//        return paymentStatus == 1 ? "ordersuccess" : "orderfail";
 
-//        String redirectUrl = "http://localhost:3000/thong-bao";
-//        if(paymentStatus == 1){
-//            redirectUrl += "?status=success";
-//        }else {
-//            redirectUrl += "?status=failure";
-//        }
-//
-//        // Chuyển hướng người dùng về trang trong Nuxt.js
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.setLocation(URI.create(redirectUrl));
-//        return new ResponseEntity<>(headers, HttpStatus.SEE_OTHER);
+        String redirectUrl = "http://localhost:3000/thong-bao";
+        if(paymentStatus == 1){
+            redirectUrl += "?status=success";
+        }else {
+            redirectUrl += "?status=failure";
+        }
+
+        // Chuyển hướng người dùng về trang trong Nuxt.js
+        HttpHeaders headers = new HttpHeaders();
+        headers.setLocation(URI.create(redirectUrl));
+        return new ResponseEntity<>(headers, HttpStatus.SEE_OTHER);
     }
 
-//    @GetMapping("/check")
-//    public void check(){
-//        String email = "trongquan202@gmail.com";
-//        String subject = "Xin chào đoàn trọng quân";
-//         vnPayService.sendEmail(email,subject);
-//    }
+    @GetMapping("/check")
+    public String check(){
+            return "hello";
+    }
 }

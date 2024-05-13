@@ -151,7 +151,7 @@ public class VNPayService {
 
                     //thông báo bill tơi email
                    sendEmail(user,code);
-                } catch (DataNotFoundException ex) {
+            } catch (DataNotFoundException ex) {
                     return 0;
                 } catch (Exception e) {
                     throw new RuntimeException(e);
@@ -166,11 +166,11 @@ public class VNPayService {
         }
     }
 
-    public void sendEmail( int user, String code) {
+    public void     sendEmail( int user, String code) {
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
 
         User user1 = userRepo.findById(user).orElse(null);
-        Bill bill = billRepo.findBillByUserAndBillstatusIdAndTradingCode(user1, 3,code);
+        Bill bill = billRepo.findBillByUserAndBillstatusIdAndTradingCode(user1, 2,code);
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
         String reservationCode = "";
