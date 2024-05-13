@@ -14,6 +14,7 @@ import org.example.project_cinemas_java.payload.request.admin_request.seat_reque
 import org.example.project_cinemas_java.payload.request.admin_request.seat_request.UpdateSeatRequest;
 import org.example.project_cinemas_java.payload.request.seat_request.SeatStatusRequest;
 import org.example.project_cinemas_java.service.implement.SeatService;
+import org.example.project_cinemas_java.service.implement.TicketService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -39,6 +40,9 @@ public class SeatController {
 
     @Autowired
     private SimpMessagingTemplate simpMessagingTemplate;
+
+    @Autowired
+    private TicketService ticketService;
     @PostMapping("/create-seat")
     public ResponseEntity<?> createSeat(@RequestBody CreateSeatRequest createSeatRequest){
         try {
@@ -133,6 +137,7 @@ public class SeatController {
     public String send(String s) throws JsonProcessingException {
 //        System.out.println(s);
         SeatStatusRequest seatStatusRequest = objectMapper.readValue(s,SeatStatusRequest.class);
+
         simpMessagingTemplate.convertAndSend("/topic/seatStatus/" + seatStatusRequest.getSchedule(), s );
         return "success";
     }

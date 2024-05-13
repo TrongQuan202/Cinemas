@@ -385,6 +385,7 @@ public class SeatService implements ISeatService {
             ticket.setSeatStatus(3);
             ticket.setUser(existingUser);
             ticket.setSeatType(1);
+            ticket.setTicketBookingTime(LocalDateTime.now());
             ticketRepo.save(ticket);
 
 
@@ -446,6 +447,7 @@ public class SeatService implements ISeatService {
             ticket.setSeatStatus(3);
             ticket.setUser(existingUser);
             ticket.setSeatType(2);
+            ticket.setTicketBookingTime(LocalDateTime.now());
             ticketRepo.save(ticket);
 
             Bill bill = billRepo.findBillByUserAndBillstatusId(existingUser,3);
@@ -504,6 +506,7 @@ public class SeatService implements ISeatService {
             ticket.setSeatStatus(3);
             ticket.setUser(existingUser);
             ticket.setSeatType(3);
+            ticket.setTicketBookingTime(LocalDateTime.now());
             ticketRepo.save(ticket);
 
             Bill bill = billRepo.findBillByUserAndBillstatusId(existingUser,3);
@@ -568,6 +571,7 @@ public class SeatService implements ISeatService {
             ticket.setPriceTicket(0);
             ticket.setSeatStatus(1);
             ticket.setUser(null);
+            ticket.setTicketBookingTime(null);
             ticketRepo.save(ticket);
 
 
@@ -613,6 +617,7 @@ public class SeatService implements ISeatService {
             ticket.setPriceTicket(0);
             ticket.setSeatStatus(1);
             ticket.setUser(null);
+            ticket.setTicketBookingTime(null);
             ticketRepo.save(ticket);
 
 
@@ -653,6 +658,7 @@ public class SeatService implements ISeatService {
             ticket.setPriceTicket(0);
             ticket.setSeatStatus(1);
             ticket.setUser(null);
+            ticket.setTicketBookingTime(null);
             ticketRepo.save(ticket);
 
             BillTicket billTicket = billTicketRepo.findBillTicketByTicketAndBill(ticket,bill);
@@ -709,6 +715,7 @@ public class SeatService implements ISeatService {
                 ticket.setActive(false);
                 ticket.setSeatStatus(1);
                 ticket.setUser(null);
+                ticket.setTicketBookingTime(null);
                 ticketRepo.save(ticket);
 
                 Bill bill = billRepo.findBillByUserAndBillstatusId(user.get(),3);

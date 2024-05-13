@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.Set;
 
 @Entity
@@ -24,6 +25,8 @@ public class Ticket extends BaseEntity{
     private boolean isActive ;
 
     private int seatType;
+
+    private LocalDateTime ticketBookingTime;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "scheduleId", foreignKey = @ForeignKey(name = "fk_Ticket_Schedule"))
