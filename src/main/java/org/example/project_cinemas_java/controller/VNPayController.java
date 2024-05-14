@@ -33,19 +33,19 @@ public class VNPayController {
                               @RequestParam("user") int user,
                                          @RequestParam("schedule") String schedule,
                               HttpServletRequest request) {
-                System.out.println(schedule);
+//                System.out.println(schedule);
                 String baseUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
                 String vnpayUrl = vnPayService.createOrder(orderTotal, user, baseUrl);
-        return ResponseEntity.ok(vnpayUrl);
-                // trước khi vào trang thanh toán của VNPay thì gia hạn giời gian giữ cho cho ghế đã chọn
-//                try {
-//                    ticketService.updateSeatHoldExpiration(user);
-//
-//                } catch (DataNotFoundException ex) {
-//                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex);
-//                } catch (Exception e) {
-//                    throw new RuntimeException(e);
-//                }
+
+                //trước khi vào trang thanh toán của VNPay thì gia hạn giời gian giữ cho cho ghế đã chọn
+               try {
+                    ticketService.updateSeatHoldExpiration(user,schedule);
+                    return ResponseEntity.ok(vnpayUrl);
+                } catch (DataNotFoundException ex) {
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
     }
 
     @GetMapping("/vnpay-payment")

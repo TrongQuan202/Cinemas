@@ -64,7 +64,7 @@ public class PromotionService implements IPromotionService {
     public PromotionOfBillDTO getDiscountAmount(String email, PromotionOfBillRequest promotionOfBillRequest) throws Exception {
         Promotion promotion = promotionRepo.findByName(promotionOfBillRequest.getCode());
         if(promotion == null){
-            throw  new DataNotFoundException("Promotion does not exist");
+            throw  new DataNotFoundException("Mã voucher không tồn tại");
         }
         User user  = userRepo.findByEmail(email).orElse(null);
         if(user == null){
@@ -73,7 +73,7 @@ public class PromotionService implements IPromotionService {
 
         LocalDateTime now = LocalDateTime.now();
         if (now.isAfter(promotion.getEndTime())) {
-            throw new VoucherExpired("Voucher Expired");
+            throw new VoucherExpired("Mã voucher đã hết hạn");
         }
         Bill bill = billRepo.findBillByUserAndBillstatusId(user,3);
         if(bill == null){
@@ -89,7 +89,7 @@ public class PromotionService implements IPromotionService {
         PromotionOfBillDTO promotionOfBillDTO = new PromotionOfBillDTO();
         promotionOfBillDTO.setDiscountAmount(amountDiscounted);
         promotionOfBillDTO.setFinalAmount(bill.getTotalMoney());
-
+        promotionOfBillDTO.setTotalMoney(bill.getTotalMoney());
         return promotionOfBillDTO;
     }
 }

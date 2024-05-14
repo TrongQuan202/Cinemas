@@ -13,7 +13,7 @@ public interface TicketRepo extends JpaRepository<Ticket, Integer> {
 
     Ticket findTicketByScheduleAndSeat(Schedule schedule, Seat seat);
 
-    List<Ticket> findAllByUserAndSeatStatus(User user, int seatStatus);
+    List<Ticket> findAllByUserAndSeatStatusAndSchedule(User user, int seatStatus,Schedule schedule);
 
     boolean existsBySeatIdAndScheduleId(int seatId, int scheduleId);
     boolean existsBySeatAndScheduleNot(Seat seat, Schedule schedule);

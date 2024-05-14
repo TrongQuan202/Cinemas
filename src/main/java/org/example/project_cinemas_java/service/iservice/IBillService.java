@@ -7,4 +7,6 @@ public interface IBillService {
     void createBill(String email)throws Exception;
 
     String saveBillInformation(int user)throws Exception;
+
+    void resetBillByUser(int user) throws Exception;
 }

@@ -47,6 +47,8 @@ public class SeatService implements ISeatService {
     private BillStatusRepo billStatusRepo;
 
     @Autowired
+    private PromotionRepo promotionRepo;
+    @Autowired
     private BillFoodRepo billFoodRepo;
 
     private final JwtTokenUtils jwtTokenUtils;
@@ -373,7 +375,13 @@ public class SeatService implements ISeatService {
         Ticket ticket = ticketRepo.findTicketByScheduleAndSeat(schedule,seat);
 
         if(ticket == null) {
-            throw new Exception();
+            throw new DataNotFoundException("Ghế hoặc lịch không tồn tại");
+        }
+        if(ticket.getSeatStatus() == 3 && ticket.getUser().getId() != seatStatusRequest.getUserId()){
+            throw new org.example.project_cinemas_java.exceptions.DataIntegrityViolationException("Ghế này đang được giữ! Vui lòng chọn ghế khác");
+        }
+        if(ticket.getSeatStatus() == 4){
+            throw new org.example.project_cinemas_java.exceptions.DataIntegrityViolationException("Ghế này đã được bán! Vui lòng chọn ghế khác");
         }
         SeatSelectedDTO seatSelectedDTO = new SeatSelectedDTO();
 //        Set<String> seats = new HashSet<>();
@@ -747,6 +755,11 @@ public class SeatService implements ISeatService {
                     billTicketRepo.deleteById(billTicket.getId());
                 }
 
+                Promotion promotion = bill.getPromotion();
+                if(promotion != null){
+                    promotion.setQuantity(promotion.getQuantity() + 1);
+                    promotionRepo.save(promotion);
+                }
 
                 SeatStatusDTO seatStatusDTO = new SeatStatusDTO();
                 seatStatusDTO.setSeatStatus(ticket.getSeatStatus());

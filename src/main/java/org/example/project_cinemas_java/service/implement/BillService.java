@@ -31,6 +31,9 @@ public class BillService implements IBillService {
     @Autowired
     private BillTicketRepo billTicketRepo;
 
+
+    @Autowired
+    private BillFoodRepo billFoodRepo;
     @Autowired
     private TicketRepo ticketRepo;
 
@@ -119,6 +122,48 @@ public class BillService implements IBillService {
             ticketRepo.save(ticket);
         }
         return bill.getTradingCode();
+    }
+
+    @Override
+    public void resetBillByUser(int userId) throws Exception {
+        User user  = userRepo.findById(userId).orElse(null);
+        if(user == null) {
+            throw new DataNotFoundException("Tài khoản không tồn tại");
+        }
+        Bill bill = billRepo.findBillByUserAndBillstatusId(user,3);
+        if(bill != null){
+            Set<BillTicket> billTickets = billTicketRepo.findAllByBill(bill);
+            if(billTickets != null){
+                for (BillTicket billTicket:billTickets){
+                    if(billTicket.getTicket() != null){
+                        billTicket.getTicket().setPriceTicket(0);
+                        billTicket.getTicket().setUser(null);
+                        billTicket.getTicket().setActive(false);
+                        billTicket.getTicket().setTicketBookingTime(null);
+                        billTicket.getTicket().setCode(null);
+                        billTicket.getTicket().setSeatStatus(1);
+                        ticketRepo.save(billTicket.getTicket());
+                    }
+                    billTicket.setBill(null);
+                    billTicket.setTicket(null);
+                    billTicketRepo.delete(billTicket);
+                }
+            }
+            List<BillFood> billFoods = billFoodRepo.findAllByBill(bill);
+            if(billFoods != null){
+                for (BillFood billFood:billFoods){
+                    billFood.setFood(null);
+                    billFood.setBill(null);
+                    billFoodRepo.delete(billFood);
+                }
+            }
+
+            Promotion promotion = bill.getPromotion();
+            if(promotion != null){
+                promotion.setQuantity(promotion.getQuantity() + 1);
+                promotionRepo.save(promotion);
+            }
+        }
     }
 
 }

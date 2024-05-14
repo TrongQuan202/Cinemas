@@ -10,4 +10,6 @@ import lombok.*;
 public class PromotionOfBillDTO {
     private double finalAmount;
     private double discountAmount;
+
+    private double totalMoney;
 }
