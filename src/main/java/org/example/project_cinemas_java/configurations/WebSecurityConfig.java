@@ -77,7 +77,7 @@ public class WebSecurityConfig {
                             .requestMatchers(POST, String.format("/%s/cinema/create-cinema",apiPrefix)).hasRole("ADMIN")
                             .requestMatchers(POST, String.format("/%s/room/create-room",apiPrefix)).hasRole("ADMIN")
                             .requestMatchers(POST, String.format("/%s/seat/create-seat",apiPrefix)).hasRole("ADMIN")
-                            .requestMatchers(POST, String.format("/%s/food/create-food",apiPrefix)).hasRole("ADMIN")
+                            .requestMatchers(POST, String.format("/%s/food/create-food",apiPrefix)).hasRole(Role.ADMIN)
                             .requestMatchers(POST, String.format("/%s/movie/create-movie",apiPrefix)).hasRole(Role.ADMIN)
                             .requestMatchers(POST, String.format("/%s/bill/create-bill",apiPrefix)).hasAnyRole(Role.USER,Role.ADMIN)
                             .requestMatchers(POST, String.format("/%s/payment/submitOrder",apiPrefix)).hasAnyRole(Role.USER,Role.ADMIN)
@@ -87,7 +87,6 @@ public class WebSecurityConfig {
                             .requestMatchers(POST, String.format("/%s/user/confirm-author",apiPrefix)).hasAnyRole(Role.USER,Role.ADMIN)
                             .requestMatchers(POST, String.format("/submitOrder")).hasRole(Role.USER)
 
-                            .requestMatchers(PUT, String.format("/%s/food/update-food",apiPrefix)).hasRole("ADMIN")
                             .requestMatchers(PUT, String.format("/%s/cinema/update-cinema",apiPrefix)).hasRole("ADMIN")
                             .requestMatchers(PUT, String.format("/%s/room/update-room",apiPrefix)).hasRole("ADMIN")
                             .requestMatchers(PUT, String.format("/%s/seat/update-seat",apiPrefix)).hasRole("ADMIN")
@@ -102,10 +101,12 @@ public class WebSecurityConfig {
                             .requestMatchers(PUT, String.format("/%s/seat/reset-seat-by-user",apiPrefix)).hasAnyRole(Role.USER,Role.ADMIN)
                             .requestMatchers(PUT, String.format("/%s/seat/reset-seat-status-by-user",apiPrefix)).hasAnyRole(Role.USER,Role.ADMIN)
                             .requestMatchers(PUT, String.format("/%s/billFood/update-billFood",apiPrefix)).hasAnyRole(Role.USER,Role.ADMIN)
+                            .requestMatchers(PUT, String.format("/%s/food/update-food",apiPrefix)).hasRole(Role.ADMIN)
 
                             .requestMatchers(GET, String.format("/%s/schedule/get-price-by-schedule",apiPrefix)).hasAnyRole(Role.USER,Role.ADMIN)
                             .requestMatchers(GET, String.format("/%s/user/get-phone-user",apiPrefix)).hasAnyRole(Role.USER,Role.ADMIN)
                             .requestMatchers(GET, String.format("/%s/food/get-all-food",apiPrefix)).hasAnyRole(Role.USER,Role.ADMIN)
+                            .requestMatchers(GET, String.format("/%s/food/get-all-food-admin",apiPrefix)).hasAnyRole(Role.USER,Role.ADMIN)
                             .requestMatchers(GET, String.format("/%s/promotion/get-all-promotion-by-user",apiPrefix)).hasAnyRole(Role.USER,Role.ADMIN)
                             .requestMatchers(GET, String.format("/%s/rank/get-rank-by-user",apiPrefix)).hasAnyRole(Role.USER,Role.ADMIN)
                             .requestMatchers(PUT, String.format("/%s/promotion/get-discount-amount",apiPrefix)).hasAnyRole(Role.USER,Role.ADMIN)
@@ -115,6 +116,7 @@ public class WebSecurityConfig {
                             .requestMatchers(GET, String.format("/%s/schedule/get-all-schedule-by-admin",apiPrefix)).hasRole(Role.ADMIN)
                             .requestMatchers(GET, String.format("/%s/user/get-all-user-by-admin",apiPrefix)).hasRole(Role.ADMIN)
                             .requestMatchers(GET, String.format("/%s/cinema/get-all-revenue",apiPrefix)).hasRole(Role.ADMIN)
+                            .requestMatchers(GET, String.format("/%s/food/get-food-by-admin",apiPrefix)).hasAnyRole(Role.ADMIN,Role.USER)
                             .anyRequest().authenticated();
                     //.anyRequest().permitAll();
 
