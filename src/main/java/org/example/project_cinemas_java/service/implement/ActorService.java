@@ -19,9 +19,9 @@ public class ActorService implements IActorService {
     private ActorRepo actorRepo;
     @Override
     public Actor createActor(CreateActorRequest createActorRequest) throws Exception {
-        Actor actorCheck = actorRepo.findByImage(createActorRequest.getImage());
+        Actor actorCheck = actorRepo.findBySlug(createActorRequest.getSlug());
         if(actorCheck != null){
-            throw new DataIntegrityViolationException("Actor early exits");
+            throw new DataIntegrityViolationException("Diễn viên đã tồn tại");
         }
         Actor actor = new Actor();
         actor.setImage(createActorRequest.getImage());

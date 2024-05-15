@@ -2,6 +2,7 @@ package org.example.project_cinemas_java.service.implement;
 
 import org.example.project_cinemas_java.exceptions.DataNotFoundException;
 import org.example.project_cinemas_java.model.*;
+import org.example.project_cinemas_java.payload.dto.billdtos.BillAdminDTO;
 import org.example.project_cinemas_java.payload.dto.billdtos.BillDTO;
 import org.example.project_cinemas_java.payload.request.bill_request.CreateBillRequest;
 import org.example.project_cinemas_java.repository.*;
@@ -12,6 +13,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -164,6 +166,28 @@ public class BillService implements IBillService {
                 promotionRepo.save(promotion);
             }
         }
+    }
+
+    @Override
+    public List<BillAdminDTO> getAllBillAdmin() throws Exception {
+
+        List<BillAdminDTO> billAdminDTOS = new ArrayList<>();
+        for (Bill bill:billRepo.findAll()){
+            BillAdminDTO billAdminDTO = new BillAdminDTO();
+            billAdminDTO.setUser(bill.getUser().getEmail());
+            billAdminDTO.setName(bill.getName());
+            billAdminDTO.setStatus(bill.getBillstatus().getId());
+            billAdminDTO.setMonth(bill.getMonth());
+            billAdminDTO.setTotalMoney(bill.getTotalMoney());
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            LocalDateTime createTime = bill.getCreateTime();
+            String formattedDateTime = createTime.format(formatter);
+            billAdminDTO.setCreateTime(formattedDateTime);
+            billAdminDTO.setVoucher(bill.getPromotion() == null ? null: bill.getPromotion().getName());
+            billAdminDTO.setTradingCode(bill.getTradingCode());
+            billAdminDTOS.add(billAdminDTO);
+        }
+        return billAdminDTOS;
     }
 
 }

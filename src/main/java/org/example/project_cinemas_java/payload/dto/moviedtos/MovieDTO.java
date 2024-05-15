@@ -17,5 +17,6 @@ public class MovieDTO {
     private String movieTrailer;
     private String slug;
     private Set<String> movieTypeName;
+    private boolean isUpcoming;
 
 }

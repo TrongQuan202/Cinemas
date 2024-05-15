@@ -117,6 +117,7 @@ public class WebSecurityConfig {
                             .requestMatchers(GET, String.format("/%s/user/get-all-user-by-admin",apiPrefix)).hasRole(Role.ADMIN)
                             .requestMatchers(GET, String.format("/%s/cinema/get-all-revenue",apiPrefix)).hasRole(Role.ADMIN)
                             .requestMatchers(GET, String.format("/%s/food/get-food-by-admin",apiPrefix)).hasAnyRole(Role.ADMIN,Role.USER)
+                            .requestMatchers(GET, String.format("/%s/bill/get-all-bill",apiPrefix)).hasRole(Role.ADMIN)
                             .anyRequest().authenticated();
                     //.anyRequest().permitAll();
 

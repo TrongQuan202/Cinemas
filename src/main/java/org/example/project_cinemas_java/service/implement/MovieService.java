@@ -55,10 +55,10 @@ public class MovieService implements IMovieService {
     private ModelMapper modelMapper;
 
     public LocalDateTime stringToLocalDateTime (String time){
-        DateTimeFormatter endTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        LocalDate localDate =LocalDate.parse(time,endTimeFormatter);
-        LocalDateTime localDateTimeEndTime = localDate.atStartOfDay();
-        return localDateTimeEndTime;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
+        // Phân tích chuỗi ngày giờ với formatter
+        LocalDateTime localDateTime = LocalDateTime.parse(time, formatter);
+        return localDateTime;
     }
 
     public boolean checkEndTimeAfterPremiereDate(String endTime, String premiereDate){
@@ -82,19 +82,10 @@ public class MovieService implements IMovieService {
         if(movieRepo.existsByTrailer(createMovieRequest.getTrailer())){
             throw new DataIntegrityViolationException(MessageKeys.TRAILER_ALREADY_EXIST);
         }
-        if (!checkEndTimeAfterPremiereDate(createMovieRequest.getEndTime(),createMovieRequest.getPremiereDate())){
-            throw new InvalidMovieDataException("The end time must be after the premiere time!");
-        }
         //thêm cinema vào phim
         Cinema cinema = cinemaRepo.findBynameOfCinema(createMovieRequest.getCodeCinema());
         if(cinema == null){
             throw new DataNotFoundException(MessageKeys.CINEMA_DOES_NOT_EXIST);
-        }
-        boolean isUpcoming = Boolean.parseBoolean(null);
-        if(createMovieRequest.getIsUpcoming().equals("Phim sắp chiếu")){
-            isUpcoming = false;
-        }else {
-            isUpcoming =true;
         }
         Movie movie = Movie.builder()
                 .movieDuration(createMovieRequest.getMovieDuration())
@@ -109,7 +100,7 @@ public class MovieService implements IMovieService {
                 .trailer(createMovieRequest.getTrailer())
                 .slug(createMovieRequest.getSlug())
                 .cinema(cinema)
-                .isUpcoming(isUpcoming)
+                .isUpcoming(createMovieRequest.getIsUpcoming().equals("Phim sắp chiếu") ? true :false)
                 .isActive(false)
                 .build();
         movieRepo.save(movie);

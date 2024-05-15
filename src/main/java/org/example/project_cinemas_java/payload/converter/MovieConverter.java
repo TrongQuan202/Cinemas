@@ -43,6 +43,7 @@ public class MovieConverter {
                 .movieTrailer(movie.getTrailer())
                 .slug(movie.getSlug())
                 .movieTypeName(listMovieTypeName)
+                .isUpcoming(movie.isUpcoming())
                 .build();
         return movieDTO;
     }

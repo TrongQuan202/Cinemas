@@ -11,4 +11,6 @@ public interface ActorRepo extends JpaRepository<Actor, Integer> {
     Actor findByImage(String img);
 
     Actor findByName(String name);
+
+    Actor findBySlug(String slug);
 }
