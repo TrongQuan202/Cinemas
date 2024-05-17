@@ -5,6 +5,7 @@ import org.example.project_cinemas_java.model.*;
 import org.example.project_cinemas_java.payload.dto.billdtos.BillAdminDTO;
 import org.example.project_cinemas_java.payload.dto.billdtos.BillDTO;
 import org.example.project_cinemas_java.payload.request.bill_request.CreateBillRequest;
+import org.example.project_cinemas_java.payload.request.bill_request.DeleteBillRequest;
 import org.example.project_cinemas_java.repository.*;
 import org.example.project_cinemas_java.service.iservice.IBillService;
 import org.example.project_cinemas_java.utils.MessageKeys;
@@ -188,6 +189,11 @@ public class BillService implements IBillService {
             billAdminDTOS.add(billAdminDTO);
         }
         return billAdminDTOS;
+    }
+
+    @Override
+    public void deleteBill(DeleteBillRequest deleteBillRequest) throws Exception {
+        
     }
 
 }
