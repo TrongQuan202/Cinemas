@@ -76,7 +76,7 @@ public class FoodController {
 //        }
 //    }
 
-/*    @GetMapping("/get-all-food")
+   @GetMapping("/get-all-food")
     public ResponseEntity<?> getAllFood() {
         try {
             List<FoodDTO> result = foodService.getAllFood();
@@ -88,7 +88,7 @@ public class FoodController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
-    }*/
+    }
 
     @GetMapping("/get-all-food-admin")
     public ResponseEntity<?> getAllFoodAdmin() {

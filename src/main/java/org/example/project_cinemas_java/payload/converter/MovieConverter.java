@@ -88,6 +88,7 @@ public class MovieConverter {
                 .movieType(movieTypes)
                 .directors(movie.getDirector())
                 .actors(actors)
+                .heroImage(movie.getHerolmage())
                 .build();
         return movieDetailDTO;
     }

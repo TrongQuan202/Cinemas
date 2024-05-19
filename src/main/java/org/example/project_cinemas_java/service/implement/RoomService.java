@@ -32,9 +32,7 @@ public class RoomService implements IRoomService {
         if(room != null){
             throw  new DataIntegrityViolationException(MessageKeys.ROOM_ALREADY_EXIST);
         }
-        if(roomRepo.existsByName(createRoomRequest.getName())){
-            throw new DataIntegrityViolationException(MessageKeys.NAME_ALREADY_EXIST);
-        }
+
         Cinema cinema = cinemaRepo.findById(createRoomRequest.getCinemaId()).orElse(null);
 
         if (cinema == null){

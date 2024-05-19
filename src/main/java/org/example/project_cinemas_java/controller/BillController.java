@@ -58,4 +58,18 @@ public class BillController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
+    @GetMapping("/get-totalMoney")
+    public ResponseEntity<?> getTotalMoney(@RequestParam int user){
+        try {
+            double totalMoney = billService.getTotalMoney(user);
+            return ResponseEntity.ok().body(totalMoney);
+        }catch (DataIntegrityViolationException ex){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+        }catch (DataNotFoundException ex){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
 }

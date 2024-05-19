@@ -5,9 +5,12 @@ import org.example.project_cinemas_java.model.Room;
 import org.example.project_cinemas_java.model.Schedule;
 import org.example.project_cinemas_java.payload.dto.scheduledtos.DayMonthYearOfScheduleByMovieDTO;
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -24,8 +27,10 @@ public interface ScheduleRepo extends JpaRepository<Schedule, Integer> {
     Schedule findByRoomAndMovieAndStartAt(Room room, Movie movie, LocalDateTime startAt);
 
     Schedule findByRoom(Room room);
-
-
+    @Modifying
+    @Transactional
+    @Query(value = "UPDATE cinemalts.schedule SET is_active = 0 WHERE start_at BETWEEN :startTime AND :endTime", nativeQuery = true)
+    void deleteSchedule(@Param("startTime") String startTime, @Param("endTime") String endTime);
 
 
     @Query(nativeQuery = true,
@@ -39,6 +44,7 @@ public interface ScheduleRepo extends JpaRepository<Schedule, Integer> {
             "FROM cinemalts.schedule s " +
             "JOIN cinemalts.room r ON s.room_id = r.id " +
             "WHERE s.movie_id = :movieId AND DATE_FORMAT(s.start_at, '%Y-%m-%d') = STR_TO_DATE(:startDate, '%d/%m/%Y') " +
+            "AND s.is_active = 1 " +
             "ORDER BY StartTime", nativeQuery = true)
     
     List<Object[]> findScheduleByMovieIdAndStartDate(@Param("movieId") int movieId, @Param("startDate") String startDate);

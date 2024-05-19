@@ -2,18 +2,17 @@ package org.example.project_cinemas_java.service.implement;
 
 import org.example.project_cinemas_java.exceptions.DataIntegrityViolationException;
 import org.example.project_cinemas_java.exceptions.DataNotFoundException;
-import org.example.project_cinemas_java.model.Movie;
-import org.example.project_cinemas_java.model.Room;
-import org.example.project_cinemas_java.model.Schedule;
+import org.example.project_cinemas_java.model.*;
 import org.example.project_cinemas_java.payload.dto.scheduledtos.*;
+import org.example.project_cinemas_java.payload.request.DeleteByTimeRequest;
 import org.example.project_cinemas_java.payload.request.admin_request.schedule_request.CreateScheduleRequest;
-import org.example.project_cinemas_java.repository.MovieRepo;
-import org.example.project_cinemas_java.repository.RoomRepo;
-import org.example.project_cinemas_java.repository.ScheduleRepo;
+import org.example.project_cinemas_java.repository.*;
 import org.example.project_cinemas_java.service.iservice.IScheduleService;
 import org.example.project_cinemas_java.utils.MessageKeys;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -30,6 +29,13 @@ public class ScheduleService implements IScheduleService {
 
     @Autowired
     private RoomRepo roomRepo;
+
+    @Autowired
+    private SeatRepo seatRepo;
+    @Autowired
+    private TicketRepo ticketRepo;
+    @Autowired
+    private BillTicketRepo billTicketRepo;
 
     @Override
     public List<String> getAllDayMonthYearOfScheduleByMovie(int movieId) {
@@ -128,14 +134,19 @@ public class ScheduleService implements IScheduleService {
     public List<ScheduleByAdminDTO> getAllScheduleByAdmin() throws Exception {
         List<ScheduleByAdminDTO> scheduleByAdminDTOS = new ArrayList<>();
         for (Schedule schedule:scheduleRepo.findAll()){
-            ScheduleByAdminDTO scheduleByAdminDTO = new ScheduleByAdminDTO();
-            scheduleByAdminDTO.setCode(schedule.getCode());
-            scheduleByAdminDTO.setStartAt(localDateTimeToString(schedule.getStartAt()));
-            scheduleByAdminDTO.setEndAt(localDateTimeToString(schedule.getEndAt()));
-            scheduleByAdminDTO.setMovie(schedule.getMovie().getName());
-            scheduleByAdminDTO.setRoom(schedule.getRoom().getName());
-            scheduleByAdminDTO.setPrice(schedule.getPrice());
-            scheduleByAdminDTOS.add(scheduleByAdminDTO);
+            if(!scheduleRepo.findAll().isEmpty()){
+                if(schedule.isActive()){
+                    ScheduleByAdminDTO scheduleByAdminDTO = new ScheduleByAdminDTO();
+                    scheduleByAdminDTO.setCode(schedule.getCode());
+                    scheduleByAdminDTO.setStartAt(localDateTimeToString(schedule.getStartAt()));
+                    scheduleByAdminDTO.setEndAt(localDateTimeToString(schedule.getEndAt()));
+                    scheduleByAdminDTO.setMovie(schedule.getMovie().getName());
+                    scheduleByAdminDTO.setRoom(schedule.getRoom().getName());
+                    scheduleByAdminDTO.setPrice(schedule.getPrice());
+                    scheduleByAdminDTOS.add(scheduleByAdminDTO);
+                }
+            }
+
         }
         return scheduleByAdminDTOS;
     }
@@ -170,13 +181,16 @@ public class ScheduleService implements IScheduleService {
         if(scheduleCheck != null){
             throw new DataIntegrityViolationException("Trùng lịch! Vui lòng thử lại");
         }
-
-
         for (Schedule schedule: scheduleRepo.findAll()){
             if(hasOverlap(start,end, schedule.getStartAt(),schedule.getEndAt())) {
                 throw new DataIntegrityViolationException("Trùng lịch! Vui lòng thử lại");
             }
         }
+        List<Seat> seats = seatRepo.findAllByRoom(room);
+        if( seats.isEmpty()){
+            throw new DataNotFoundException("Phòng " + room.getName() + " chưa có ghế!");
+        }
+
         Schedule schedule = new Schedule();
         schedule.setCode(createScheduleRequest.getCode());
         schedule.setStartAt(start);
@@ -187,6 +201,32 @@ public class ScheduleService implements IScheduleService {
         schedule.setName(createScheduleRequest.getName());
         scheduleRepo.save(schedule);
 
+
+        if(!seats.isEmpty()){
+            for (Seat seat: seats){
+                Ticket ticket = new Ticket();
+                ticket.setSchedule(schedule);
+                ticket.setSeat(seat);
+                ticket.setSeatType(seat.getSeatType().getId());
+                ticket.setActive(false);
+                ticket.setSeatStatus(1);
+                ticketRepo.save(ticket);
+            }
+        }
+
         return schedule;
+    }
+    @Transactional
+    @Modifying
+    @Override
+    public void deleteScheduleByAdmin(DeleteByTimeRequest deleteByTimeRequest) throws Exception {
+        LocalDateTime startTime = stringToLocalDateTime(deleteByTimeRequest.getStart());
+        LocalDateTime endTime = stringToLocalDateTime(deleteByTimeRequest.getEnd());
+
+       scheduleRepo.deleteSchedule(deleteByTimeRequest.getStart(),deleteByTimeRequest.getEnd());
+
+
+
+
     }
 }

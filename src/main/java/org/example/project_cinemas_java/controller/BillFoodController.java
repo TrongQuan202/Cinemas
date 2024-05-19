@@ -2,6 +2,7 @@ package org.example.project_cinemas_java.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.example.project_cinemas_java.exceptions.DataNotFoundException;
+import org.example.project_cinemas_java.payload.dto.promotiondtos.PromotionOfBillDTO;
 import org.example.project_cinemas_java.payload.request.food_request.ChooseFoodRequest;
 import org.example.project_cinemas_java.service.implement.BillFoodService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,7 +52,7 @@ public class BillFoodController {
                 // Lấy email của người dùng từ UserDetails
                 String email = userDetails.getUsername();
 
-                double s = billFoodService.chooseFood(email,chooseFoodRequest);
+                PromotionOfBillDTO s = billFoodService.chooseFood(email,chooseFoodRequest);
                 return ResponseEntity.ok().body(s);
             } else {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");

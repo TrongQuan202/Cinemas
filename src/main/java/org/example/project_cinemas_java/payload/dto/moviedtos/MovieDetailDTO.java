@@ -18,6 +18,7 @@ public class MovieDetailDTO {
     private String trailer;
 
     private String image;
+    private String heroImage;
 
     private Integer duration;
 

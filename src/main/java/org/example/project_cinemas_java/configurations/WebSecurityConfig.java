@@ -102,6 +102,7 @@ public class WebSecurityConfig {
                             .requestMatchers(PUT, String.format("/%s/seat/reset-seat-status-by-user",apiPrefix)).hasAnyRole(Role.USER,Role.ADMIN)
                             .requestMatchers(PUT, String.format("/%s/billFood/update-billFood",apiPrefix)).hasAnyRole(Role.USER,Role.ADMIN)
                             .requestMatchers(PUT, String.format("/%s/food/update-food",apiPrefix)).hasRole(Role.ADMIN)
+                            .requestMatchers(PUT, String.format("/%s/schedule/delete-schedule",apiPrefix)).hasRole(Role.ADMIN)
 
                             .requestMatchers(GET, String.format("/%s/schedule/get-price-by-schedule",apiPrefix)).hasAnyRole(Role.USER,Role.ADMIN)
                             .requestMatchers(GET, String.format("/%s/user/get-phone-user",apiPrefix)).hasAnyRole(Role.USER,Role.ADMIN)
@@ -118,6 +119,7 @@ public class WebSecurityConfig {
                             .requestMatchers(GET, String.format("/%s/cinema/get-all-revenue",apiPrefix)).hasRole(Role.ADMIN)
                             .requestMatchers(GET, String.format("/%s/food/get-food-by-admin",apiPrefix)).hasAnyRole(Role.ADMIN,Role.USER)
                             .requestMatchers(GET, String.format("/%s/bill/get-all-bill",apiPrefix)).hasRole(Role.ADMIN)
+                            .requestMatchers(GET, String.format("/%s/bill/get-totalMoney",apiPrefix)).hasRole(Role.USER)
                             .anyRequest().authenticated();
                     //.anyRequest().permitAll();
 

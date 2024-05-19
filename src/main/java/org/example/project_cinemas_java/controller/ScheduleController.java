@@ -7,7 +7,9 @@ import org.example.project_cinemas_java.exceptions.DataNotFoundException;
 import org.example.project_cinemas_java.model.Schedule;
 import org.example.project_cinemas_java.payload.dto.scheduledtos.ScheduleByAdminDTO;
 import org.example.project_cinemas_java.payload.dto.scheduledtos.ScheduleDTO;
+import org.example.project_cinemas_java.payload.request.DeleteByTimeRequest;
 import org.example.project_cinemas_java.payload.request.admin_request.schedule_request.CreateScheduleRequest;
+import org.example.project_cinemas_java.repository.ScheduleRepo;
 import org.example.project_cinemas_java.service.implement.ScheduleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,6 +24,8 @@ import java.util.List;
 public class ScheduleController {
     @Autowired
     private ScheduleService scheduleService;
+    @Autowired
+    private ScheduleRepo scheduleRepo;
 
     @GetMapping("/get-schedule-by-movie")
     public ResponseEntity<?> getAllDayMonthYearOfScheduleByMovie(@RequestParam int movieId) {
@@ -72,12 +76,32 @@ public class ScheduleController {
         try {
             Schedule schedule= scheduleService.createSchedule(createScheduleRequest);
             return ResponseEntity.ok().body(schedule);
-        } catch (DataIntegrityViolationException ex) {
+        }  catch (DataIntegrityViolationException ex) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+        }
+        catch (DataNotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
+    @PutMapping("/delete-schedule")
+    public ResponseEntity<?> deleteScheduleByAdmin(@RequestBody DeleteByTimeRequest deleteByTimeRequest) {
+ /*       try {*/
+            String start = deleteByTimeRequest.getStart();
+            String end = deleteByTimeRequest.getEnd();
+            scheduleRepo.deleteSchedule(start,end);
+            return ResponseEntity.ok().body("sucesss");
+//        }  catch (DataIntegrityViolationException ex) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+//        }
+//        catch (DataNotFoundException ex) {
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+//        }
+    }
+
 
 
 

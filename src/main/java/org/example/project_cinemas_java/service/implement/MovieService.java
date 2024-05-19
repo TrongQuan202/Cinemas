@@ -236,7 +236,7 @@ public class MovieService implements IMovieService {
         movieByScheduleDTO.setMovieName(schedule.getMovie().getName());
         Set<String> movieTypeName = new HashSet<>();
         for (MovieType movieType:movieTypeRepo.findAllByMovie(schedule.getMovie())){
-            movieTypeName.add(movieType.getMovieTypeName());
+            movieTypeName.add(movieType.getType().getMovieTypeName());
         }
         movieByScheduleDTO.setMovieType(movieTypeName);
         movieByScheduleDTO.setImg(schedule.getMovie().getImage());

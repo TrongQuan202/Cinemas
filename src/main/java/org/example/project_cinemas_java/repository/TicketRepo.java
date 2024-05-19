@@ -12,6 +12,9 @@ import java.util.Set;
 public interface TicketRepo extends JpaRepository<Ticket, Integer> {
 
     Ticket findTicketByScheduleAndSeat(Schedule schedule, Seat seat);
+    List<Ticket> findAllByUserAndSeatStatus(User user, int seatStatus);
+
+
 
     List<Ticket> findAllByUserAndSeatStatusAndSchedule(User user, int seatStatus,Schedule schedule);
 
@@ -28,6 +31,8 @@ public interface TicketRepo extends JpaRepository<Ticket, Integer> {
     List<Ticket> findAllByUserAndSeatTypeAndSchedule(User user, int seatType, Schedule schedule);
 
     List<Ticket> findAllBySeatStatusAndTicketBookingTimeLessThan(int seatStatus, LocalDateTime localDateTime);
+
+    List<Ticket> findAllBySchedule(Schedule schedule);
 
 
 }

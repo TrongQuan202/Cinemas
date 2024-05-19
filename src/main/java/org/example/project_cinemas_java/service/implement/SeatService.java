@@ -13,6 +13,7 @@ import org.example.project_cinemas_java.service.iservice.ISeatService;
 import org.example.project_cinemas_java.utils.MessageKeys;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.naming.AuthenticationException;
@@ -55,7 +56,8 @@ public class SeatService implements ISeatService {
 
     private final TicketService ticketService;
     private final SeatConverter seatConverter;
-
+    @Autowired
+    private SimpMessagingTemplate simpMessagingTemplate;
 
 
     public SeatService(JwtTokenUtils jwtTokenUtils, SeatConverter seatConverter, TicketService ticketService) {
@@ -701,6 +703,7 @@ public class SeatService implements ISeatService {
 //                .id(ticket.getSeat().getId())
 //                .build();
 
+//        simpMessagingTemplate.convertAndSend("/topic/seatStatus/" + seatStatusRequest.getSchedule(), seatStatusRequest );
         return seatSelectedDTO;
     }
 
@@ -746,15 +749,13 @@ public class SeatService implements ISeatService {
                 billRepo.save(bill);
 
                 Set<BillTicket> billTickets = billTicketRepo.findAllByBill(bill);
-                if(billTickets == null){
-                    throw new DataNotFoundException("BillTicket does not exits");
+                if(!billTickets.isEmpty()){
+                    for (BillTicket billTicket:billTickets){
+                        billTicket.setTicket(null);
+                        billTicket.setBill(null);
+                        billTicketRepo.deleteById(billTicket.getId());
+                    }
                 }
-                for (BillTicket billTicket:billTickets){
-                    billTicket.setTicket(null);
-                    billTicket.setBill(null);
-                    billTicketRepo.deleteById(billTicket.getId());
-                }
-
                 Promotion promotion = bill.getPromotion();
                 if(promotion != null){
                     promotion.setQuantity(promotion.getQuantity() + 1);

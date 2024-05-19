@@ -5,6 +5,7 @@ import org.example.project_cinemas_java.model.Bill;
 import org.example.project_cinemas_java.model.BillFood;
 import org.example.project_cinemas_java.model.Food;
 import org.example.project_cinemas_java.model.User;
+import org.example.project_cinemas_java.payload.dto.promotiondtos.PromotionOfBillDTO;
 import org.example.project_cinemas_java.payload.request.food_request.ChooseFoodRequest;
 import org.example.project_cinemas_java.repository.*;
 import org.example.project_cinemas_java.service.iservice.IBillFoodService;
@@ -87,7 +88,7 @@ public class BillFoodService implements IBillFoodService {
     }
 
     @Override
-    public double chooseFood(String email, ChooseFoodRequest chooseFoodRequest) throws Exception {
+    public PromotionOfBillDTO chooseFood(String email, ChooseFoodRequest chooseFoodRequest) throws Exception {
         User user = userRepo.findByEmail(email).orElse(null);
         if(user == null){
             throw  new DataNotFoundException(MessageKeys.USER_DOES_NOT_EXIST);
@@ -100,6 +101,8 @@ public class BillFoodService implements IBillFoodService {
         if(bill ==null){
             throw new DataNotFoundException("Đơn hàng không tồn tại");
         }
+        PromotionOfBillDTO promotionOfBillDTO = new PromotionOfBillDTO();
+        //trường hợp chọn đồ ăn
         if(chooseFoodRequest.getChooseFood() == 1) {
             BillFood billFood = billFoodRepo.findByBillAndFood(bill,food);
             if(billFood == null) {
@@ -110,14 +113,22 @@ public class BillFoodService implements IBillFoodService {
                 billFoodRepo.save(billFood1);
                 bill.setTotalMoney(bill.getTotalMoney() + billFood1.getFood().getPrice());
                 billRepo.save(bill);
+                promotionOfBillDTO.setTotalMoney(bill.getTotalMoney());
+                //nếu đã áp dụng mã giảm gía thì tính discountAmount
+                promotionOfBillDTO.setDiscountAmount(bill.getPromotion() != null ? bill.getTotalMoney() * ((double) bill.getPromotion().getPercent() / 100) : 0);
+                promotionOfBillDTO.setFinalAmount(bill.getTotalMoney() - promotionOfBillDTO.getDiscountAmount());
             }else {
                 billFood.setQuantity(billFood.getQuantity() + 1);
                 billFoodRepo.save(billFood);
                 bill.setTotalMoney(bill.getTotalMoney() + billFood.getFood().getPrice());
                 billRepo.save(bill);
+                promotionOfBillDTO.setTotalMoney(bill.getTotalMoney());
+                promotionOfBillDTO.setDiscountAmount(bill.getPromotion() != null ? bill.getTotalMoney() * ((double) bill.getPromotion().getPercent() / 100) : 0);
+                promotionOfBillDTO.setFinalAmount(bill.getTotalMoney() - promotionOfBillDTO.getDiscountAmount());
             }
 
         }
+        //trường hợp remove
         if(chooseFoodRequest.getChooseFood() == 2) {
             BillFood billFood = billFoodRepo.findByBillAndFood(bill,food);
             if(billFood == null){
@@ -126,9 +137,11 @@ public class BillFoodService implements IBillFoodService {
             billFood.setQuantity(billFood.getQuantity() -1);
             bill.setTotalMoney(bill.getTotalMoney() - billFood.getFood().getPrice());
             billRepo.save(bill);
+            promotionOfBillDTO.setTotalMoney(bill.getTotalMoney());
+            promotionOfBillDTO.setDiscountAmount(bill.getPromotion() != null ? bill.getTotalMoney() * ((double) bill.getPromotion().getPercent() / 100) : 0);
+            promotionOfBillDTO.setFinalAmount(bill.getTotalMoney() - promotionOfBillDTO.getDiscountAmount());
         }
-        double totalMoney =  bill.getTotalMoney();
 
-        return totalMoney;
+        return promotionOfBillDTO;
     }
 }

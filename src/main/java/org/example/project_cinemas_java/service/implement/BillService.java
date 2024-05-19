@@ -196,4 +196,17 @@ public class BillService implements IBillService {
         
     }
 
+    public double  getTotalMoney(int user) throws Exception {
+        User user1 = userRepo.findById(user).orElse(null);
+        if(user1 == null){
+            throw new DataNotFoundException("Người dùng không tồn tại");
+        }
+        Bill bill = billRepo.findBillByUserAndBillstatusId(user1,3);
+        if(bill == null){
+            throw new DataNotFoundException("Hóa đơn không tồn tại! Vui lòng thử lại");
+        }
+        return bill.getTotalMoney();
+    }
+
+
 }

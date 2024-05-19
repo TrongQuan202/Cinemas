@@ -6,7 +6,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.example.project_cinemas_java.configurations.VNPayConfig;
 import org.example.project_cinemas_java.exceptions.DataNotFoundException;
 import org.example.project_cinemas_java.model.*;
+import org.example.project_cinemas_java.payload.dto.seatdtos.SeatStatusDTO;
 import org.example.project_cinemas_java.repository.*;
+import org.example.project_cinemas_java.utils.MessageKeys;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpStatus;
@@ -47,6 +49,8 @@ public class VNPayService {
     private MovieRepo movieRepo;
     @Autowired
     private BillFoodRepo billFoodRepo;
+    @Autowired
+    private PromotionRepo promotionRepo;
 
     public String createOrder(int total, int orderInfor, String urlReturn){
         String vnp_Version = "2.1.0";
@@ -159,7 +163,12 @@ public class VNPayService {
 
                 return 1;
             } else {
-
+                int user = Integer.parseInt(request.getParameter("vnp_OrderInfo"));
+                try {
+                    resetTicketByUser(user);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
                 return 0;
             }
         } else {
@@ -243,5 +252,66 @@ public class VNPayService {
 
         javaMailSender.send(mimeMessage);
     }
+    public void resetTicketByUser(int userId)throws Exception {
+        User user = userRepo.findById(userId).orElse(null);
+        if (user == null) {
+            throw new DataNotFoundException(MessageKeys.USER_DOES_NOT_EXIST);
+        }
+        List<SeatStatusDTO> seatStatusDTOS = new ArrayList<>();
+        List<Ticket> tickets = ticketRepo.findAllByUserAndSeatStatus(user, 3);
+        if (!tickets.isEmpty()) {
+            for (Ticket ticket:tickets){
+                if(ticket.getSeatStatus() == 3){
+                    ticket.setPriceTicket(0);
+                    ticket.setCode(null);
+                    ticket.setActive(false);
+                    ticket.setSeatStatus(1);
+                    ticket.setUser(null);
+                    ticket.setTicketBookingTime(null);
+                    ticketRepo.save(ticket);
 
+                    Bill bill = billRepo.findBillByUserAndBillstatusId(user,3);
+                    if(bill == null) {
+                        throw new DataNotFoundException("Bill does not exits");
+                    }
+                    List<BillFood> billFoods = billFoodRepo.findAllByBill(bill);
+                    if (!billFoods.isEmpty()){
+                        for (BillFood billFood:billFoods){
+                            bill.setTotalMoney(bill.getTotalMoney() - billFood.getFood().getPrice());
+                            billRepo.save(bill);
+                            billFood.setFood(null);
+                            billFood.setBill(null);
+                            billFood.setQuantity(0);
+                            billFoodRepo.delete(billFood);
+                        }
+                    }
+
+                    bill.setTotalMoney(0);
+                    billRepo.save(bill);
+
+                    Set<BillTicket> billTickets = billTicketRepo.findAllByBill(bill);
+                    if(!billTickets.isEmpty()){
+                        for (BillTicket billTicket:billTickets){
+                            billTicket.setTicket(null);
+                            billTicket.setBill(null);
+                            billTicketRepo.deleteById(billTicket.getId());
+                        }
+                    }
+                    Promotion promotion = bill.getPromotion();
+                    if(promotion != null){
+                        promotion.setQuantity(promotion.getQuantity() + 1);
+                        promotionRepo.save(promotion);
+                    }
+
+                    SeatStatusDTO seatStatusDTO = new SeatStatusDTO();
+                    seatStatusDTO.setSeatStatus(ticket.getSeatStatus());
+                    seatStatusDTO.setId(ticket.getSeat().getId());
+                    seatStatusDTO.setUserId(null);
+                    seatStatusDTOS.add(seatStatusDTO);
+                }
+
+            }
+        }
+    }
 }
+

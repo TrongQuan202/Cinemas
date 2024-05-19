@@ -86,6 +86,10 @@ public class PromotionService implements IPromotionService {
         bill.setTotalMoney(bill.getTotalMoney() - amountDiscounted);
         bill.setPromotion(promotion);
         billRepo.save(bill);
+        if(promotion.getQuantity() > 0){
+            promotion.setQuantity(promotion.getQuantity() - 1);
+            promotionRepo.save(promotion);
+        }
         PromotionOfBillDTO promotionOfBillDTO = new PromotionOfBillDTO();
         promotionOfBillDTO.setDiscountAmount(amountDiscounted);
         promotionOfBillDTO.setFinalAmount(bill.getTotalMoney());
