@@ -3,6 +3,7 @@ package org.example.project_cinemas_java.controller;
 import lombok.RequiredArgsConstructor;
 import org.example.project_cinemas_java.exceptions.DataNotFoundException;
 import org.example.project_cinemas_java.payload.dto.billdtos.BillAdminDTO;
+import org.example.project_cinemas_java.payload.dto.billdtos.HistoryBillByUserDTO;
 import org.example.project_cinemas_java.service.implement.BillService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -63,6 +64,29 @@ public class BillController {
         try {
             double totalMoney = billService.getTotalMoney(user);
             return ResponseEntity.ok().body(totalMoney);
+        }catch (DataIntegrityViolationException ex){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+        }catch (DataNotFoundException ex){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/get-history-bill-by-user")
+    public ResponseEntity<?> getAllHistoryBillByUser(){
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
+                UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+                // Lấy email của người dùng từ UserDetails
+                String email = userDetails.getUsername();
+                // Gọi service để tạo hóa đơn
+                List<HistoryBillByUserDTO> historyBillByUserDTOS = billService.getAllHistoryBillByUser(email);
+                return ResponseEntity.ok().body(historyBillByUserDTOS);
+            } else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
+            }
         }catch (DataIntegrityViolationException ex){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
         }catch (DataNotFoundException ex){

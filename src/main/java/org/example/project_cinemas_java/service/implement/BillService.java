@@ -4,6 +4,7 @@ import org.example.project_cinemas_java.exceptions.DataNotFoundException;
 import org.example.project_cinemas_java.model.*;
 import org.example.project_cinemas_java.payload.dto.billdtos.BillAdminDTO;
 import org.example.project_cinemas_java.payload.dto.billdtos.BillDTO;
+import org.example.project_cinemas_java.payload.dto.billdtos.HistoryBillByUserDTO;
 import org.example.project_cinemas_java.payload.request.bill_request.CreateBillRequest;
 import org.example.project_cinemas_java.payload.request.bill_request.DeleteBillRequest;
 import org.example.project_cinemas_java.repository.*;
@@ -194,6 +195,52 @@ public class BillService implements IBillService {
     @Override
     public void deleteBill(DeleteBillRequest deleteBillRequest) throws Exception {
         
+    }
+    public String localDateTimeToString(LocalDateTime localDateTime){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+        String formattedDate = localDateTime.format(formatter);
+        return  formattedDate;
+    }
+
+    @Override
+    public List<HistoryBillByUserDTO> getAllHistoryBillByUser(String email) throws Exception {
+        User user = userRepo.findByEmail(email).orElse(null);
+        if(user == null){
+            throw new DataNotFoundException("Người dùng không tồn tại");
+        }
+        List<Bill> bills = billRepo.findAllBillByUserAndBillstatusId(user,2);
+        List<HistoryBillByUserDTO> historyBillByUserDTOS = new ArrayList<>();
+        String seatSelected = "";
+        String comboFood = "";
+        if(!bills.isEmpty()){
+            for (Bill bill:bills){
+                HistoryBillByUserDTO historyBillByUserDTO = new HistoryBillByUserDTO();
+                historyBillByUserDTO.setBillCode(bill.getTradingCode());
+                Set<BillTicket> billTickets = billTicketRepo.findAllByBill(bill);
+                if(!billTickets.isEmpty()){
+                    for (BillTicket billTicket:billTickets){
+                        historyBillByUserDTO.setMovieName(billTicket.getTicket().getSchedule().getMovie().getName());
+                        historyBillByUserDTO.setNameOfCinema(billTicket.getTicket().getSchedule().getMovie().getCinema().getNameOfCinema());
+                        historyBillByUserDTO.setSchedule(localDateTimeToString(billTicket.getTicket().getSchedule().getStartAt()));
+                        seatSelected += billTicket.getTicket().getSeat().getLine() + billTicket.getTicket().getSeat().getNumber() + ", ";
+                    }
+                    seatSelected += "Tổng tiền: " + bill.getTotalMoney()+ "VNĐ";
+                    historyBillByUserDTO.setSeatSelectedAndTotalMoney(seatSelected);
+                    List<BillFood> billFoods = billFoodRepo.findAllByBill(bill);
+                    if(!billFoods.isEmpty()){
+                        for(BillFood billFood:billFoods){
+                            comboFood += billFood.getQuantity() + " x " + billFood.getFood().getNameOfFood() +", ";
+                        }
+                        historyBillByUserDTO.setComboFood(comboFood);
+                    }
+                    historyBillByUserDTO.setDateBooking(localDateTimeToString(bill.getCreateTime()));
+
+                }
+                historyBillByUserDTOS.add(historyBillByUserDTO);
+            }
+        }
+
+        return historyBillByUserDTOS;
     }
 
     public double  getTotalMoney(int user) throws Exception {

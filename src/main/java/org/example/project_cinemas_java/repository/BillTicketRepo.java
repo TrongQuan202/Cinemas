@@ -24,4 +24,6 @@ public interface BillTicketRepo extends JpaRepository<BillTicket, Integer> {
     BillTicket findByTicket(Ticket ticket);
 
     void deleteAllByBill(Bill bill);
+
+    BillTicket findByBill(Bill bill);
 }

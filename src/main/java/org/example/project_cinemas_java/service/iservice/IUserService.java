@@ -16,5 +16,7 @@ public interface IUserService {
 
     List<UserDTO>  confirmAuth(String email, ConfirmAuthorRequest confirmAuthorRequest) throws Exception;
 
-    List<UserAccountDTO> getProfileUser(String email) throws Exception;
+    UserAccountDTO getProfileUser(String email) throws Exception;
+
+
 }

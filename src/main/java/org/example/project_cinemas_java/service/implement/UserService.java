@@ -100,13 +100,27 @@ public class UserService implements IUserService {
             }
 
     @Override
-    public List<UserAccountDTO> getProfileUser(String email) {
+    public UserAccountDTO getProfileUser(String email) throws Exception{
         User user = userRepo.findByEmail(email).orElse(null);
-        if(user == null){
-
+        if(user ==null){
+            throw new DataNotFoundException(MessageKeys.USER_DOES_NOT_EXIST);
         }
-        return List.of();
+        UserAccountDTO userAccountDTO = userToUserAccountDTO(user);
+
+        return userAccountDTO;
     }
+
+    public UserAccountDTO userToUserAccountDTO(User user){
+        UserAccountDTO userAccountDTO = new UserAccountDTO();
+        userAccountDTO.setEmail(user.getEmail());
+        userAccountDTO.setUserName(user.getUserName());
+        userAccountDTO.setPassword(user.getPassword());
+        userAccountDTO.setPhoneNumber(user.getPhoneNumber());
+        userAccountDTO.setRankcustomer(user.getRankcustomer().getName());
+        userAccountDTO.setPoint(user.getPoint());
+        return userAccountDTO;
+    }
+
 }
 
 

@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.project_cinemas_java.exceptions.DataIntegrityViolationException;
 import org.example.project_cinemas_java.exceptions.DataNotFoundException;
 import org.example.project_cinemas_java.payload.dto.seatdtos.SeatStatusDTO;
+import org.example.project_cinemas_java.payload.dto.userdto.UserAccountDTO;
 import org.example.project_cinemas_java.payload.dto.userdto.UserDTO;
 import org.example.project_cinemas_java.payload.request.auth_request.ConfirmAuthorRequest;
 import org.example.project_cinemas_java.service.implement.UserService;
@@ -41,6 +42,27 @@ public class UserController {
     public ResponseEntity<?> getAllUserByAdmin(){
             List<UserDTO> userDTOS = userService.getAllUserByAdmin();
             return ResponseEntity.ok().body(userDTOS);
+    }
+
+    @GetMapping("/get-profile-user")
+    public ResponseEntity<?> getProfileUser() {
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
+                UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+                // Lấy email của người dùng từ UserDetails
+                String email = userDetails.getUsername();
+
+                UserAccountDTO s = userService.getProfileUser(email);
+                return ResponseEntity.ok().body(s);
+            } else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
+            }
+        } catch (DataNotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
     }
 
     @PostMapping ("/confirm-author")
