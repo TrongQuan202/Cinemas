@@ -76,7 +76,7 @@ public class MovieService implements IMovieService {
         if(movieRepo.existsByImage(createMovieRequest.getImage())){
               throw  new DataIntegrityViolationException(MessageKeys.IMAGE_ALREADY_EXIST);
         }
-        if (movieRepo.existsByHerolmage(createMovieRequest.getHerolmage())){
+        if (movieRepo.existsByHerolmage(createMovieRequest.getHeroImage())){
             throw new DataIntegrityViolationException(MessageKeys.HERO_IMAGE_ALREADY_EXIST);
         }
         if(movieRepo.existsByTrailer(createMovieRequest.getTrailer())){
@@ -93,15 +93,16 @@ public class MovieService implements IMovieService {
                 .premiereDate(stringToLocalDateTime(createMovieRequest.getPremiereDate()))
                 .description(createMovieRequest.getDescription())
                 .director(createMovieRequest.getDirector())
-                .image(createMovieRequest.getImage())
-                .herolmage(createMovieRequest.getHerolmage())
+                .image("/img/" + createMovieRequest.getImage())
+                .herolmage("/img/" +createMovieRequest.getHeroImage())
+                .imageSuggest("/img/" +createMovieRequest.getImageSuggest())
                 .language(createMovieRequest.getLanguage())
                 .name(createMovieRequest.getName())
                 .trailer(createMovieRequest.getTrailer())
                 .slug(createMovieRequest.getSlug())
                 .cinema(cinema)
                 .isUpcoming(createMovieRequest.getIsUpcoming().equals("Phim sắp chiếu") ? true :false)
-                .isActive(false)
+                .isActive(true)
                 .build();
         movieRepo.save(movie);
 
@@ -130,7 +131,7 @@ public class MovieService implements IMovieService {
         if(movie == null){
             throw new DataNotFoundException(MessageKeys.MOVIE_DOES_NOT_EXIST);
         }
-        if(movieRepo.existsByHerolmageAndSlugNot(createMovieRequest.getHerolmage(), createMovieRequest.getSlug())){
+        if(movieRepo.existsByHerolmageAndSlugNot(createMovieRequest.getHeroImage(), createMovieRequest.getSlug())){
             throw new DataIntegrityViolationException("Hero Image already exists");
         }
         if(movieRepo.existsByImageAndSlugNot(createMovieRequest.getImage(),createMovieRequest.getSlug())){
@@ -161,7 +162,7 @@ public class MovieService implements IMovieService {
         movie.setDescription(createMovieRequest.getDescription());
         movie.setDirector(createMovieRequest.getDirector());
         movie.setImage(createMovieRequest.getImage());
-        movie.setHerolmage(createMovieRequest.getHerolmage());
+        movie.setHerolmage(createMovieRequest.getHeroImage());
         movie.setLanguage(createMovieRequest.getLanguage());
         movie.setName(createMovieRequest.getName());
         movie.setTrailer(createMovieRequest.getTrailer());
@@ -289,7 +290,7 @@ public class MovieService implements IMovieService {
         movieRequest.setDescription(movie.getDescription());
         movieRequest.setDirector(movie.getDirector());
         movieRequest.setImage(movie.getImage());
-        movieRequest.setHerolmage(movie.getHerolmage());
+        movieRequest.setHeroImage(movie.getHerolmage());
         movieRequest.setLanguage(movie.getLanguage());
         movieRequest.setName(movie.getName());
         movieRequest.setTrailer(movie.getTrailer());
@@ -328,5 +329,14 @@ public class MovieService implements IMovieService {
 
     public MovieByAdminDTO movieToMovieByAdminDTO(Movie movie){
         return this.modelMapper.map(movie, MovieByAdminDTO.class);
+    }
+
+    public void stopMovieShowing(String slug) throws Exception{
+            Movie movie = movieRepo.findBySlug(slug);
+            if(movie == null){
+                throw new DataNotFoundException("Phim này không tồn tại! Vui lòng thử lại");
+            }
+            movie.setActive(false);
+            movieRepo.save(movie);
     }
 }

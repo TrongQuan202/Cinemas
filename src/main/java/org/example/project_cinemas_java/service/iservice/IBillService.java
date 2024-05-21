@@ -23,5 +23,4 @@ public interface IBillService {
 
     List<HistoryBillByUserDTO> getAllHistoryBillByUser(String email) throws Exception;
 
-
 }

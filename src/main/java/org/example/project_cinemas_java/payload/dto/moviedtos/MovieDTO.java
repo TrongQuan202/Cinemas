@@ -19,4 +19,5 @@ public class MovieDTO {
     private Set<String> movieTypeName;
     private boolean isUpcoming;
 
+
 }

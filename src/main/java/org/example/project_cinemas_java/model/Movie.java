@@ -27,6 +27,7 @@ public class Movie extends BaseEntity {
 
     private LocalDateTime premiereDate;
 
+    @Column(columnDefinition = "TEXT")
     private String description;
 
     private String director;
@@ -34,6 +35,7 @@ public class Movie extends BaseEntity {
     private String image;
 
     private String herolmage;
+    private String imageSuggest;
 
     private String language;
 

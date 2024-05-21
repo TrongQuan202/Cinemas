@@ -63,6 +63,7 @@ public class WebSecurityConfig {
                                     String.format("%s/movie/get-movie", apiPrefix),
                                     String.format("%s/movie/get-all-movie-schedule-by-admin", apiPrefix),
                                     String.format("%s/room/get-all-room-schedule-by-admin", apiPrefix),
+                                    String.format("%s/blog/get-all-blog", apiPrefix),
                                       "/check/**",
 //                                      "/submitOrder/**"
                                       "/vnpay-payment/**",
@@ -95,7 +96,7 @@ public class WebSecurityConfig {
                             .requestMatchers(PUT, String.format("/%s/movie/update-movie",apiPrefix)).hasRole(Role.ADMIN)
                             .requestMatchers(PUT, String.format("/%s/billFood/remove-billFood",apiPrefix)).hasAnyRole(Role.USER,Role.ADMIN)
                             .requestMatchers(PUT, String.format("/%s/auth/change-password",apiPrefix)).hasAnyRole(Role.USER,Role.ADMIN)
-
+                            .requestMatchers(PUT, String.format("/%s/movie/stop-show-movie",apiPrefix)).hasRole(Role.ADMIN)
 
                             .requestMatchers(DELETE, String.format("/%s/cinema/delete-cinema",apiPrefix)).hasRole("ADMIN")
                             .requestMatchers(PUT, String.format("/%s/seat/update-seat-status",apiPrefix)).hasAnyRole(Role.USER,Role.ADMIN)
@@ -124,6 +125,7 @@ public class WebSecurityConfig {
                             .requestMatchers(GET, String.format("/%s/bill/get-totalMoney",apiPrefix)).hasRole(Role.USER)
                             .requestMatchers(GET, String.format("/%s/bill/get-history-bill-by-user",apiPrefix)).hasRole(Role.USER)
                             .requestMatchers(GET, String.format("/%s/user/get-profile-user",apiPrefix)).hasRole(Role.USER)
+                            .requestMatchers(GET, String.format("/%s/blog/get-blog-detail",apiPrefix)).hasRole(Role.USER)
                             .anyRequest().authenticated();
                     //.anyRequest().permitAll();
 

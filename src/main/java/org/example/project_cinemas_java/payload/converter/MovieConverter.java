@@ -34,7 +34,7 @@ public class MovieConverter {
         Set<String> listMovieTypeName = new HashSet<>();
         Set<MovieType> movieTypes = movieTypeRepo.findAllByMovie(movie);
         for (MovieType movieType:movieTypes){
-            listMovieTypeName.add(movieType.getType().getMovieTypeName());
+            listMovieTypeName.add(movieType.getType().getMovieTypeName() == null ? null: movieType.getType().getMovieTypeName());
         }
         MovieDTO movieDTO = MovieDTO.builder()
                 .movieName(movie.getName())

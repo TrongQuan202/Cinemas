@@ -26,7 +26,8 @@ public class CreateMovieRequest {
 
     private String image;
 
-    private String herolmage;
+    private String heroImage;
+    private String imageSuggest;
 
     private String language;
 

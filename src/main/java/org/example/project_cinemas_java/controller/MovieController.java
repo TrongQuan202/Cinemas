@@ -46,7 +46,7 @@ public class MovieController {
     }
 
     @PutMapping("/update-movie")
-    public ResponseEntity<?> updateMovie(@RequestBody CreateMovieRequest movieRequest){
+    public ResponseEntity<?> stopMovieShowing(@RequestBody CreateMovieRequest movieRequest){
         try {
             CreateMovieRequest movie = movieService.updateMovie(movieRequest);
             return ResponseEntity.ok().body(movie);
@@ -55,6 +55,19 @@ public class MovieController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
         }catch (InvalidMovieDataException ex){
             return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(ex.getMessage());
+        }catch (DataNotFoundException ex){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        }catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    @PutMapping("/stop-show-movie")
+    public ResponseEntity<?> updateMovie(@RequestParam String slug){
+        try {
+            movieService.stopMovieShowing(slug);
+            return ResponseEntity.ok().body("Phim đã ngừng chiếu");
+
         }catch (DataNotFoundException ex){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
         }catch (Exception e) {
