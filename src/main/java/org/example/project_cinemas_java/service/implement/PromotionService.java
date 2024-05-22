@@ -8,6 +8,7 @@ import org.example.project_cinemas_java.model.Promotion;
 import org.example.project_cinemas_java.model.RankCustomer;
 import org.example.project_cinemas_java.model.User;
 import org.example.project_cinemas_java.payload.converter.PromotionConverter;
+import org.example.project_cinemas_java.payload.dto.promotiondtos.PromotionByAdminDTO;
 import org.example.project_cinemas_java.payload.dto.promotiondtos.PromotionDTO;
 import org.example.project_cinemas_java.payload.dto.promotiondtos.PromotionOfBillDTO;
 import org.example.project_cinemas_java.payload.request.promotion_request.PromotionOfBillRequest;
@@ -20,6 +21,7 @@ import org.example.project_cinemas_java.utils.MessageKeys;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -96,4 +98,38 @@ public class PromotionService implements IPromotionService {
         promotionOfBillDTO.setTotalMoney(bill.getTotalMoney());
         return promotionOfBillDTO;
     }
+
+    @Override
+    public List<PromotionByAdminDTO> getAllPromotionByAdmin() throws Exception {
+        List<PromotionByAdminDTO> promotionByAdminDTOS = new ArrayList<>();
+
+        for (Promotion promotion: promotionRepo.findAll()){
+            promotionByAdminDTOS.add(promotionToPromotionByAdminDTO(promotion));
+        }
+        return promotionByAdminDTOS;
+    }
+
+
+    public PromotionByAdminDTO promotionToPromotionByAdminDTO(Promotion promotion){
+        PromotionByAdminDTO promotionByAdminDTO = new PromotionByAdminDTO();
+
+        promotionByAdminDTO.setImage(promotion.getImage());
+        promotionByAdminDTO.setName(promotion.getName());
+        promotionByAdminDTO.setPercent(promotion.getPercent());
+        promotionByAdminDTO.setCode(promotion.getCode());
+
+        promotionByAdminDTO.setQuantity(promotion.getQuantity());
+        promotionByAdminDTO.setStartTime(localDateTimeToString(promotion.getStartTime()));
+        promotionByAdminDTO.setEndTime(localDateTimeToString(promotion.getEndTime()));
+        promotionByAdminDTO.setActive(promotion.isActive());
+        return promotionByAdminDTO;
+    }
+
+    public String localDateTimeToString (LocalDateTime localDateTime){
+        // Định dạng LocalDateTime thành chuỗi
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        String formattedDateTime = localDateTime.format(formatter);
+        return formattedDateTime;
+    }
+
 }

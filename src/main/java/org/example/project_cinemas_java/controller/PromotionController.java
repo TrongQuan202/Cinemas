@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.project_cinemas_java.exceptions.DataIntegrityViolationException;
 import org.example.project_cinemas_java.exceptions.DataNotFoundException;
 import org.example.project_cinemas_java.exceptions.VoucherExpired;
+import org.example.project_cinemas_java.payload.dto.promotiondtos.PromotionByAdminDTO;
 import org.example.project_cinemas_java.payload.dto.promotiondtos.PromotionDTO;
 import org.example.project_cinemas_java.payload.dto.promotiondtos.PromotionOfBillDTO;
 import org.example.project_cinemas_java.payload.dto.seatdtos.SeatStatusDTO;
@@ -40,6 +41,18 @@ public class PromotionController {
             } else {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
             }
+        }catch (DataNotFoundException ex){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/get-all-promotion-by-admin")
+    public ResponseEntity<?> getAllPromotionByAdmin(){
+        try {
+            List<PromotionByAdminDTO> promotionDTOS = promotionService.getAllPromotionByAdmin();
+                return ResponseEntity.ok().body(promotionDTOS);
         }catch (DataNotFoundException ex){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
         }catch (Exception e){

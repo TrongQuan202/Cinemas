@@ -24,6 +24,8 @@ public class Promotion extends BaseEntity {
     private int quantity;
 
     private String type;
+    private String code;
+    private String image;
 
     private LocalDateTime startTime;
 

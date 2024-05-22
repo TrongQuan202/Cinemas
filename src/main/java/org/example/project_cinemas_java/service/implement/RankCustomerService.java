@@ -38,4 +38,5 @@ public class RankCustomerService implements IRankCustomerService {
         }
         return rankUserConverter.rankCustomerToRankUserDTO(rankCustomer);
     }
+
 }

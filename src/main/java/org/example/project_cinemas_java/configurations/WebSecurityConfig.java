@@ -126,6 +126,7 @@ public class WebSecurityConfig {
                             .requestMatchers(GET, String.format("/%s/bill/get-history-bill-by-user",apiPrefix)).hasRole(Role.USER)
                             .requestMatchers(GET, String.format("/%s/user/get-profile-user",apiPrefix)).hasRole(Role.USER)
                             .requestMatchers(GET, String.format("/%s/blog/get-blog-detail",apiPrefix)).hasRole(Role.USER)
+                            .requestMatchers(GET, String.format("/%s/promotion/get-all-promotion-by-admin",apiPrefix)).hasRole(Role.ADMIN)
                             .anyRequest().authenticated();
                     //.anyRequest().permitAll();
 
@@ -139,7 +140,7 @@ public class WebSecurityConfig {
             @Override
             public void customize(CorsConfigurer<HttpSecurity> httpSecurityCorsConfigurer) {
                 CorsConfiguration configuration = new CorsConfiguration();
-                configuration.setAllowedOrigins(List.of("http://localhost:3000","http://localhost:3001"));
+                configuration.setAllowedOrigins(List.of("http://localhost:3000","http://localhost:3001","https://1c36-58-186-64-41.ngrok-free.app"));
                 configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
                 configuration.setAllowedHeaders(Arrays.asList("authorization", "content-type", "x-auth-token"));
                 configuration.setExposedHeaders(List.of("x-auth-token"));
