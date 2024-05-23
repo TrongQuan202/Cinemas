@@ -14,7 +14,7 @@ public class CreatePromotionRequest {
     private String name;
     private String rank;
     private int percent;
-    private String quantity;
+    private int quantity;
     private String image;
     private String content;
 

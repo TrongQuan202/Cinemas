@@ -8,6 +8,7 @@ import org.example.project_cinemas_java.payload.dto.promotiondtos.PromotionByAdm
 import org.example.project_cinemas_java.payload.dto.promotiondtos.PromotionDTO;
 import org.example.project_cinemas_java.payload.dto.promotiondtos.PromotionOfBillDTO;
 import org.example.project_cinemas_java.payload.dto.seatdtos.SeatStatusDTO;
+import org.example.project_cinemas_java.payload.request.promotion_request.CreatePromotionRequest;
 import org.example.project_cinemas_java.payload.request.promotion_request.PromotionOfBillRequest;
 import org.example.project_cinemas_java.service.implement.PromotionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,6 +60,18 @@ public class PromotionController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
+    @PostMapping("/create-promotion")
+    public ResponseEntity<?> createPromotion(@RequestBody CreatePromotionRequest createPromotionRequest){
+        try {
+            promotionService.createPromotion(createPromotionRequest);
+            return ResponseEntity.ok().body("Thêm thành công");
+        }catch (DataIntegrityViolationException ex){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
     @PutMapping("/get-discount-amount")
     public ResponseEntity<?> getDiscountAmount(@RequestBody PromotionOfBillRequest promotionOfBillRequest){
         try {

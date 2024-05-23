@@ -88,6 +88,7 @@ public class WebSecurityConfig {
                             .requestMatchers(POST, String.format("/%s/blog/create-blog",apiPrefix)).hasRole(Role.ADMIN)
                             .requestMatchers(POST, String.format("/%s/user/confirm-author",apiPrefix)).hasAnyRole(Role.USER,Role.ADMIN)
                             .requestMatchers(POST, String.format("/submitOrder")).hasRole(Role.USER)
+                            .requestMatchers(POST, String.format("/%s/promotion/create-promotion",apiPrefix)).hasRole(Role.ADMIN)
 
 
                             .requestMatchers(PUT, String.format("/%s/cinema/update-cinema",apiPrefix)).hasRole("ADMIN")

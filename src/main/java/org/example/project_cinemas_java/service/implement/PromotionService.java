@@ -11,6 +11,7 @@ import org.example.project_cinemas_java.payload.converter.PromotionConverter;
 import org.example.project_cinemas_java.payload.dto.promotiondtos.PromotionByAdminDTO;
 import org.example.project_cinemas_java.payload.dto.promotiondtos.PromotionDTO;
 import org.example.project_cinemas_java.payload.dto.promotiondtos.PromotionOfBillDTO;
+import org.example.project_cinemas_java.payload.request.promotion_request.CreatePromotionRequest;
 import org.example.project_cinemas_java.payload.request.promotion_request.PromotionOfBillRequest;
 import org.example.project_cinemas_java.repository.BillRepo;
 import org.example.project_cinemas_java.repository.PromotionRepo;
@@ -24,6 +25,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 @Service
 public class PromotionService implements IPromotionService {
@@ -109,7 +111,38 @@ public class PromotionService implements IPromotionService {
         return promotionByAdminDTOS;
     }
 
+    @Override
+    public void createPromotion(CreatePromotionRequest createPromotionRequest) throws Exception {
+        Promotion promotion = promotionRepo.findByName(createPromotionRequest.getName());
+        if(promotion != null){
+            throw new DataIntegrityViolationException("Mã khuyến mãi đã tồn tại");
+        }
+        Promotion promotion1 = new Promotion();
+        promotion1.setQuantity(createPromotionRequest.getQuantity());
+        promotion1.setCode(generateConfirmCode());
+        promotion1.setImage(createPromotionRequest.getImage());
+        promotion1.setName(createPromotionRequest.getName());
+        promotion1.setStartTime(stringToLocalDateTime(createPromotionRequest.getStart()));
+        promotion1.setEndTime(stringToLocalDateTime(createPromotionRequest.getEnd()));
+        promotion1.setPercent(createPromotionRequest.getPercent());
+        promotion1.setActive(true);
+        promotion1.setRankcustomer(rankCustomerRepo.findById(1).orElse(null));
+        promotion1.setDescription(createPromotionRequest.getContent());
+        promotionRepo.save(promotion1);
+    }
 
+    public String generateConfirmCode() {
+        Random random = new Random();
+        int randomNumber = random.nextInt(900000) + 100000;
+        return String.valueOf(randomNumber);
+    }
+
+    public LocalDateTime stringToLocalDateTime (String time){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
+        // Phân tích chuỗi ngày giờ với formatter
+        LocalDateTime localDateTime = LocalDateTime.parse(time, formatter);
+        return localDateTime;
+    }
     public PromotionByAdminDTO promotionToPromotionByAdminDTO(Promotion promotion){
         PromotionByAdminDTO promotionByAdminDTO = new PromotionByAdminDTO();
 
