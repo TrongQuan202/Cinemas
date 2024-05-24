@@ -407,23 +407,43 @@ public class SeatService implements ISeatService {
             //sau khi có bill và ticket thì luu vào bảng billTicket
             Set<BillTicket> billTickets = billTicketRepo.findAllByBill(bill);
 
-            if(billTicketRepo.findAllByTicketAndBill(ticket,bill).size() < 1 || billTickets.size() < 1){
+            if(billTickets.isEmpty() ){
                 BillTicket billTicket  = new BillTicket();
                 billTicket.setBill(bill);
                 billTicket.setTicket(ticket);
                 billTicket.setQuantity(0);
                 billTicketRepo.save(billTicket);
-            } else if (billTicketRepo.findAllByTicketAndBill(ticket,bill).size() >=1 || billTickets.size() >= 1) {
-                for (BillTicket billTicket:billTickets){
-                    if(billTicket.getTicket()== null){
+            }else{
+                for(BillTicket billTicket:billTickets){
+                    if(billTicket.getTicket() == null){
                         billTicket.setTicket(ticket);
                         billTicketRepo.save(billTicket);
-                    } else  {
-                        continue;
+                    }else {
+                        BillTicket billTicket1  = new BillTicket();
+                        billTicket1.setBill(bill);
+                        billTicket1.setTicket(ticket);
+                        billTicket1.setQuantity(0);
+                        billTicketRepo.save(billTicket1);
+                        break;
                     }
-                    break;
                 }
             }
+
+
+
+//            if(billTicketRepo.findAllByTicketAndBill(ticket,bill).isEmpty() || billTickets.isEmpty()){
+//
+//            } else if (!billTicketRepo.findAllByTicketAndBill(ticket,bill).isEmpty()|| !billTickets.isEmpty()) {
+//                for (BillTicket billTicket:billTickets){
+//                    if(billTicket.getTicket() == null){
+//                        billTicket.setTicket(ticket);
+//                        billTicketRepo.save(billTicket);
+//                    } else  {
+//                        continue;
+//                    }
+//                    break;
+//                }
+//            }
 
             for (BillTicket billTicket1:billTicketRepo.findAllByTicketAndBill(ticket,bill)){
                 bill.setTotalMoney(bill.getTotalMoney() + billTicket1.getTicket().getPriceTicket());
@@ -592,8 +612,9 @@ public class SeatService implements ISeatService {
             }
 
             billTicket.setTicket(null);
-            billTicket.setBill(null);
-            billTicketRepo.delete(billTicket);
+//            billTicket.setBill(null);
+//            billTicketRepo.delete(billTicket);
+            billTicketRepo.save(billTicket);
 
 
 

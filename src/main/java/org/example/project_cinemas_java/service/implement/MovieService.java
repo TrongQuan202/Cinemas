@@ -326,6 +326,27 @@ public class MovieService implements IMovieService {
         return movieScheduleAdminDTOS;
     }
 
+    @Override
+    public List<MovieSuggestDTO> getAllMovieSuggestDTO() throws Exception {
+        List<MovieSuggestDTO> movieSuggestDTOS = new ArrayList<>();
+        int count = 0;
+        for (Movie movie:movieRepo.findAll()){
+            if(movie.getImageSuggest() != null){
+                MovieSuggestDTO movieSuggestDTO = new MovieSuggestDTO();
+                movieSuggestDTO.setMovieName(movie.getName());
+                movieSuggestDTO.setSlug(movie.getSlug());
+                movieSuggestDTO.setImage(movie.getImage());
+                movieSuggestDTOS.add(movieSuggestDTO);
+                count++;
+
+                if (count == 3) {
+                    break;
+                }
+            }
+        }
+        return movieSuggestDTOS;
+    }
+
 
     public MovieByAdminDTO movieToMovieByAdminDTO(Movie movie){
         return this.modelMapper.map(movie, MovieByAdminDTO.class);

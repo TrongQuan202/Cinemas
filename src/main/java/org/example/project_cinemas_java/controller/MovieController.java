@@ -131,4 +131,13 @@ public class MovieController {
     public ResponseEntity<?> getAllMovieScheduleDTO(){
         return ResponseEntity.ok().body(movieService.getAllMovieScheduleDTO());
     }
+
+    @GetMapping("/get-all-movie-suggest")
+    public ResponseEntity<?> getAllMovieSuggestDTO(){
+        try {
+            return ResponseEntity.ok().body(movieService.getAllMovieSuggestDTO());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

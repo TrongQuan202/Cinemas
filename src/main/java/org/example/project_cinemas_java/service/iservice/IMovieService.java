@@ -26,4 +26,6 @@ public interface IMovieService {
     List<MovieTypeRequest> getAllMovieType();
 
     List<MovieScheduleAdminDTO> getAllMovieScheduleDTO();
+
+    List<MovieSuggestDTO> getAllMovieSuggestDTO()throws Exception;
 }

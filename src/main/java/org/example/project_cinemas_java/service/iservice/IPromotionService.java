@@ -1,5 +1,6 @@
 package org.example.project_cinemas_java.service.iservice;
 
+import org.example.project_cinemas_java.model.Promotion;
 import org.example.project_cinemas_java.payload.dto.promotiondtos.PromotionByAdminDTO;
 import org.example.project_cinemas_java.payload.dto.promotiondtos.PromotionDTO;
 import org.example.project_cinemas_java.payload.dto.promotiondtos.PromotionOfBillDTO;
@@ -16,4 +17,6 @@ public interface IPromotionService {
     List<PromotionByAdminDTO> getAllPromotionByAdmin()throws Exception;
 
     void createPromotion(CreatePromotionRequest createPromotionRequest) throws Exception;
+
+    List<Promotion> getAllPromotion() ;
 }

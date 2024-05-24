@@ -131,6 +131,11 @@ public class PromotionService implements IPromotionService {
         promotionRepo.save(promotion1);
     }
 
+    @Override
+    public List<Promotion> getAllPromotion() {
+        return promotionRepo.findAll();
+    }
+
     public String generateConfirmCode() {
         Random random = new Random();
         int randomNumber = random.nextInt(900000) + 100000;

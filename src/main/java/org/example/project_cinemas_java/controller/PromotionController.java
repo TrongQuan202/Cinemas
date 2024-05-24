@@ -60,6 +60,11 @@ public class PromotionController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
+
+    @GetMapping("/get-promotions")
+    public ResponseEntity<?> getAllPromotion(){
+          return ResponseEntity.ok().body(promotionService.getAllPromotion());
+    }
     @PostMapping("/create-promotion")
     public ResponseEntity<?> createPromotion(@RequestBody CreatePromotionRequest createPromotionRequest){
         try {
