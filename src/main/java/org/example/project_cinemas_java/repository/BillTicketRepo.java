@@ -16,7 +16,7 @@ public interface BillTicketRepo extends JpaRepository<BillTicket, Integer> {
 
     boolean existsByBillAndTicket(Bill bill, Ticket ticket);
 
-    Set<BillTicket> findAllByBill(Bill bill);
+    List<BillTicket> findAllByBill(Bill bill);
 
 
     List<BillTicket> findAllByTicketAndBill(Ticket ticket, Bill bill);

@@ -113,7 +113,7 @@ public class BillService implements IBillService {
         bill.setCreateTime(LocalDateTime.now());
         billRepo.save(bill);
 
-        Set<BillTicket> billTickets = billTicketRepo.findAllByBill(bill);
+        List<BillTicket> billTickets = billTicketRepo.findAllByBill(bill);
             if(billTickets.isEmpty()){
             throw new DataNotFoundException("Vui lòng chọn combo");
         }
@@ -136,7 +136,7 @@ public class BillService implements IBillService {
         }
         Bill bill = billRepo.findBillByUserAndBillstatusId(user,3);
         if(bill != null){
-            Set<BillTicket> billTickets = billTicketRepo.findAllByBill(bill);
+            List<BillTicket> billTickets = billTicketRepo.findAllByBill(bill);
             if(billTickets != null){
                 for (BillTicket billTicket:billTickets){
                     if(billTicket.getTicket() != null){
@@ -216,7 +216,7 @@ public class BillService implements IBillService {
             for (Bill bill:bills){
                 HistoryBillByUserDTO historyBillByUserDTO = new HistoryBillByUserDTO();
                 historyBillByUserDTO.setBillCode(bill.getTradingCode());
-                Set<BillTicket> billTickets = billTicketRepo.findAllByBill(bill);
+                List<BillTicket> billTickets = billTicketRepo.findAllByBill(bill);
                 if(!billTickets.isEmpty()){
                     for (BillTicket billTicket:billTickets){
                         historyBillByUserDTO.setMovieName(billTicket.getTicket().getSchedule().getMovie().getName());

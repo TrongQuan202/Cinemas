@@ -192,7 +192,7 @@ public class VNPayService {
         String food = "";
         String paymentTime = "";
         String totalAmount = "";
-        Set<BillTicket> billTickets = billTicketRepo.findAllByBill(bill);
+        List<BillTicket> billTickets = billTicketRepo.findAllByBill(bill);
         List<Ticket> tickets = new ArrayList<>();
         for (BillTicket billTicket:billTickets){
             tickets.add(billTicket.getTicket());
@@ -289,7 +289,7 @@ public class VNPayService {
                     bill.setTotalMoney(0);
                     billRepo.save(bill);
 
-                    Set<BillTicket> billTickets = billTicketRepo.findAllByBill(bill);
+                    List<BillTicket> billTickets = billTicketRepo.findAllByBill(bill);
                     if(!billTickets.isEmpty()){
                         for (BillTicket billTicket:billTickets){
                             billTicket.setTicket(null);

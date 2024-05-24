@@ -24,9 +24,9 @@ public class MessageKeys {
 
     public static final String INCORRECT_VERIFICATION_CODE = "Incorrect verification code";
 
-    public static final String EMAIL_ALREADY_EXISTS = "Email already exists";
-    public static final String VERIFICATION_CODE_HAS_EXPIRED = "Verification code has expired";
-    public static final String USER_DOES_NOT_EXIST = "User does not exist";
+    public static final String EMAIL_ALREADY_EXISTS = "Email đã tồn tại";
+    public static final String VERIFICATION_CODE_HAS_EXPIRED = "Mã xác thực đã hết hạn";
+    public static final String USER_DOES_NOT_EXIST = "Người dùng không tồn tại";
 
     public static final String CINEMA_ALREADY_EXISTS = "Cinema already exists";
     public static final String CINEMA_DOES_NOT_EXIST = "Cinema does not exist";
