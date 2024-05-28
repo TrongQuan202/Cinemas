@@ -18,5 +18,5 @@ public class UserDTO {
 
     private String rank;
 
-    private int point;
+    private float point;
 }

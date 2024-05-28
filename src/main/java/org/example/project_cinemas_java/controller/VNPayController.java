@@ -50,32 +50,39 @@ public class VNPayController {
 
     @GetMapping("/vnpay-payment")
     public  ResponseEntity<?> confirmPayment(HttpServletRequest request, Model model){
-        int paymentStatus =vnPayService.orderReturn(request);
+        try {
+           int paymentStatus = vnPayService.orderReturn(request);
 
-        String orderInfo = request.getParameter("vnp_OrderInfo");
-        String paymentTime = request.getParameter("vnp_PayDate");
-        String transactionId = request.getParameter("vnp_TransactionNo");
-        String totalPrice = request.getParameter("vnp_Amount");
+            String orderInfo = request.getParameter("vnp_OrderInfo");
+            String paymentTime = request.getParameter("vnp_PayDate");
+            String transactionId = request.getParameter("vnp_TransactionNo");
+            String totalPrice = request.getParameter("vnp_Amount");
 
 
-        model.addAttribute("orderId", orderInfo);
-        model.addAttribute("totalPrice", totalPrice);
-        model.addAttribute("paymentTime", paymentTime);
-        model.addAttribute("transactionId", transactionId);
+            model.addAttribute("orderId", orderInfo);
+            model.addAttribute("totalPrice", totalPrice);
+            model.addAttribute("paymentTime", paymentTime);
+            model.addAttribute("transactionId", transactionId);
 
 //        return paymentStatus == 1 ? "ordersuccess" : "orderfail";
 
-        String redirectUrl = "http://localhost:3000/thong-bao";
-        if(paymentStatus == 1){
-            redirectUrl += "?status=success";
-        }else {
-            redirectUrl += "?status=failure";
+            String redirectUrl = "https://spacecinema-wheat.vercel.app/thong-bao";
+            if(paymentStatus == 1){
+                redirectUrl += "?status=success";
+            }else {
+                redirectUrl += "?status=failure";
+            }
+
+            // Chuyển hướng người dùng về trang trong Nuxt.js
+            HttpHeaders headers = new HttpHeaders();
+            headers.setLocation(URI.create(redirectUrl));
+            return new ResponseEntity<>(headers, HttpStatus.SEE_OTHER);
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
 
-        // Chuyển hướng người dùng về trang trong Nuxt.js
-        HttpHeaders headers = new HttpHeaders();
-        headers.setLocation(URI.create(redirectUrl));
-        return new ResponseEntity<>(headers, HttpStatus.SEE_OTHER);
+
     }
 
     @GetMapping("/check")

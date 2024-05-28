@@ -12,7 +12,7 @@ import org.example.project_cinemas_java.model.UserStatus;
 @NoArgsConstructor
 @Builder
 public class UserAccountDTO {
-    private int point;
+    private float point;
 
     private String userName;
 

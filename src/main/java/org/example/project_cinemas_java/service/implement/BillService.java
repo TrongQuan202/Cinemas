@@ -87,7 +87,7 @@ public class BillService implements IBillService {
     }
 
     @Override
-    public String saveBillInformation(int user) throws Exception {
+    public String saveBillInformation(int user, float finalAmount) throws Exception {
         User exitstingUser = userRepo.findById(user).orElse(null);
         if(exitstingUser == null){
             throw new DataNotFoundException("Thông tin khách hàng bị lỗi! Thử lại sau ít phút");
@@ -106,11 +106,22 @@ public class BillService implements IBillService {
             }
         }
 
+        // cập nhật lại số point đã dùng
+        float point = (float) (bill.getTotalMoney() - finalAmount);
+        exitstingUser.setPoint(exitstingUser.getPoint()  > 0 ? exitstingUser.getPoint() - point : 0);
+        userRepo.save(exitstingUser);
+
+        // nếu đơn hàng lớn hơn 200k thì được cộng 5% point của tổng giá trị đơn hàng
+        if(finalAmount >= 200000){
+            exitstingUser.setPoint((float) (exitstingUser.getPoint() + finalAmount * 0.05));
+            userRepo.save(exitstingUser);
+        }
 
         bill.setName(exitstingUser.getUserName() + "đã thanh toán hóa đơn");
         bill.setBillstatus(billStatusRepo.findById(2).orElse(null));
         bill.setUpdateTime(LocalDateTime.now());
         bill.setCreateTime(LocalDateTime.now());
+        bill.setTotalMoney(finalAmount);
         billRepo.save(bill);
 
         List<BillTicket> billTickets = billTicketRepo.findAllByBill(bill);

@@ -19,4 +19,6 @@ public interface IPromotionService {
     void createPromotion(CreatePromotionRequest createPromotionRequest) throws Exception;
 
     List<Promotion> getAllPromotion() ;
+
+    Promotion getPromotion(int id)throws Exception;
 }

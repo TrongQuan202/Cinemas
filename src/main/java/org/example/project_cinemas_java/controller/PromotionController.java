@@ -65,6 +65,17 @@ public class PromotionController {
     public ResponseEntity<?> getAllPromotion(){
           return ResponseEntity.ok().body(promotionService.getAllPromotion());
     }
+
+    @GetMapping("/get-promotion-detail")
+    public ResponseEntity<?> getAllPromotion(@RequestParam int id){
+        try {
+            return ResponseEntity.ok().body(promotionService.getPromotion(id));
+        } catch (DataNotFoundException ex){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        }catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
     @PostMapping("/create-promotion")
     public ResponseEntity<?> createPromotion(@RequestBody CreatePromotionRequest createPromotionRequest){
         try {

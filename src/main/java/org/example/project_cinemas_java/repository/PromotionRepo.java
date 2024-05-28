@@ -13,4 +13,6 @@ public interface PromotionRepo extends JpaRepository<Promotion, Integer> {
     List<Promotion> findAllByRankcustomer(RankCustomer rankCustomer);
 
     Promotion findByName(String name);
+
+    Promotion findByCode(String code);
 }

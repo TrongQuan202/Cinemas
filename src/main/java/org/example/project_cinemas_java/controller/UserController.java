@@ -88,4 +88,25 @@ public class UserController {
         }
     }
 
+    @GetMapping("/get-point")
+    public ResponseEntity<?> getPoint() {
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
+                UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+                // Lấy email của người dùng từ UserDetails
+                String email = userDetails.getUsername();
+
+                float point = userService.getPoint(email);
+                return ResponseEntity.ok().body(point);
+            } else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
+            }
+        } catch (DataNotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
 }

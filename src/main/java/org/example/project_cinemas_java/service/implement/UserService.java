@@ -121,6 +121,15 @@ public class UserService implements IUserService {
         return userAccountDTO;
     }
 
+    public float getPoint(String email) throws Exception {
+        User user = userRepo.findByEmail(email).orElse(null);
+        if(user == null){
+            throw new DataNotFoundException("Người dùng kooong tồn tại");
+        }
+        return user.getPoint();
+    }
+
+
 }
 
 

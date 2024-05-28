@@ -1,9 +1,6 @@
 package org.example.project_cinemas_java.repository;
 
-import org.example.project_cinemas_java.model.Bill;
-import org.example.project_cinemas_java.model.BillStatus;
-import org.example.project_cinemas_java.model.BillTicket;
-import org.example.project_cinemas_java.model.User;
+import org.example.project_cinemas_java.model.*;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -27,6 +24,8 @@ public interface BillRepo extends JpaRepository<Bill, Integer> {
     List<Bill> findAllBillByUserAndBillstatusId(User user, int billStatusId);
 
     List<Bill> findDistinctByBillTicketsIn(List<BillTicket> billTickets);
+
+    Bill findByUserAndBillstatusIdAndPromotionIsNotNull(User user, int billStatusId);
 
     @Query( nativeQuery = true,
             value = "SELECT MONTH(b.update_time), SUM(b.total_money) " +

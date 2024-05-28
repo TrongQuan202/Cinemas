@@ -23,7 +23,7 @@ import java.util.Set;
 @Table(name = "user")
 @Builder
 public class User extends BaseEntity implements UserDetails {
-    private int point;
+    private float point;
 
     private String userName;
 

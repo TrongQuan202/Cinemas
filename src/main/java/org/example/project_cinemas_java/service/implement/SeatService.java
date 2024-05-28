@@ -279,7 +279,7 @@ public class SeatService implements ISeatService {
     }
 
     @Override
-    public List<SeatsByRoomDTO> resetSeatByUser(String dayMonthYear, String startTime, int movieId, int roomId, String tokenOfUser) throws Exception {
+        public List<SeatsByRoomDTO> resetSeatByUser(String dayMonthYear, String startTime, int movieId, int roomId, String tokenOfUser) throws Exception {
         String email = jwtTokenUtils.extractEmail(tokenOfUser);
         User user = userRepo.findByEmail(email).orElse(null);
         if(email == null){
@@ -459,7 +459,7 @@ public class SeatService implements ISeatService {
 
             //tính toán số lượng ghế đã chọn và tổng tiền cho ghe thường
             seatSelectedDTO.setSeatType(1);
-            List<Ticket> tickets = ticketRepo.findAllByUserAndSeatTypeAndSchedule(existingUser,1,schedule);
+            List<Ticket> tickets = ticketRepo.findAllByUserAndSeatTypeAndScheduleAndSeatStatus(existingUser,1,schedule,3);
             seatSelectedDTO.setSeatSelectedCount(tickets.size());
             seatSelectedDTO.setPrice(priceTicket(tickets));
             seatSelectedDTO.setTotalMoney(bill.getTotalMoney());
@@ -529,7 +529,7 @@ public class SeatService implements ISeatService {
 
             //tính toán số lượng ghế đã chọn và tổng tiền cho ghe thường
             seatSelectedDTO.setSeatType(2);
-            List<Ticket> tickets = ticketRepo.findAllByUserAndSeatTypeAndSchedule(existingUser,2,schedule);
+            List<Ticket> tickets = ticketRepo.findAllByUserAndSeatTypeAndScheduleAndSeatStatus(existingUser,2,schedule,3);
             seatSelectedDTO.setSeatSelectedCount(tickets.size());
             seatSelectedDTO.setPrice(priceTicket(tickets));
             seatSelectedDTO.setTotalMoney(bill.getTotalMoney());
@@ -598,7 +598,7 @@ public class SeatService implements ISeatService {
 
             //tính toán số lượng ghế đã chọn và tổng tiền cho ghe thường
             seatSelectedDTO.setSeatType(3);
-            List<Ticket> tickets = ticketRepo.findAllByUserAndSeatTypeAndSchedule(existingUser,3,schedule);
+            List<Ticket> tickets = ticketRepo.findAllByUserAndSeatTypeAndScheduleAndSeatStatus(existingUser,3,schedule,3);
             seatSelectedDTO.setSeatSelectedCount(tickets.size());
             seatSelectedDTO.setPrice(priceTicket(tickets));
             List<Ticket> ticketsByUserAndSchedule = ticketRepo.findAllByUserAndSchedule(existingUser,schedule);
@@ -644,7 +644,7 @@ public class SeatService implements ISeatService {
 
 
 
-            List<Ticket> tickets = ticketRepo.findAllByUserAndSeatTypeAndSchedule(existingUser,1,schedule);
+            List<Ticket> tickets = ticketRepo.findAllByUserAndSeatTypeAndScheduleAndSeatStatus(existingUser,1,schedule,3);
             seatSelectedDTO.setSeatType(1);
             seatSelectedDTO.setSeatSelectedCount(tickets.size());
             seatSelectedDTO.setPrice(priceTicket(tickets));
@@ -688,7 +688,7 @@ public class SeatService implements ISeatService {
             billTicketRepo.save(billTicket);
 
 
-            List<Ticket> tickets = ticketRepo.findAllByUserAndSeatTypeAndSchedule(existingUser,2,schedule);
+            List<Ticket> tickets = ticketRepo.findAllByUserAndSeatTypeAndScheduleAndSeatStatus(existingUser,2,schedule,3);
             seatSelectedDTO.setSeatType(2);
             seatSelectedDTO.setSeatSelectedCount(tickets.size());
             seatSelectedDTO.setPrice(priceTicket(tickets));
@@ -727,7 +727,7 @@ public class SeatService implements ISeatService {
 //            billTicket.setBill(null);
             billTicketRepo.save(billTicket);
 
-            List<Ticket> tickets = ticketRepo.findAllByUserAndSeatTypeAndSchedule(existingUser,3,schedule);
+            List<Ticket> tickets = ticketRepo.findAllByUserAndSeatTypeAndScheduleAndSeatStatus(existingUser,3,schedule,3);
             seatSelectedDTO.setSeatType(3);
             seatSelectedDTO.setSeatSelectedCount(tickets.size());
             seatSelectedDTO.setPrice(priceTicket(tickets));
@@ -780,6 +780,14 @@ public class SeatService implements ISeatService {
                 if(bill == null) {
                     throw new DataNotFoundException("Bill does not exits");
                 }
+                if(bill.getPromotion() != null){
+                    Promotion promotion = bill.getPromotion();
+                    System.out.println(promotion.getQuantity());
+                    promotion.setQuantity(promotion.getQuantity() + 1);
+                    System.out.println("helllo");
+                    promotionRepo.save(promotion);
+                }
+
                 List<BillFood> billFoods = billFoodRepo.findAllByBill(bill);
                 if (!billFoods.isEmpty()){
                     for (BillFood billFood:billFoods){
@@ -791,7 +799,6 @@ public class SeatService implements ISeatService {
                         billFoodRepo.delete(billFood);
                     }
                 }
-
                 bill.setTotalMoney(0);
                 billRepo.save(bill);
 
@@ -803,11 +810,7 @@ public class SeatService implements ISeatService {
                         billTicketRepo.deleteById(billTicket.getId());
                     }
                 }
-                Promotion promotion = bill.getPromotion();
-                if(promotion != null){
-                    promotion.setQuantity(promotion.getQuantity() + 1);
-                    promotionRepo.save(promotion);
-                }
+
 
                 SeatStatusDTO seatStatusDTO = new SeatStatusDTO();
                 seatStatusDTO.setSeatStatus(ticket.getSeatStatus());

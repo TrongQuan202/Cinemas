@@ -84,7 +84,7 @@ public class TicketService implements ITicketService {
                 ticketRepo.save(ticket);
             }
         }else {
-            throw new DataNotFoundException("Chưa chọn ghế ! Vui lòng chọn lại ghế để tiếp tục");
+            throw new DataNotFoundException("Hết thời gian giữ ghế ! Vui lòng chọn lại ghế để tiếp tục");
         }
 
     }

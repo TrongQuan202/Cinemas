@@ -28,7 +28,7 @@ public interface TicketRepo extends JpaRepository<Ticket, Integer> {
 
     List<Ticket> findAllByUserAndSchedule(User user, Schedule schedule);
 
-    List<Ticket> findAllByUserAndSeatTypeAndSchedule(User user, int seatType, Schedule schedule);
+    List<Ticket> findAllByUserAndSeatTypeAndScheduleAndSeatStatus(User user, int seatType, Schedule schedule, int seatStatus);
 
     List<Ticket> findAllBySeatStatusAndTicketBookingTimeLessThan(int seatStatus, LocalDateTime localDateTime);
 

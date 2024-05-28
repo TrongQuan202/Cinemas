@@ -12,8 +12,8 @@ public class PromotionConverter {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy"); // Định dạng ngày giờ
         String formattedEndTime = promotion.getEndTime().format(formatter); // Chuyển đổi endTime sang String
         PromotionDTO promotionDTO = PromotionDTO.builder()
-                .name(promotion.getName())
-                .description(promotion.getDescription())
+                .name(promotion.getCode())
+                .description(promotion.getName())
                 .quantity(promotion.getQuantity())
                 .endTime(formattedEndTime)
                 .build();

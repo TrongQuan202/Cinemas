@@ -54,21 +54,23 @@ public class PromotionService implements IPromotionService {
             throw new DataNotFoundException(MessageKeys.RANK_OF_USER_DOES_NOT_EXIST);
         }
         List<Promotion> promotions = promotionRepo.findAllByRankcustomer(rankCustomer);
-        if(promotions.size() ==0 ){
-            throw  new DataNotFoundException("Promotion does not exist");
-        }
         List<PromotionDTO> promotionDTOS = new ArrayList<>();
-        for (Promotion promotion: promotions){
-            promotionDTOS.add(promotionConverter.promotionToPromotionDTO(promotion));
+        if(!promotions.isEmpty()){
+            for (Promotion promotion: promotions){
+                promotionDTOS.add(promotionConverter.promotionToPromotionDTO(promotion));
+            }
         }
         return promotionDTOS;
     }
 
     @Override
     public PromotionOfBillDTO getDiscountAmount(String email, PromotionOfBillRequest promotionOfBillRequest) throws Exception {
-        Promotion promotion = promotionRepo.findByName(promotionOfBillRequest.getCode());
+        Promotion promotion = promotionRepo.findByCode(promotionOfBillRequest.getCode());
         if(promotion == null){
             throw  new DataNotFoundException("Mã voucher không tồn tại");
+        }
+        if(promotion.getQuantity() <1){
+            throw new DataIntegrityViolationException("Voucher đã hết hạn");
         }
         User user  = userRepo.findByEmail(email).orElse(null);
         if(user == null){
@@ -134,6 +136,15 @@ public class PromotionService implements IPromotionService {
     @Override
     public List<Promotion> getAllPromotion() {
         return promotionRepo.findAll();
+    }
+
+    @Override
+    public Promotion getPromotion(int id) throws Exception {
+        Promotion promotion = promotionRepo.findById(id).orElse(null);
+        if(promotion == null){
+            throw new DataNotFoundException("Sự kiện đã kết thúc");
+        }
+        return promotion;
     }
 
     public String generateConfirmCode() {

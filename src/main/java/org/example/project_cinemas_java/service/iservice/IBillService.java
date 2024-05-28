@@ -13,7 +13,7 @@ import java.util.List;
 public interface IBillService {
     void createBill(String email)throws Exception;
 
-    String saveBillInformation(int user)throws Exception;
+    String saveBillInformation(int user, float finalAmount)throws Exception;
 
     void resetBillByUser(int user) throws Exception;
 

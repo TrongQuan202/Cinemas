@@ -7,6 +7,7 @@ import org.example.project_cinemas_java.configurations.VNPayConfig;
 import org.example.project_cinemas_java.exceptions.DataNotFoundException;
 import org.example.project_cinemas_java.model.*;
 import org.example.project_cinemas_java.payload.dto.seatdtos.SeatStatusDTO;
+import org.example.project_cinemas_java.payload.request.seat_request.SeatStatusRequest;
 import org.example.project_cinemas_java.repository.*;
 import org.example.project_cinemas_java.utils.MessageKeys;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.io.UnsupportedEncodingException;
@@ -51,6 +53,8 @@ public class VNPayService {
     private BillFoodRepo billFoodRepo;
     @Autowired
     private PromotionRepo promotionRepo;
+    @Autowired
+    private SimpMessagingTemplate simpMessagingTemplate;
 
     public String createOrder(int total, int orderInfor, String urlReturn){
         String vnp_Version = "2.1.0";
@@ -121,7 +125,7 @@ public class VNPayService {
         return paymentUrl;
     }
 
-    public int orderReturn(HttpServletRequest request){
+    public int orderReturn(HttpServletRequest request) throws Exception{
         Map fields = new HashMap();
         for (Enumeration params = request.getParameterNames(); params.hasMoreElements();) {
             String fieldName = null;
@@ -146,21 +150,24 @@ public class VNPayService {
         }
         String signValue = VNPayConfig.hashAllFields(fields);
         if (signValue.equals(vnp_SecureHash)) {
-            if ("00".equals(request.getParameter("vnp_TransactionStatus"))) {
-                int user = Integer.parseInt(request.getParameter("vnp_OrderInfo"));
-                System.out.println(user);
-                try {
-                    //save bill thành đã thanh toán cập nhật lại trang thái ghế thành đã bán
-                   String code = billService.saveBillInformation(user);
+                    if ("00".equals(request.getParameter("vnp_TransactionStatus"))) {
+                        int user = Integer.parseInt(request.getParameter("vnp_OrderInfo"));
+                        float finalAmount = Float.parseFloat(request.getParameter("vnp_Amount")) / 100;
 
-                    //thông báo bill tơi email
-                   sendEmail(user,code);
-            } catch (DataNotFoundException ex) {
-                    return 0;
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
+                        //cập nhât lại seatStatus thành đã bán cho toàn bộ người phòng
+                        handleSeatAfterPayment(user);
+                        try {
+                            //save bill thành đã thanh toán cập nhật lại trang thái ghế thành đã bán
+                            String code = billService.saveBillInformation(user,finalAmount);
 
+                            //thông báo bill tơi email
+                            sendEmail(user,code);
+
+                        } catch (DataNotFoundException ex) {
+                            return 0;
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
+                        }
                 return 1;
             } else {
                 int user = Integer.parseInt(request.getParameter("vnp_OrderInfo"));
@@ -175,6 +182,24 @@ public class VNPayService {
             return -1;
         }
     }
+
+    public void handleSeatAfterPayment(int userId) {
+        User  user = userRepo.findById(userId).orElse(null);
+        Bill bill = billRepo.findBillByUserAndBillstatusId(user,3);
+        if(bill != null){
+            List<BillTicket> billTickets = billTicketRepo.findAllByBill(bill);
+            for (BillTicket billTicket:billTickets){
+                SeatStatusRequest seatStatusRequest = new SeatStatusRequest();
+                seatStatusRequest.setSeatId(billTicket.getTicket().getSeat().getId());
+                seatStatusRequest.setStatus(4);
+                seatStatusRequest.setSeatType(billTicket.getTicket().getSeatType());
+                seatStatusRequest.setUserId(billTicket.getTicket().getUser().getId());
+                seatStatusRequest.setSchedule(billTicket.getTicket().getSchedule().getId());
+                simpMessagingTemplate.convertAndSend("/topic/seatStatus/" + seatStatusRequest.getSchedule(), seatStatusRequest );
+            }
+        }
+    }
+
 
     public void     sendEmail( int user, String code) {
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
