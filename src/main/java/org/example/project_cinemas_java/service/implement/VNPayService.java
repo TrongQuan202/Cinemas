@@ -154,8 +154,6 @@ public class VNPayService {
                         int user = Integer.parseInt(request.getParameter("vnp_OrderInfo"));
                         float finalAmount = Float.parseFloat(request.getParameter("vnp_Amount")) / 100;
 
-                        //cập nhât lại seatStatus thành đã bán cho toàn bộ người phòng
-                        handleSeatAfterPayment(user);
                         try {
                             //save bill thành đã thanh toán cập nhật lại trang thái ghế thành đã bán
                             String code = billService.saveBillInformation(user,finalAmount);
@@ -168,6 +166,8 @@ public class VNPayService {
                         } catch (Exception e) {
                             throw new RuntimeException(e);
                         }
+                        //cập nhât lại seatStatus thành đã bán cho toàn bộ người phòng
+                        handleSeatAfterPayment(user);
                 return 1;
             } else {
                 int user = Integer.parseInt(request.getParameter("vnp_OrderInfo"));

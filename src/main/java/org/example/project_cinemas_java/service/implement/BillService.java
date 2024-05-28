@@ -5,6 +5,7 @@ import org.example.project_cinemas_java.model.*;
 import org.example.project_cinemas_java.payload.dto.billdtos.BillAdminDTO;
 import org.example.project_cinemas_java.payload.dto.billdtos.BillDTO;
 import org.example.project_cinemas_java.payload.dto.billdtos.HistoryBillByUserDTO;
+import org.example.project_cinemas_java.payload.request.DeleteByTimeRequest;
 import org.example.project_cinemas_java.payload.request.bill_request.CreateBillRequest;
 import org.example.project_cinemas_java.payload.request.bill_request.DeleteBillRequest;
 import org.example.project_cinemas_java.repository.*;
@@ -12,7 +13,9 @@ import org.example.project_cinemas_java.service.iservice.IBillService;
 import org.example.project_cinemas_java.utils.MessageKeys;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -85,6 +88,8 @@ public class BillService implements IBillService {
             billRepo.save(bill);
         }
     }
+
+
 
     @Override
     public String saveBillInformation(int user, float finalAmount) throws Exception {
@@ -186,27 +191,42 @@ public class BillService implements IBillService {
 
         List<BillAdminDTO> billAdminDTOS = new ArrayList<>();
         for (Bill bill:billRepo.findAll()){
-            BillAdminDTO billAdminDTO = new BillAdminDTO();
-            billAdminDTO.setUser(bill.getUser().getEmail());
-            billAdminDTO.setName(bill.getName());
-            billAdminDTO.setStatus(bill.getBillstatus().getId());
-            billAdminDTO.setMonth(bill.getMonth());
-            billAdminDTO.setTotalMoney(bill.getTotalMoney());
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-            LocalDateTime createTime = bill.getCreateTime();
-            String formattedDateTime = createTime.format(formatter);
-            billAdminDTO.setCreateTime(formattedDateTime);
-            billAdminDTO.setVoucher(bill.getPromotion() == null ? null: bill.getPromotion().getName());
-            billAdminDTO.setTradingCode(bill.getTradingCode());
-            billAdminDTOS.add(billAdminDTO);
+            if(bill.isActive()){
+                BillAdminDTO billAdminDTO = new BillAdminDTO();
+                billAdminDTO.setUser(bill.getUser().getEmail());
+                billAdminDTO.setName(bill.getName());
+                billAdminDTO.setStatus(bill.getBillstatus().getId());
+                billAdminDTO.setMonth(bill.getMonth());
+                billAdminDTO.setTotalMoney(bill.getTotalMoney());
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                LocalDateTime createTime = bill.getCreateTime();
+                String formattedDateTime = createTime.format(formatter);
+                billAdminDTO.setCreateTime(formattedDateTime);
+                billAdminDTO.setVoucher(bill.getPromotion() == null ? null: bill.getPromotion().getName());
+                billAdminDTO.setTradingCode(bill.getTradingCode());
+                billAdminDTOS.add(billAdminDTO);
+            }
+
         }
         return billAdminDTOS;
+    }
+    public static LocalDateTime stringToLocalDateTime(String time) {
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS");
+        LocalDateTime localDateTime = LocalDateTime.parse(time, formatter);
+
+        return localDateTime;
     }
 
     @Override
     public void deleteBill(DeleteBillRequest deleteBillRequest) throws Exception {
-        
+        LocalDateTime startTime = stringToLocalDateTime(deleteBillRequest.getStart());
+        LocalDateTime endTime = stringToLocalDateTime(deleteBillRequest.getEnd());
+        billRepo.deleteBill(deleteBillRequest.getStart(),deleteBillRequest.getEnd());
     }
+
+
+
     public String localDateTimeToString(LocalDateTime localDateTime){
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
         String formattedDate = localDateTime.format(formatter);
@@ -224,30 +244,33 @@ public class BillService implements IBillService {
         String seatSelected = "";
         String comboFood = "";
         if(!bills.isEmpty()){
-            for (Bill bill:bills){
-                HistoryBillByUserDTO historyBillByUserDTO = new HistoryBillByUserDTO();
-                historyBillByUserDTO.setBillCode(bill.getTradingCode());
-                List<BillTicket> billTickets = billTicketRepo.findAllByBill(bill);
-                if(!billTickets.isEmpty()){
-                    for (BillTicket billTicket:billTickets){
-                        historyBillByUserDTO.setMovieName(billTicket.getTicket().getSchedule().getMovie().getName());
-                        historyBillByUserDTO.setNameOfCinema(billTicket.getTicket().getSchedule().getMovie().getCinema().getNameOfCinema());
-                        historyBillByUserDTO.setSchedule(localDateTimeToString(billTicket.getTicket().getSchedule().getStartAt()));
-                        seatSelected += billTicket.getTicket().getSeat().getLine() + billTicket.getTicket().getSeat().getNumber() + ", ";
-                    }
-                    seatSelected += "Tổng tiền: " + bill.getTotalMoney()+ "VNĐ";
-                    historyBillByUserDTO.setSeatSelectedAndTotalMoney(seatSelected);
-                    List<BillFood> billFoods = billFoodRepo.findAllByBill(bill);
-                    if(!billFoods.isEmpty()){
-                        for(BillFood billFood:billFoods){
-                            comboFood += billFood.getQuantity() + " x " + billFood.getFood().getNameOfFood() +", ";
-                        }
-                        historyBillByUserDTO.setComboFood(comboFood);
-                    }
-                    historyBillByUserDTO.setDateBooking(localDateTimeToString(bill.getCreateTime()));
+            for (Bill bill:bills) {
+                if (bill.isActive()) {
+                    HistoryBillByUserDTO historyBillByUserDTO = new HistoryBillByUserDTO();
+                    historyBillByUserDTO.setBillCode(bill.getTradingCode());
+                    List<BillTicket> billTickets = billTicketRepo.findAllByBill(bill);
+                    if (!billTickets.isEmpty()) {
 
+                        for (BillTicket billTicket : billTickets) {
+                            historyBillByUserDTO.setMovieName(billTicket.getTicket().getSchedule().getMovie().getName());
+                            historyBillByUserDTO.setNameOfCinema(billTicket.getTicket().getSchedule().getMovie().getCinema().getNameOfCinema());
+                            historyBillByUserDTO.setSchedule(localDateTimeToString(billTicket.getTicket().getSchedule().getStartAt()));
+                            seatSelected += billTicket.getTicket().getSeat().getLine() + billTicket.getTicket().getSeat().getNumber() + ", ";
+                        }
+                        seatSelected += "Tổng tiền: " + bill.getTotalMoney() + "VNĐ";
+                        historyBillByUserDTO.setSeatSelectedAndTotalMoney(seatSelected);
+                        List<BillFood> billFoods = billFoodRepo.findAllByBill(bill);
+                        if (!billFoods.isEmpty()) {
+                            for (BillFood billFood : billFoods) {
+                                comboFood += billFood.getQuantity() + " x " + billFood.getFood().getNameOfFood() + ", ";
+                            }
+                            historyBillByUserDTO.setComboFood(comboFood);
+                        }
+                        historyBillByUserDTO.setDateBooking(localDateTimeToString(bill.getCreateTime()));
+
+                    }
+                    historyBillByUserDTOS.add(historyBillByUserDTO);
                 }
-                historyBillByUserDTOS.add(historyBillByUserDTO);
             }
         }
 

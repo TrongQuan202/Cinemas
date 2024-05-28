@@ -110,6 +110,7 @@ public class WebSecurityConfig {
                             .requestMatchers(PUT, String.format("/%s/billFood/update-billFood",apiPrefix)).hasAnyRole(Role.USER,Role.ADMIN)
                             .requestMatchers(PUT, String.format("/%s/food/update-food",apiPrefix)).hasRole(Role.ADMIN)
                             .requestMatchers(PUT, String.format("/%s/schedule/delete-schedule",apiPrefix)).hasRole(Role.ADMIN)
+                            .requestMatchers(PUT, String.format("/%s/bill/delete-bill",apiPrefix)).hasRole(Role.ADMIN)
 
                             .requestMatchers(GET, String.format("/%s/schedule/get-price-by-schedule",apiPrefix)).hasAnyRole(Role.USER,Role.ADMIN)
                             .requestMatchers(GET, String.format("/%s/user/get-phone-user",apiPrefix)).hasAnyRole(Role.USER,Role.ADMIN)
@@ -145,7 +146,7 @@ public class WebSecurityConfig {
             @Override
             public void customize(CorsConfigurer<HttpSecurity> httpSecurityCorsConfigurer) {
                 CorsConfiguration configuration = new CorsConfiguration();
-                configuration.setAllowedOrigins(List.of("http://localhost:3000","http://localhost:3001","https://spacecinema-wheat.vercel.app"));
+                configuration.setAllowedOrigins(List.of("http://localhost:3000","http://localhost:3001","https://spacecinema-wheat.vercel.app","https://cinema-admin-one.vercel.app"));
                 configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
                 configuration.setAllowedHeaders(Arrays.asList("authorization", "content-type", "x-auth-token"));
                 configuration.setExposedHeaders(List.of("x-auth-token"));

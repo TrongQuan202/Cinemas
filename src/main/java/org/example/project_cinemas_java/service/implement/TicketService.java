@@ -95,7 +95,7 @@ public class TicketService implements ITicketService {
     @Override
     public List<SeatStatusRequest> updateSeatOfTicket() throws Exception {
         // Lấy thời gian hiện tại trừ đi 5 phút
-        LocalDateTime fiveMinutesAgo = LocalDateTime.now().minusMinutes(8); // thời gian giữ ghế
+        LocalDateTime fiveMinutesAgo = LocalDateTime.now().minusMinutes(10); // thời gian giữ ghế
 
         List<Ticket> tickets = ticketRepo.findAllBySeatStatusAndTicketBookingTimeLessThan(3, fiveMinutesAgo);
         List<SeatStatusRequest> seatStatusRequests = new ArrayList<>();

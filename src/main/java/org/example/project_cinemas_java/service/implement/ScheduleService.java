@@ -182,7 +182,7 @@ public class ScheduleService implements IScheduleService {
             throw new DataIntegrityViolationException("Trùng lịch! Vui lòng thử lại");
         }
         for (Schedule schedule: scheduleRepo.findAll()){
-            if(hasOverlap(start,end, schedule.getStartAt(),schedule.getEndAt())) {
+            if(hasOverlap(start,end, schedule.getStartAt(),schedule.getEndAt()) && createScheduleRequest.getRoom() == schedule.getRoom().getId()) {
                 throw new DataIntegrityViolationException("Trùng lịch! Vui lòng thử lại");
             }
         }
@@ -224,9 +224,5 @@ public class ScheduleService implements IScheduleService {
         LocalDateTime endTime = stringToLocalDateTime(deleteByTimeRequest.getEnd());
 
        scheduleRepo.deleteSchedule(deleteByTimeRequest.getStart(),deleteByTimeRequest.getEnd());
-
-
-
-
     }
 }

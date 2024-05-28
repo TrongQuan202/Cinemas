@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.example.project_cinemas_java.exceptions.DataNotFoundException;
 import org.example.project_cinemas_java.payload.dto.billdtos.BillAdminDTO;
 import org.example.project_cinemas_java.payload.dto.billdtos.HistoryBillByUserDTO;
+import org.example.project_cinemas_java.payload.request.DeleteByTimeRequest;
+import org.example.project_cinemas_java.repository.BillRepo;
 import org.example.project_cinemas_java.service.implement.BillService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -22,6 +24,9 @@ import java.util.List;
 public class BillController {
     @Autowired
     private BillService billService;
+
+    @Autowired
+    private BillRepo billRepo;
 
     @PostMapping("/create-bill")
     public ResponseEntity<?> createBill(){
@@ -44,6 +49,16 @@ public class BillController {
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
+    }
+
+    @PutMapping("/delete-bill")
+    public ResponseEntity<?> deleteBillByAdmin(@RequestBody DeleteByTimeRequest deleteByTimeRequest) {
+        /*       try {*/
+        String start = deleteByTimeRequest.getStart();
+        String end = deleteByTimeRequest.getEnd();
+        billRepo.deleteBill(start,end);
+        return ResponseEntity.ok().body("Xóa đơn hàng thành công");
+
     }
 
     @GetMapping("/get-all-bill")

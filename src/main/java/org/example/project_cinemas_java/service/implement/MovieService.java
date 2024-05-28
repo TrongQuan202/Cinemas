@@ -147,9 +147,9 @@ public class MovieService implements IMovieService {
         System.out.println(createMovieRequest.getEndTime());
         boolean isUpcoming = Boolean.parseBoolean(null);
         if(createMovieRequest.getIsUpcoming().equals("Phim sắp chiếu")){
-            isUpcoming = false;
+            isUpcoming = true;
         }else {
-            isUpcoming =true;
+            isUpcoming =false;
         }
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS");
@@ -176,27 +176,12 @@ public class MovieService implements IMovieService {
             movieTypeRepo.delete(movieType);
         }
 
-        for (MovieTypeRequest type:createMovieRequest.getType()){
-            Type type1 = typeRepo.findByMovieTypeName(type.getName());
-            MovieType movieType = new MovieType();
-            movieType.setMovie(movie);
-            movieType.setType(type1);
-            movieTypeRepo.save(movieType);
-        }
-
         for (ActorMovie actorMovie:actorMovieRepo.findAllByMovie(movie)){
             actorMovie.setMovie(null);
             actorMovie.setActor(null);
             actorMovieRepo.delete(actorMovie);
         }
-        for (ActorRequest ac:createMovieRequest.getActor()){
-            Actor actor = actorRepo.findByName(ac.getName());
-            ActorMovie actorMovie = new ActorMovie();
-            actorMovie.setMovie(movie);
-            actorMovie.setMovie(movie);
-            actorMovie.setActor(actor);
-            actorMovieRepo.save(actorMovie);
-        }
+
 
         return createMovieRequest;
     }
@@ -210,7 +195,10 @@ public class MovieService implements IMovieService {
         List<MovieDTO> movieDTOS = new ArrayList<>();
         List<Movie> movies = movieRepo.findAllByCinema(cinema);
         for (Movie movie: movies){
-            movieDTOS.add(movieConverter.movieToMovieDTO(movie));
+            if(movie.isActive()){
+                movieDTOS.add(movieConverter.movieToMovieDTO(movie));
+            }
+
         }
         return movieDTOS;
         }
@@ -335,7 +323,7 @@ public class MovieService implements IMovieService {
                 MovieSuggestDTO movieSuggestDTO = new MovieSuggestDTO();
                 movieSuggestDTO.setMovieName(movie.getName());
                 movieSuggestDTO.setSlug(movie.getSlug());
-                movieSuggestDTO.setImage(movie.getImage());
+                movieSuggestDTO.setImage(movie.getImageSuggest());
                 movieSuggestDTOS.add(movieSuggestDTO);
                 count++;
 

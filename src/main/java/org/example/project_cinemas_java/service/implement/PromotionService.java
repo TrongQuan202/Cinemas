@@ -57,7 +57,10 @@ public class PromotionService implements IPromotionService {
         List<PromotionDTO> promotionDTOS = new ArrayList<>();
         if(!promotions.isEmpty()){
             for (Promotion promotion: promotions){
-                promotionDTOS.add(promotionConverter.promotionToPromotionDTO(promotion));
+                if(promotion.getQuantity() > 0){
+                    promotionDTOS.add(promotionConverter.promotionToPromotionDTO(promotion));
+                }
+
             }
         }
         return promotionDTOS;
