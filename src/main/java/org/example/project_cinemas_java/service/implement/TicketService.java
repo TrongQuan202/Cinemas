@@ -90,7 +90,7 @@ public class TicketService implements ITicketService {
     }
 
     // Định nghĩa một scheduled task chạy mỗi phút
-    @Scheduled(fixedRate = 5000)  // 60000 milliseconds = 1 minute
+//    @Scheduled(fixedRate = 5000)  // 60000 milliseconds = 1 minute
     @Transactional
     @Override
     public List<SeatStatusRequest> updateSeatOfTicket() throws Exception {
